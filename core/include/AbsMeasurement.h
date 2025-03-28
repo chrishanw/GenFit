@@ -26,8 +26,6 @@
 #include "MeasurementOnPlane.h"
 #include "AbsHMatrix.h"
 
-#include <TObject.h>
-
 
 namespace genfit {
 
@@ -39,7 +37,7 @@ class TrackPoint;
  *
  *  Detector and hit ids can be used to point back to the original detector hits (clusters etc.).
  */
-class AbsMeasurement : public TObject {
+class AbsMeasurement {
 
  public:
 
@@ -119,7 +117,9 @@ class AbsMeasurement : public TObject {
   TrackPoint* trackPoint_; //! No ownership
 
  public:
-  ClassDef(AbsMeasurement, 3)
+  ClassDef(AbsMeasurement, 4)
+  // Version history:
+  // ver 4: no longer derives from TObject
 };
 
 } /* End of namespace genfit */

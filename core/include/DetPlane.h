@@ -33,7 +33,6 @@
 
 #include "AbsFinitePlane.h"
 
-#include <TObject.h>
 #include <TVector3.h>
 
 #include <memory>
@@ -56,7 +55,7 @@ namespace genfit {
  * This class parameterizes a plane in terms of an origin vector o
  * and two plane-spanning directions u and v.
  */
-class DetPlane : public TObject {
+class DetPlane {
 
  public:
 
@@ -188,7 +187,9 @@ class DetPlane : public TObject {
   std::unique_ptr<AbsFinitePlane> finitePlane_; // Ownership
 
  public:
-  ClassDef(DetPlane,1)
+  ClassDef(DetPlane,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

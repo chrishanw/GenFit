@@ -87,41 +87,4 @@ const AbsHMatrix* PlanarMeasurement::constructHMatrix(const AbsTrackRep* rep) co
 
 }
 
-void PlanarMeasurement::Streamer(TBuffer &R__b)
-{
-   // Stream an object of class genfit::PlanarMeasurement.
-
-   //This works around a msvc bug and should be harmless on other platforms
-   typedef ::genfit::PlanarMeasurement thisClass;
-   UInt_t R__s, R__c;
-   if (R__b.IsReading()) {
-      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-      //This works around a msvc bug and should be harmless on other platforms
-      typedef genfit::AbsMeasurement baseClass0;
-      baseClass0::Streamer(R__b);
-      char flag;
-      R__b >> flag;
-      physicalPlane_.reset();
-      if (flag) {
-        physicalPlane_.reset(new DetPlane());
-        physicalPlane_->Streamer(R__b);
-      }
-      R__b >> planeId_;
-      R__b.CheckByteCount(R__s, R__c, thisClass::IsA());
-   } else {
-      R__c = R__b.WriteVersion(thisClass::IsA(), kTRUE);
-      //This works around a msvc bug and should be harmless on other platforms
-      typedef genfit::AbsMeasurement baseClass0;
-      baseClass0::Streamer(R__b);
-      if (physicalPlane_) {
-        R__b << (char)1;
-        physicalPlane_->Streamer(R__b);
-      } else {
-        R__b << (char)0;
-      }
-      R__b << planeId_;
-      R__b.SetByteCount(R__c, kTRUE);
-   }
-}
-
 } /* End of namespace genfit */

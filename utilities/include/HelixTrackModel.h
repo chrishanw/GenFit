@@ -29,7 +29,6 @@
 #ifndef genfit_HelixTrackModel_h
 #define genfit_HelixTrackModel_h
 
-#include <TObject.h>
 #include <TVector3.h>
 
 
@@ -38,7 +37,7 @@ namespace genfit {
 /**
  * @brief Helix track model for testing purposes
  */
-class HelixTrackModel : public TObject {
+class HelixTrackModel {
 
  public:
 
@@ -64,7 +63,9 @@ class HelixTrackModel : public TObject {
 
 
  public:
-  ClassDef(HelixTrackModel,1)
+  ClassDef(HelixTrackModel,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

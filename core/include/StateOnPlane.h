@@ -27,7 +27,6 @@
 #include "SharedPlanePtr.h"
 #include "AbsTrackRep.h"
 
-#include <TObject.h>
 #include <TVectorD.h>
 
 #include <cassert>

@@ -27,7 +27,6 @@
 #include "MeasurementOnPlane.h"
 #include "FitStatus.h"
 
-#include <TObject.h>
 #include <TVectorD.h>
 
 
@@ -39,7 +38,7 @@ class TrackPoint;
 /**
  *  @brief This class collects all information needed and produced by a specific  AbsFitter and is specific to one AbsTrackRep of the Track.
  */
-class AbsFitterInfo : public TObject {
+class AbsFitterInfo {
 
  public:
 
@@ -100,7 +99,9 @@ class AbsFitterInfo : public TObject {
 
 
  public:
-  ClassDef(AbsFitterInfo,1)
+  ClassDef(AbsFitterInfo,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

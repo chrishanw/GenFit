@@ -27,8 +27,6 @@
 #include "AbsFitterInfo.h"
 #include "ThinScatterer.h"
 
-#include <TObject.h>
-
 #include <map>
 #include <vector>
 #include <memory>
@@ -43,7 +41,7 @@ class KalmanFitterInfo;
  * @brief Object containing AbsMeasurement and AbsFitterInfo objects.
  *
  */
-class TrackPoint : public TObject {
+class TrackPoint {
 
  public:
 
@@ -148,7 +146,9 @@ class TrackPoint : public TObject {
 
  public:
 
-  ClassDef(TrackPoint,1)
+  ClassDef(TrackPoint,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

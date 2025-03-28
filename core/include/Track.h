@@ -31,7 +31,6 @@
 #include "TrackPoint.h"
 
 #include <vector>
-#include <TObject.h>
 #include <TVectorD.h>
 
 
@@ -68,7 +67,7 @@ class TrackPointComparator {
  *  in every TrackPoint, as well as one FitStatus for every AbsTrackRep.
  *
  */
-class Track : public TObject {
+class Track {
 
  public:
 
@@ -322,9 +321,10 @@ class Track : public TObject {
 
 
  public:
-  ClassDef(Track,3)
+  ClassDef(Track,4)
   // Class version history:
   //  ver 3: introduces timeSeed_
+  // ver 4: no longer derives from TObject
 };
 
 } /* End of namespace genfit */

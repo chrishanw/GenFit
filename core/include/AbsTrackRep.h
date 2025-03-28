@@ -28,7 +28,6 @@
 #include "Material.h"
 
 #include <TVector3.h>
-#include <TObject.h>
 #include <TVectorD.h>
 #include <TMatrixD.h>
 #include <TMatrixDSym.h>
@@ -63,7 +62,7 @@ class AbsMeasurement;
  *  The AbsTrackRep provides functionality to translate from the internal representation of a state
  *  into cartesian position and momentum (and covariance) and vice versa.
  */
-class AbsTrackRep : public TObject {
+class AbsTrackRep {
 
  public:
 
@@ -368,7 +367,9 @@ class AbsTrackRep : public TObject {
   unsigned int debugLvl_;
 
  public:
-  ClassDef(AbsTrackRep,1)
+  ClassDef(AbsTrackRep,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

@@ -59,7 +59,6 @@ TrackPoint::TrackPoint(AbsMeasurement* rawMeasurement, Track* track) :
 
 
 TrackPoint::TrackPoint(const TrackPoint& rhs) :
-  TObject(rhs),
   sortingParameter_(rhs.sortingParameter_), track_(rhs.track_), thinScatterer_(nullptr)
 {
   // clone rawMeasurements
@@ -219,100 +218,6 @@ void TrackPoint::Print(const Option_t*) const {
   if (thinScatterer_)
     thinScatterer_->Print();
 
-}
-
-
-//
-// This is modified from the auto-generated Streamer.
-//
-void TrackPoint::Streamer(TBuffer &R__b)
-{
-   // Stream an object of class genfit::TrackPoint.
-   //This works around a msvc bug and should be harmless on other platforms
-   typedef ::genfit::TrackPoint thisClass;
-   UInt_t R__s, R__c;
-   if (R__b.IsReading()) {
-      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-      //TObject::Streamer(R__b);
-      R__b >> sortingParameter_;
-      {
-        std::vector<genfit::AbsMeasurement*,std::allocator<genfit::AbsMeasurement*> > &R__stl =  rawMeasurements_;
-        R__stl.clear();
-        TClass *R__tcl1 = TBuffer::GetClass(typeid(genfit::AbsMeasurement));
-        if (R__tcl1==0) {
-          Error("rawMeasurements_ streamer","Missing the TClass object for genfit::AbsMeasurement!");
-          return;
-        }
-        int R__i, R__n;
-        R__b >> R__n;
-        R__stl.reserve(R__n);
-        for (R__i = 0; R__i < R__n; R__i++) {
-          genfit::AbsMeasurement* R__t = 0;
-          R__b >> R__t;
-          R__stl.push_back(R__t);
-        }
-      }
-      track_ = nullptr;
-      size_t nTrackReps;
-      R__b >> nTrackReps;
-      for (size_t i = 0; i < nTrackReps; ++i)  {
-        int id;
-        R__b >> id;
-        AbsFitterInfo* p = 0;
-        R__b >> p;
-        vFitterInfos_[id] = p;
-      }
-      thinScatterer_.reset();
-      char flag;
-      R__b >> flag;
-      if (flag) {
-        genfit::ThinScatterer *scatterer = 0;
-        R__b >> scatterer;
-        thinScatterer_.reset(new ThinScatterer(*scatterer));
-      }
-      R__b.CheckByteCount(R__s, R__c, thisClass::IsA());
-
-
-      // Fixup ownerships.
-      for (size_t i = 0; i < rawMeasurements_.size(); ++i) {
-        rawMeasurements_[i]->setTrackPoint(this);
-      }
-      for (auto& trackRepIDWithFitterInfo : vFitterInfos_) {
-        AbsFitterInfo* fitterInfo = trackRepIDWithFitterInfo.second;
-        if (fitterInfo)
-          fitterInfo->setTrackPoint(this);
-      }
-   } else {
-      R__c = R__b.WriteVersion(thisClass::IsA(), kTRUE);
-      //TObject::Streamer(R__b);
-      R__b << sortingParameter_;
-      {
-        std::vector<genfit::AbsMeasurement*,std::allocator<genfit::AbsMeasurement*> > &R__stl = rawMeasurements_;
-        int R__n= int(R__stl.size());
-        R__b << R__n;
-        if(R__n) {
-          std::vector<genfit::AbsMeasurement*,std::allocator<genfit::AbsMeasurement*> >::iterator R__k;
-          for (R__k = R__stl.begin(); R__k != R__stl.end(); ++R__k) {
-            R__b << (*R__k);
-          }
-        }
-      }
-      R__b << fitterInfos_.size();
-      for (std::map<const AbsTrackRep*, AbsFitterInfo*>::const_iterator it = fitterInfos_.begin();
-          it != fitterInfos_.end(); ++it)
-      {
-        int id = track_->getIdForRep(it->first);
-        R__b << id;
-        R__b << it->second;
-      }
-      if (thinScatterer_) {
-        R__b << (char)1;
-        R__b << thinScatterer_.get();
-      } else {
-        R__b << (char)0;
-      }
-      R__b.SetByteCount(R__c, kTRUE);
-   }
 }
 
 

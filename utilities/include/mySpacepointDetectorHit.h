@@ -20,8 +20,6 @@
 #ifndef genfit_mySpacepointDetectorHit_h
 #define genfit_mySpacepointDetectorHit_h
 
-#include <TObject.h>
-
 
 namespace genfit {
 
@@ -30,7 +28,7 @@ namespace genfit {
  *  @author Johannes Rauch  (Technische Universit&auml;t M&uuml;nchen, original author)
  *
  */
-class mySpacepointDetectorHit : public TObject {
+class mySpacepointDetectorHit {
 
  public:
   mySpacepointDetectorHit() {;}
@@ -46,7 +44,9 @@ class mySpacepointDetectorHit : public TObject {
   TVector3 pos_;
   TMatrixDSym cov_;
 
-  ClassDef(mySpacepointDetectorHit,1)
+  ClassDef(mySpacepointDetectorHit,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 };
 /** @} */
 

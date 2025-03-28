@@ -112,19 +112,4 @@ void HMatrixPhi::Print(const Option_t*) const
   printOut << "phi = " << phi_ << std::endl;
 }
 
-void HMatrixPhi::Streamer(TBuffer &R__b) {
-  // Stream an object of class genfit::HMatrixPhi.
-
-  // Modified from auto-generated streamer to set non-persistent members after reading
-
-  if (R__b.IsReading()) {
-    R__b.ReadClassBuffer(genfit::HMatrixPhi::Class(),this);
-    cosPhi_ = cos(phi_);
-    sinPhi_ = sin(phi_);
-  } else {
-    R__b.WriteClassBuffer(genfit::HMatrixPhi::Class(),this);
-  }
-}
-
-
 } /* End of namespace genfit */

@@ -32,7 +32,6 @@
 #include "AbsMeasurement.h"
 #include "HelixTrackModel.h"
 
-#include <TObject.h>
 #include <TVector3.h>
 
 
@@ -54,7 +53,7 @@ enum eMeasurementType { Pixel = 0,
 /**
  * @brief Create different measurement types along a HelixTrackModel for testing purposes.
  */
-class MeasurementCreator : public TObject {
+class MeasurementCreator {
 
 
  public:
@@ -121,7 +120,9 @@ class MeasurementCreator : public TObject {
 
 
  public:
-  ClassDef(MeasurementCreator,1)
+  ClassDef(MeasurementCreator,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

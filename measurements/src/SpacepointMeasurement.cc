@@ -132,21 +132,4 @@ void SpacepointMeasurement::initG() {
   tools::invertMatrix(G_);
 }
 
-
-// Modified from auto-generated Streamer to account for non-persistent G_
-void SpacepointMeasurement::Streamer(TBuffer &R__b)
-{
-   // Stream an object of class genfit::SpacepointMeasurement.
-
-   if (R__b.IsReading()) {
-      R__b.ReadClassBuffer(genfit::SpacepointMeasurement::Class(),this);
-
-      if (weightedPlaneContruction_)
-        this->initG();
-   } else {
-      R__b.WriteClassBuffer(genfit::SpacepointMeasurement::Class(),this);
-   }
-}
-
-
 } /* End of namespace genfit */

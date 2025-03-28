@@ -27,7 +27,6 @@
 #include "RKTrackRep.h"
 #include "Material.h"
 
-#include <TObject.h>
 #include <TVector3.h>
 
 
@@ -36,7 +35,7 @@ namespace genfit {
 /**
  * @brief Abstract base class for geometry interfacing
  */
-class AbsMaterialInterface : public TObject {
+class AbsMaterialInterface {
 
  public:
 

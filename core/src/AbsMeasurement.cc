@@ -33,8 +33,7 @@ AbsMeasurement::AbsMeasurement(const TVectorD& rawHitCoords, const TMatrixDSym& 
 
 
 AbsMeasurement::AbsMeasurement(const AbsMeasurement& o)
-  : TObject(o),
-    rawHitCoords_(o.rawHitCoords_),
+  : rawHitCoords_(o.rawHitCoords_),
     rawHitCov_(o.rawHitCov_),
     detId_(o.detId_),
     hitId_(o.hitId_),

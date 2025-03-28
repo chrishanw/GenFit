@@ -28,7 +28,6 @@
 #include <set>
 #include <assert.h>
 
-#include <TObject.h>
 #include <TVector3.h>
 #include <TVectorD.h>
 #include <TMatrixD.h>
@@ -66,7 +65,7 @@ namespace genfit {
  *
  * @sa RecoHitFactory
  */
-class TrackCand : public TObject {
+class TrackCand {
 
 
  public:
@@ -238,9 +237,10 @@ class TrackCand : public TObject {
 
  public:
 
-  ClassDef(TrackCand,2)
+  ClassDef(TrackCand,3)
   // Version history:
   // ver 2: keep track of time in state (schema evolution rule added).
+  // ver 3: no longer derives from TObject
 };
 
 } /* End of namespace genfit */

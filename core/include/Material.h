@@ -1,7 +1,7 @@
 #ifndef genfit_Material_h
 #define genfit_Material_h
 
-#include <TObject.h>
+#include <Rtypes.h>
 
 namespace genfit {
 

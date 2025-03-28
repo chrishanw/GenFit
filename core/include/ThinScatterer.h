@@ -27,22 +27,20 @@
 #include "SharedPlanePtr.h"
 #include "Material.h"
 
-#include <TObject.h>
-
 
 namespace genfit {
 
 /**
  * @brief Thin or thick scatterer
  */
-class ThinScatterer : public TObject {
+class ThinScatterer {
 
  public:
 
   ThinScatterer() :
-    TObject(), sharedPlane_(), material_() {;}
+    sharedPlane_(), material_() {;}
   ThinScatterer(const SharedPlanePtr& sharedPlane, const Material& material) :
-    TObject(), sharedPlane_(sharedPlane), material_(material) {;}
+    sharedPlane_(sharedPlane), material_(material) {;}
 
   SharedPlanePtr getPlane() const {return sharedPlane_;}
   const Material& getMaterial() const {return material_;}
@@ -56,7 +54,9 @@ class ThinScatterer : public TObject {
 
 
  public:
-  ClassDef(ThinScatterer, 2)
+  ClassDef(ThinScatterer, 3)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

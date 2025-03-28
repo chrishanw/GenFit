@@ -48,7 +48,6 @@ TrackCand::~TrackCand() {
 
 
 TrackCand::TrackCand( const TrackCand& other ) :
-  TObject(other),
   mcTrackId_(other.mcTrackId_),
   pdg_(0),
   time_(other.time_),

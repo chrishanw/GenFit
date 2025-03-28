@@ -23,15 +23,14 @@
 #ifndef genfit_TrackCandHit_h
 #define genfit_TrackCandHit_h
 
-#include <TObject.h>
-
+#include <Rtypes.h>
 
 namespace genfit {
 
 /**
  * @brief Hit object for use in TrackCand. Provides IDs and sorting parameters.
  */
-class TrackCandHit : public TObject {
+class TrackCandHit {
  public:
 
   // Constructors/Destructors ---------
@@ -73,7 +72,7 @@ class TrackCandHit : public TObject {
 
   //! protect from calling copy c'tor from outside the class. Use #clone() if you want a copy!
   TrackCandHit(const TrackCandHit& other) :
-    TObject(other), detId_(other.detId_), hitId_(other.hitId_), planeId_(other.planeId_), sortingParameter_(other.sortingParameter_) {;}
+    detId_(other.detId_), hitId_(other.hitId_), planeId_(other.planeId_), sortingParameter_(other.sortingParameter_) {;}
   //! protect from calling assignment operator from outside the class. Use #clone() instead!
   TrackCandHit& operator=(const TrackCandHit&);
 
@@ -87,8 +86,9 @@ class TrackCandHit : public TObject {
 
  public:
 
-  ClassDef(TrackCandHit,1)
-
+  ClassDef(TrackCandHit,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 };
 
 } /* End of namespace genfit */

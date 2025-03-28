@@ -23,7 +23,6 @@
 #ifndef genfit_AbsHMatrix_h
 #define genfit_AbsHMatrix_h
 
-#include <TObject.h>
 #include <TMatrixDSym.h>
 #include <TVectorD.h>
 
@@ -34,7 +33,7 @@ namespace genfit {
  * @brief HMatrix for projecting from AbsTrackRep parameters to measured parameters in a DetPlane.
  *
  */
-class AbsHMatrix : public TObject {
+class AbsHMatrix {
 
  public:
 
@@ -65,11 +64,13 @@ class AbsHMatrix : public TObject {
 
  protected:
   // protect from calling copy c'tor or assignment operator from outside the class. Use #clone() if you want a copy!
-  AbsHMatrix(const AbsHMatrix& o) : TObject(o) {;}
+  AbsHMatrix(const AbsHMatrix& o) {;}
   AbsHMatrix& operator=(const AbsHMatrix&);
 
  public:
-  ClassDef(AbsHMatrix,1)
+  ClassDef(AbsHMatrix,2)
+  // Version history:
+  // ver 2: no longer derives from TObject
 
 };
 

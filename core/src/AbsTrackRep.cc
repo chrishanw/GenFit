@@ -41,7 +41,7 @@ AbsTrackRep::AbsTrackRep(int pdgCode, char propDir) :
 }
 
 AbsTrackRep::AbsTrackRep(const AbsTrackRep& rep) :
-  TObject(rep), pdgCode_(rep.pdgCode_), propDir_(rep.propDir_), debugLvl_(rep.debugLvl_)
+  pdgCode_(rep.pdgCode_), propDir_(rep.propDir_), debugLvl_(rep.debugLvl_)
 {
   ;
 }

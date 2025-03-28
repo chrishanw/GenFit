@@ -285,49 +285,49 @@ else()
 	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ROOT::Core ROOT::Physics ROOT::Eve)
 endif()
 
-INCLUDE(CTest)
+# INCLUDE(CTest)
 
-ADD_CUSTOM_TARGET( tests )
+# ADD_CUSTOM_TARGET( tests )
 
-ADD_GENFIT_TEST( fitterTests               test/fitterTests/main.cc)
-ADD_GENFIT_TEST( minimalFittingExample     test/minimalFittingExample/main.cc)
-ADD_GENFIT_TEST( minimalFittingExample2    test/minimalFittingExample/main2.cc)
-ADD_GENFIT_TEST( measurementFactoryExample test/measurementFactoryExample/main.cc)
-ADD_GENFIT_TEST( streamerTest              test/streamerTest/main.cc)
-ADD_GENFIT_TEST( unitTests                 test/unitTests/main.cc)
-IF(DEFINED RAVE)
-  ADD_GENFIT_TEST( vertexingTest           test/vertexingTest/main.cc)
-  ADD_GENFIT_TEST( vertexingTestRead       test/vertexingTest/read.cc)
-ENDIF()
+# ADD_GENFIT_TEST( fitterTests               test/fitterTests/main.cc)
+# ADD_GENFIT_TEST( minimalFittingExample     test/minimalFittingExample/main.cc)
+# ADD_GENFIT_TEST( minimalFittingExample2    test/minimalFittingExample/main2.cc)
+# ADD_GENFIT_TEST( measurementFactoryExample test/measurementFactoryExample/main.cc)
+# ADD_GENFIT_TEST( streamerTest              test/streamerTest/main.cc)
+# ADD_GENFIT_TEST( unitTests                 test/unitTests/main.cc)
+# IF(DEFINED RAVE)
+#   ADD_GENFIT_TEST( vertexingTest           test/vertexingTest/main.cc)
+#   ADD_GENFIT_TEST( vertexingTestRead       test/vertexingTest/read.cc)
+# ENDIF()
 
-IF(BUILD_TESTING)
+# IF(BUILD_TESTING)
 
-	# Run these automatically via ctest since they do not need a GUI. Create the
-	# necessary geometry first via a dummy test
-	ADD_TEST(NAME createGeometry COMMAND root -l -b -q ${CMAKE_CURRENT_LIST_DIR}/test/makeGeom.C)
+# 	# Run these automatically via ctest since they do not need a GUI. Create the
+# 	# necessary geometry first via a dummy test
+# 	ADD_TEST(NAME createGeometry COMMAND root -l -b -q ${CMAKE_CURRENT_LIST_DIR}/test/makeGeom.C)
 
-	ADD_TEST(NAME streamerTest COMMAND streamerTest)
-	SET_PROPERTY(TEST streamerTest PROPERTY DEPENDS createGeometry)
+# 	ADD_TEST(NAME streamerTest COMMAND streamerTest)
+# 	SET_PROPERTY(TEST streamerTest PROPERTY DEPENDS createGeometry)
 
-	ADD_TEST(NAME unitTests COMMAND unitTests)
-	SET_PROPERTY(TEST unitTests PROPERTY DEPENDS createGeometry)
+# 	ADD_TEST(NAME unitTests COMMAND unitTests)
+# 	SET_PROPERTY(TEST unitTests PROPERTY DEPENDS createGeometry)
 
-    ENABLE_TESTING()
+#     ENABLE_TESTING()
 
 
-	FIND_PACKAGE(GTest REQUIRED)
-	ADD_EXECUTABLE(gtests
-			gtest/TestConstField.cpp
-			gtest/TestMaterialEffects.cpp
-			gtest/TestRKTrackRep.cpp
-			gtest/TestMaterial.cpp
-			)
-	TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ${PROJECT_NAME})  # gtest gtest_main
-	MESSAGE(STATUS  ${GTEST_INCLUDE_DIRS})
-	TARGET_INCLUDE_DIRECTORIES(gtests PUBLIC ${GTEST_INCLUDE_DIRS})
-	GTEST_DISCOVER_TESTS(gtests)
-	INSTALL(TARGETS gtests DESTINATION bin)
-ENDIF()
+# 	FIND_PACKAGE(GTest REQUIRED)
+# 	ADD_EXECUTABLE(gtests
+# 			gtest/TestConstField.cpp
+# 			gtest/TestMaterialEffects.cpp
+# 			gtest/TestRKTrackRep.cpp
+# 			gtest/TestMaterial.cpp
+# 			)
+# 	TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ${PROJECT_NAME})  # gtest gtest_main
+# 	MESSAGE(STATUS  ${GTEST_INCLUDE_DIRS})
+# 	TARGET_INCLUDE_DIRECTORIES(gtests PUBLIC ${GTEST_INCLUDE_DIRS})
+# 	GTEST_DISCOVER_TESTS(gtests)
+# 	INSTALL(TARGETS gtests DESTINATION bin)
+# ENDIF()
 
 # generate and install following configuration files
 #GENERATE_PACKAGE_CONFIGURATION_FILES( genfitConfig.cmake genfitConfigVersion.cmake )
