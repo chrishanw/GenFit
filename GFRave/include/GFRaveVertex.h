@@ -50,7 +50,7 @@ class GFRaveVertex {
   public:
     // constructors, destructors
     GFRaveVertex();
-    GFRaveVertex(const TVector3 & pos, const TMatrixDSym & cov,
+    GFRaveVertex(const ROOT::Math::XYVector & pos, const TMatrixDSym & cov,
                  const std::vector < genfit::GFRaveTrackParameters* > & smoothedTracks,
                  double ndf, double chi2, int id = -1);
 
@@ -64,7 +64,7 @@ class GFRaveVertex {
 
     // Accessors
     //! get Position
-    TVector3 getPos() const {return pos_;}
+    ROOT::Math::XYVector getPos() const {return pos_;}
 
     //!get 3x3 covariance (error) of position.
     TMatrixDSym getCov() const {return cov_;}
@@ -83,7 +83,7 @@ class GFRaveVertex {
 
   private:
 
-    TVector3 pos_; // position of the vertex
+    ROOT::Math::XYVector pos_; // position of the vertex
     TMatrixDSym cov_; // error of the vertex position
     double ndf_;
     double chi2_;

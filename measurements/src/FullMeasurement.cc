@@ -24,7 +24,6 @@
 #include <HMatrixUnit.h>
 
 #include <cassert>
-#include <TBuffer.h>
 
 namespace genfit {
 

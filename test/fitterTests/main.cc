@@ -56,8 +56,9 @@
 #include <TH1D.h>
 #include <TRandom.h>
 #include <TStyle.h>
-#include <TVector3.h>
 #include <vector>
+
+#include <Math/Vector3D.h>
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -146,7 +147,7 @@ int main() {
   const double resolution = 0.05;   // cm; resolution of generated measurements
 
   const double resolutionWire = 5*resolution;   // cm; resolution of generated measurements
-  const TVector3 wireDir(0,0,1);
+  const ROOT::Math::XYZVector wireDir(0,0,1);
   const double skewAngle(5);
   const bool useSkew = true;
   const int nSuperLayer = 10;
@@ -339,8 +340,8 @@ int main() {
 
 
       // true start values
-      TVector3 pos(0, 0, 0);
-      TVector3 mom(1.,0,0);
+      ROOT::Math::XYZVector pos(0, 0, 0);
+      ROOT::Math::XYZVector mom(1.,0,0);
       mom.SetPhi(gRandom->Uniform(0.,2*TMath::Pi()));
       //mom.SetTheta(gRandom->Uniform(0.5*TMath::Pi(),0.9*TMath::Pi()));
       mom.SetTheta(theta*TMath::Pi()/180);
@@ -362,8 +363,8 @@ int main() {
       measurementCreator.setTrackModel(helix);
 
       // smeared start values
-      TVector3 posM(pos);
-      TVector3 momM(mom);
+      ROOT::Math::XYZVector posM(pos);
+      ROOT::Math::XYZVector momM(mom);
       if (smearPosMom) {
         posM.SetX(gRandom->Gaus(posM.X(),posSmear));
         posM.SetY(gRandom->Gaus(posM.Y(),posSmear));

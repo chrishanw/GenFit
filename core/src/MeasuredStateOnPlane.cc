@@ -36,7 +36,7 @@ void MeasuredStateOnPlane::Print(Option_t*) const {
   printOut << " covariance matrix: "; cov_.Print();
   if (sharedPlane_ != nullptr) {
     printOut << " defined in plane "; sharedPlane_->Print();
-    TVector3 pos, mom;
+    ROOT::Math::XYZVector pos, mom;
     TMatrixDSym cov(6,6);
     getRep()->getPosMomCov(*this, pos, mom, cov);
     printOut << " 3D position: "; pos.Print();

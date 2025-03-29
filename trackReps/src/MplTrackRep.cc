@@ -26,8 +26,6 @@
 
 #include <math.h>
 
-#include <TBuffer.h>
-
 using namespace genfit;
 
 MplTrackRep::MplTrackRep(int pdgCode, float magCharge, char propDir) :

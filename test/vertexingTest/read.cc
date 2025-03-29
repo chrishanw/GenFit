@@ -5,8 +5,9 @@
 #include <TEveManager.h>
 #include <TGeoManager.h>
 #include <TRandom.h>
-#include <TVector3.h>
 #include <vector>
+
+#include <Math/Vector3D.h>
 
 #include <TROOT.h>
 #include <TClonesArray.h>

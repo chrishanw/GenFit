@@ -254,7 +254,7 @@ void TrackCand::set6DSeedAndPdgCode(const TVectorD& state6D, const int pdgCode) 
   state6D_ = state6D;
 }
 
-void TrackCand::setPosMomSeed(const TVector3& pos, const TVector3& mom, const double charge) {
+void TrackCand::setPosMomSeed(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const double charge) {
   if (pdg_ != 0 && q_ != charge)
     pdg_ = -pdg_;
   q_ = charge;
@@ -262,7 +262,7 @@ void TrackCand::setPosMomSeed(const TVector3& pos, const TVector3& mom, const do
   state6D_[3] = mom[0];  state6D_[4] = mom[1];  state6D_[5] = mom[2];
 }
 
-void TrackCand::setPosMomSeedAndPdgCode(const TVector3& pos, const TVector3& mom, const int pdgCode) {
+void TrackCand::setPosMomSeedAndPdgCode(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const int pdgCode) {
   setPdgCode(pdgCode);
   state6D_[0] = pos[0];  state6D_[1] = pos[1];  state6D_[2] = pos[2];
   state6D_[3] = mom[0];  state6D_[4] = mom[1];  state6D_[5] = mom[2];
@@ -281,15 +281,15 @@ void TrackCand::setTime6DSeedAndPdgCode(double time, const TVectorD& state6D, co
   set6DSeedAndPdgCode(state6D, pdgCode);
 }
 
-void TrackCand::setTimePosMomSeed(double time, const TVector3& pos,
-				  const TVector3& mom, const double charge)
+void TrackCand::setTimePosMomSeed(double time, const ROOT::Math::XYZVector& pos,
+				  const ROOT::Math::XYZVector& mom, const double charge)
 {
   time_ = time;
   setPosMomSeed(pos, mom, charge);
 }
 
-void TrackCand::setTimePosMomSeedAndPdgCode(double time, const TVector3& pos,
-					    const TVector3& mom, const int pdgCode)
+void TrackCand::setTimePosMomSeedAndPdgCode(double time, const ROOT::Math::XYZVector& pos,
+					    const ROOT::Math::XYZVector& mom, const int pdgCode)
 {
   time_ = time;
   setPosMomSeedAndPdgCode(pos, mom, pdgCode);

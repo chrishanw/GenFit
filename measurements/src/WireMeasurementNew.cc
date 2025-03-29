@@ -43,7 +43,7 @@ WireMeasurementNew::WireMeasurementNew()
   memset(wireEndPoint2_, 0, 3*sizeof(double));
 }
 
-WireMeasurementNew::WireMeasurementNew(double driftDistance, double driftDistanceError, const TVector3& endPoint1, const TVector3& endPoint2, int detId, int hitId, TrackPoint* trackPoint)
+WireMeasurementNew::WireMeasurementNew(double driftDistance, double driftDistanceError, const ROOT::Math::XYZVector& endPoint1, const ROOT::Math::XYZVector& endPoint2, int detId, int hitId, TrackPoint* trackPoint)
   : AbsMeasurement(1), maxDistance_(2), leftRight_(0)
 {
   TVectorD coords(1);
@@ -66,20 +66,20 @@ SharedPlanePtr WireMeasurementNew::constructPlane(const StateOnPlane& state) con
   // copy state. Neglect covariance.
   StateOnPlane st(state);
 
-  TVector3 wire1(wireEndPoint1_);
-  TVector3 wire2(wireEndPoint2_);
+  ROOT::Math::XYZVector wire1(wireEndPoint1_);
+  ROOT::Math::XYZVector wire2(wireEndPoint2_);
 
   // unit vector along the wire (V)
-  TVector3 wireDirection = wire2 - wire1; 
+  ROOT::Math::XYZVector wireDirection = wire2 - wire1; 
   wireDirection.SetMag(1.);
 
   // point of closest approach
   const AbsTrackRep* rep = state.getRep();
   rep->extrapolateToLine(st, wire1, wireDirection);
-  const TVector3& poca = rep->getPos(st);
-  TVector3 dirInPoca = rep->getMom(st);
+  const ROOT::Math::XYZVector& poca = rep->getPos(st);
+  ROOT::Math::XYZVector dirInPoca = rep->getMom(st);
   dirInPoca.SetMag(1.);
-  const TVector3& pocaOnWire = wire1 + wireDirection.Dot(poca - wire1)*wireDirection;
+  const ROOT::Math::XYZVector& pocaOnWire = wire1 + wireDirection.Dot(poca - wire1)*wireDirection;
  
   // check if direction is parallel to wire
   if (fabs(wireDirection.Angle(dirInPoca)) < 0.01){
@@ -88,7 +88,7 @@ SharedPlanePtr WireMeasurementNew::constructPlane(const StateOnPlane& state) con
   }
   
   // construct orthogonal vector
-  TVector3 U = wireDirection.Cross(dirInPoca);
+  ROOT::Math::XYZVector U = wireDirection.Cross(dirInPoca);
   // U.SetMag(1.); automatically assured
 
   return SharedPlanePtr(new DetPlane(pocaOnWire, U, wireDirection));
@@ -138,7 +138,7 @@ const AbsHMatrix* WireMeasurementNew::constructHMatrix(const AbsTrackRep* rep) c
   return new HMatrixU();
 }
 
-void WireMeasurementNew::setWireEndPoints(const TVector3& endPoint1, const TVector3& endPoint2)
+void WireMeasurementNew::setWireEndPoints(const ROOT::Math::XYZVector& endPoint1, const ROOT::Math::XYZVector& endPoint2)
 {
   wireEndPoint1_[0] = endPoint1.X();
   wireEndPoint1_[1] = endPoint1.Y();

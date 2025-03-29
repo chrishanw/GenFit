@@ -32,7 +32,6 @@
 #include <cmath>
 
 // ROOT headers
-#include <TBuffer.h>
 #include <TMath.h>
 #include <Math/QuantFuncMathCore.h>
 

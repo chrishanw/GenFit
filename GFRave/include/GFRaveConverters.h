@@ -40,7 +40,7 @@
 #include <rave/Plane.h>
 #include <rave/Vertex.h>
 
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 #include <TVectorD.h>
 #include <TMatrixDSym.h>
 
@@ -81,15 +81,15 @@ namespace genfit {
   SharedPlanePtr PlaneToGFDetPlane(const ravesurf::Plane& rplane);
 
   // RAVE to ROOT
-  TVector3 Point3DToTVector3(const rave::Point3D&);
-  TVector3 Vector3DToTVector3(const rave::Vector3D&);
+  ROOT::Math::XYVector Point3DToROOT::Math::XYVector(const rave::Point3D&);
+  ROOT::Math::XYVector Vector3DToROOT::Math::XYVector(const rave::Vector3D&);
 
   TMatrixDSym Covariance3DToTMatrixDSym(const rave::Covariance3D&);
   TVectorD Vector6DToTVectorD(const rave::Vector6D&);
   TMatrixDSym Covariance6DToTMatrixDSym(const rave::Covariance6D&);
 
   // ROOT to RAVE
-  rave::Point3D TVector3ToPoint3D(const TVector3 &);
+  rave::Point3D ROOT::Math::XYVectorToPoint3D(const ROOT::Math::XYVector &);
   rave::Covariance3D TMatrixDSymToCovariance3D(const TMatrixDSym&);
 
 

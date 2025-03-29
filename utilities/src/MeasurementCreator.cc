@@ -65,26 +65,26 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
   std::vector<AbsMeasurement*> retVal;
   genfit::AbsMeasurement* measurement;
 
-  TVector3 point, dir;
+  ROOT::Math::XYZVector point, dir;
   trackModel_->getPosDir(tracklength, point, dir);
 
 
-  TVector3 planeNorm(dir);
+  ROOT::Math::XYZVector planeNorm(dir);
   planeNorm.SetTheta(thetaDetPlane_*TMath::Pi()/180);
   planeNorm.SetPhi(planeNorm.Phi()+phiDetPlane_);
-  static const TVector3 z(0,0,1);
-  static const TVector3 x(1,0,0);
+  static const ROOT::Math::XYZVector z(0,0,1);
+  static const ROOT::Math::XYZVector x(1,0,0);
 
 
-  TVector3 currentWireDir(wireDir_);
-  TVector3 wirePerp;
+  ROOT::Math::XYZVector currentWireDir(wireDir_);
+  ROOT::Math::XYZVector wirePerp;
 
   if (type == Wire ||
       type == WirePoint){
 
     // skew layers
     if (useSkew_ && (int)((double)wireCounter_/(double)nSuperLayer_)%2 == 1) {
-      TVector3 perp(wireDir_.Cross(dir));
+      ROOT::Math::XYZVector perp(wireDir_.Cross(dir));
       if ((int)((double)wireCounter_/(double)nSuperLayer_)%4 == 1){
         currentWireDir.Rotate(skewAngle_*TMath::Pi()/180, wireDir_.Cross(perp));
       }
@@ -180,9 +180,9 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
       hitCov(2,2) = resolutionWire_*resolutionWire_;
 
       // rotation matrix
-      TVector3 xp = currentWireDir.Orthogonal();
+      ROOT::Math::XYZVector xp = currentWireDir.Orthogonal();
       xp.SetMag(1);
-      TVector3 yp = currentWireDir.Cross(xp);
+      ROOT::Math::XYZVector yp = currentWireDir.Cross(xp);
       yp.SetMag(1);
 
       TMatrixD rot(3,3);
@@ -216,7 +216,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     case StripU: case StripV: case StripUV : {
       if (debug_) std::cerr << "create StripHit" << std::endl;
 
-      TVector3 vU, vV;
+      ROOT::Math::XYZVector vU, vV;
       vU = planeNorm.Cross(z);
       vV = (planeNorm.Cross(z)).Cross(planeNorm);
       genfit::SharedPlanePtr plane(new genfit::DetPlane(point, vU, vV));

@@ -22,7 +22,6 @@
 #include "IO.h"
 
 #include <cassert>
-#include <TBuffer.h>
 
 namespace genfit {
 
@@ -32,7 +31,7 @@ void StateOnPlane::Print(Option_t*) const {
   printOut << " state vector: "; state_.Print();
   if (sharedPlane_ != nullptr) {
     printOut << " defined in plane "; sharedPlane_->Print();
-    TVector3 pos(0,0,0), mom(0,0,0);
+    ROOT::Math::XYZVector pos(0,0,0), mom(0,0,0);
     getRep()->getPosMom(*this, pos, mom);
     printOut << " 3D position: "; pos.Print();
     printOut << " 3D momentum: "; mom.Print();

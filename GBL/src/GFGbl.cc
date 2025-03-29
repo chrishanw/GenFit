@@ -64,7 +64,7 @@
 #include <TVectorDfwd.h>
 #include <TMatrixT.h>
 
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 
 //#define DEBUG
 //#define OUTPUT
@@ -334,7 +334,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
   // It is switched off automatically if no B-field at (0,0,0) is detected.
   bool fitQoverP = true;
   //TODO: Use clever way to determine zero B-field
-  double Bfield = genfit::FieldManager::getInstance()->getFieldVal(TVector3(0., 0., 0.)).Mag();
+  double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).Mag();
   if (!(Bfield > 0.))
     fitQoverP = false;
   
@@ -416,7 +416,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
     // Representation state at plane
     TVectorD state = reference->getState();
     // track direction at plane (in global coords)
-    TVector3 trackDir = rep->getDir(*reference);
+    ROOT::Math::XYZVector trackDir = rep->getDir(*reference);
     // track momentum vector at plane (in global coords)
     trackMomMag = rep->getMomMag(*reference);
     // charge of particle
@@ -557,19 +557,19 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       std::vector<int> labGlobal;
         
       // track direction in global coords
-      TVector3 tDir = trackDir;
+      ROOT::Math::XYZVector tDir = trackDir;
       // sensor u direction in global coords
-      TVector3 uDir = plane->getU();
+      ROOT::Math::XYZVector uDir = plane->getU();
       // sensor v direction in global coords
-      TVector3 vDir = plane->getV();
+      ROOT::Math::XYZVector vDir = plane->getV();
       // sensor normal direction in global coords
-      TVector3 nDir = plane->getNormal();
+      ROOT::Math::XYZVector nDir = plane->getNormal();
       //file << sensorId << endl;
       //outputVector(uDir, "U");
       //outputVector(vDir, "V");
       //outputVector(nDir, "Normal");
       // track direction in local sensor system
-      TVector3 tLoc = TVector3(uDir.Dot(tDir), vDir.Dot(tDir), nDir.Dot(tDir));
+      ROOT::Math::XYZVector tLoc = ROOT::Math::XYZVector(uDir.Dot(tDir), vDir.Dot(tDir), nDir.Dot(tDir));
         
       // track u-slope in local sensor system
       double uSlope = tLoc[0] / tLoc[2];
@@ -607,12 +607,12 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       //TODO: Usage of this requires Hierarchy Constraints to be provided to MP2
   
       // sensor centre position in global system
-      TVector3 detPos = plane->getO();
+      ROOT::Math::XYZVector detPos = plane->getO();
       //cout << "detPos" << endl;
       //detPos.Print();
 
       // global prediction from raw measurement
-      TVector3 pred = detPos + uPos * uDir + vPos * vDir;
+      ROOT::Math::XYZVector pred = detPos + uPos * uDir + vPos * vDir;
       //cout << "pred" << endl;
       //pred.Print();
 

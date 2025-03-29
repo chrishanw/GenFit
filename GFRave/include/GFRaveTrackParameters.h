@@ -32,7 +32,7 @@
 #include "Track.h"
 #include "AbsTrackRep.h"
 
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 #include <TVectorD.h>
 #include <TMatrixDSym.h>
 #include <TRef.h>
@@ -65,8 +65,8 @@ class GFRaveTrackParameters
 
     bool hasSmoothedData() const {return hasSmoothedData_;}
     TVectorD getState() const {return state_;}
-    TVector3 getPos() const;
-    TVector3 getMom() const;
+    ROOT::Math::XYVector getPos() const;
+    ROOT::Math::XYVector getMom() const;
     const TMatrixDSym & getCov() const {return cov_;}
 
     double getCharge() const;

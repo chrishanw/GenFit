@@ -22,7 +22,6 @@
 #include "IO.h"
 
 #include <TClass.h>
-#include <TBuffer.h>
 
 namespace genfit {
 

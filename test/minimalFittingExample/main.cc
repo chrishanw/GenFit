@@ -19,8 +19,9 @@
 #include <TEveManager.h>
 #include <TGeoManager.h>
 #include <TRandom.h>
-#include <TVector3.h>
 #include <vector>
+
+#include <Math/Vector3D.h>
 
 #include "TDatabasePDG.h"
 #include <TMath.h>
@@ -54,8 +55,8 @@ int main() {
   for (unsigned int iEvent=0; iEvent<100; ++iEvent){
 
     // true start values
-    TVector3 pos(0, 0, 0);
-    TVector3 mom(1.,0,0);
+    ROOT::Math::XYZVector pos(0, 0, 0);
+    ROOT::Math::XYZVector mom(1.,0,0);
     mom.SetPhi(gRandom->Uniform(0.,2*TMath::Pi()));
     mom.SetTheta(gRandom->Uniform(0.4*TMath::Pi(),0.6*TMath::Pi()));
     mom.SetMag(gRandom->Uniform(0.2, 1.));
@@ -77,8 +78,8 @@ int main() {
     const double momSmear = 3. /180.*TMath::Pi();     // rad
     const double momMagSmear = 0.1;   // relative
 
-    TVector3 posM(pos);
-    TVector3 momM(mom);
+    ROOT::Math::XYZVector posM(pos);
+    ROOT::Math::XYZVector momM(mom);
     if (smearPosMom) {
       posM.SetX(gRandom->Gaus(posM.X(),posSmear));
       posM.SetY(gRandom->Gaus(posM.Y(),posSmear));

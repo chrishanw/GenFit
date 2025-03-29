@@ -20,7 +20,6 @@
 #include "KalmanFitterInfo.h"
 
 #include <cassert>
-#include <TBuffer.h>
 
 #include "IO.h"
 #include "Exception.h"

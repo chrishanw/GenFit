@@ -25,11 +25,11 @@
 
 namespace genfit {
 
-HelixTrackModel::HelixTrackModel(const TVector3& pos, const TVector3& mom, double charge) {
+HelixTrackModel::HelixTrackModel(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, double charge) {
 
   mom_ = mom.Mag();
 
-  TVector3 B = genfit::FieldManager::getInstance()->getFieldVal(pos);
+  ROOT::Math::XYZVector B = genfit::FieldManager::getInstance()->getFieldVal(pos);
 
   // B must point in Z direction
   assert(B.X() == 0);
@@ -38,7 +38,7 @@ HelixTrackModel::HelixTrackModel(const TVector3& pos, const TVector3& mom, doubl
   double Bz = B.Z();
 
   // calc helix parameters
-  TVector3 dir2D(mom);
+  ROOT::Math::XYZVector dir2D(mom);
   dir2D.SetZ(0);
   dir2D.SetMag(1.);
   R_ = 100.*mom.Perp()/(0.0299792458*Bz) / fabs(charge);
@@ -55,13 +55,13 @@ HelixTrackModel::HelixTrackModel(const TVector3& pos, const TVector3& mom, doubl
 }
 
 
-TVector3 HelixTrackModel::getPos(double tracklength) const {
+ROOT::Math::XYZVector HelixTrackModel::getPos(double tracklength) const {
 
-  TVector3 pos;
+  ROOT::Math::XYZVector pos;
 
   double angle = alpha0_ - sgn_ * tracklength / R_ * sin(theta_);
 
-  TVector3 radius(R_,0,0);
+  ROOT::Math::XYZVector radius(R_,0,0);
   radius.SetPhi(angle);
   pos = center_ + radius;
   pos.SetZ(center_.Z() - sgn_ * ((alpha0_-angle)*R_ * tan(theta_-M_PI/2.)) );
@@ -69,11 +69,11 @@ TVector3 HelixTrackModel::getPos(double tracklength) const {
   return pos;
 }
 
-void HelixTrackModel::getPosMom(double tracklength, TVector3& pos, TVector3& mom) const {
+void HelixTrackModel::getPosMom(double tracklength, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const {
 
   double angle = alpha0_ - sgn_ * tracklength / R_ * sin(theta_);
 
-  TVector3 radius(R_,0,0);
+  ROOT::Math::XYZVector radius(R_,0,0);
   radius.SetPhi(angle);
   pos = center_ + radius;
   pos.SetZ(center_.Z() - sgn_ * ((alpha0_-angle)*R_ * tan(theta_-M_PI/2.)) );

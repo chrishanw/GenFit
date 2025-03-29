@@ -76,7 +76,7 @@
 #include <TMatrixD.h>
 #include <TVectorDfwd.h>
 #include <TMatrixT.h>
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 
 //#define DEBUG
 

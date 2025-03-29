@@ -32,7 +32,6 @@
 #include "IO.h"
 
 #include <Math/ProbFunc.h>
-#include <TBuffer.h>
 #include <TDecompChol.h>
 #include <TMatrixDSymEigen.h>
 #include <algorithm>
@@ -133,7 +132,7 @@ void KalmanFitter::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool)
       static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(tr->getCardinalRep()))->hasPredictionsAndUpdates() ) {
     if (debugLvl_ > 0)
       debugOut << "take smoothed state of cardinal rep fit as seed \n";
-    TVector3 pos, mom;
+    ROOT::Math::XYZVector pos, mom;
     TMatrixDSym cov;
     const MeasuredStateOnPlane& fittedState = static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(tr->getCardinalRep()))->getFittedState(true);
     tr->getCardinalRep()->getPosMomCov(fittedState, pos, mom, cov);
@@ -342,7 +341,7 @@ KalmanFitter::processTrackPartially(Track* tr, const AbsTrackRep* rep, int start
       static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(tr->getCardinalRep()))->hasPredictionsAndUpdates() ) {
     if (debugLvl_ > 0)
       debugOut << "take smoothed state of cardinal rep fit as seed \n";
-    TVector3 pos, mom;
+    ROOT::Math::XYZVector pos, mom;
     TMatrixDSym cov;
     const MeasuredStateOnPlane& fittedState = static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(tr->getCardinalRep()))->getFittedState(true);
     tr->getCardinalRep()->getPosMomCov(fittedState, pos, mom, cov);

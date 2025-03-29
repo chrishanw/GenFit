@@ -27,7 +27,7 @@
 #include "RKTrackRep.h"
 #include "Material.h"
 
-#include <TVector3.h>
+#include <Math/Vector3D.h>
 
 
 namespace genfit {
