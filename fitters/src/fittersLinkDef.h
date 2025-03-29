@@ -17,6 +17,6 @@
 #pragma link C++ class genfit::ReferenceStateOnPlane+;
 
 // Classes that needed manually written streamers:
-#pragma link C++ class genfit::KalmanFitter-;
-#pragma link C++ class genfit::KalmanFitterInfo-;
-#pragma link C++ class genfit::DAF-;
+#pragma link C++ class genfit::KalmanFitter+;
+#pragma link C++ class genfit::KalmanFitterInfo+;
+#pragma link C++ class genfit::DAF+;

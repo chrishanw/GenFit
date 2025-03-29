@@ -7,5 +7,5 @@
 
 #pragma link C++ namespace genfit;
 
-#pragma link C++ class genfit::RKTrackRep-;
-#pragma link C++ class genfit::MplTrackRep-;
+#pragma link C++ class genfit::RKTrackRep+;
+#pragma link C++ class genfit::MplTrackRep+;

@@ -47,7 +47,7 @@ bool emptyTrackTest()
     return false;
   }
 
-  t->Write("direct");
+  // t->Write("direct");
   f->Close();
   delete t;
   delete f;
