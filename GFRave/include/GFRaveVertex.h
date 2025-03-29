@@ -45,7 +45,7 @@ namespace genfit {
  * in the vertex, smoothed track parameters and a pointer to the original
  * unaltered genfit::Track.
  */
-class GFRaveVertex : public TObject {
+class GFRaveVertex {
 
   public:
     // constructors, destructors
@@ -92,7 +92,9 @@ class GFRaveVertex : public TObject {
     std::vector < genfit::GFRaveTrackParameters* > smoothedTracks_; //-> track parameters of smoothed (with the vertex information) tracks, weights and original tracks; Vertex has ownership!
 
   public:
-    ClassDef(GFRaveVertex, 1)
+    ClassDef(GFRaveVertex, 2)
+    // Version history:
+    // ver 2: no longer derives from TObject
 
 };
 

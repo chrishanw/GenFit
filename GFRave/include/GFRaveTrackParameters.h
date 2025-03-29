@@ -32,7 +32,6 @@
 #include "Track.h"
 #include "AbsTrackRep.h"
 
-#include <TObject.h>
 #include <TVector3.h>
 #include <TVectorD.h>
 #include <TMatrixDSym.h>
@@ -48,7 +47,7 @@ namespace genfit {
  * Contains a pointer to the original genfit::Track, the weight of the track in the vertex,
  * and smoothed (with the vertex information) state and covariance of the track.
  */
-class GFRaveTrackParameters : public TObject
+class GFRaveTrackParameters
 {
   public:
     // constructors, destructors
@@ -85,7 +84,9 @@ class GFRaveTrackParameters : public TObject
     bool hasSmoothedData_; // true if state_ is forced to go through the vertex
 
   private:
-    ClassDef(GFRaveTrackParameters, 1)
+    ClassDef(GFRaveTrackParameters, 2)
+    // Version history:
+    // ver 2: no longer derives from TObject
 };
 
 } /* End of namespace genfit */

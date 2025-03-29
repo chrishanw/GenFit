@@ -66,7 +66,6 @@ GFRaveVertex::GFRaveVertex(const TVector3 & pos, const TMatrixDSym& cov,
 
 
 GFRaveVertex::GFRaveVertex(const GFRaveVertex & vertex) :
-  TObject(vertex),
   pos_(vertex.pos_),
   cov_(vertex.cov_),
   ndf_(vertex.ndf_),
