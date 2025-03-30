@@ -744,7 +744,6 @@ void EventDisplay::drawEvent(unsigned int id, bool resetCam) {
               ROOT::Math::XYZVector eVec1(eVec(0,0),eVec(1,0),eVec(2,0));
               ROOT::Math::XYZVector eVec2(eVec(0,1),eVec(1,1),eVec(2,1));
               ROOT::Math::XYZVector eVec3(eVec(0,2),eVec(1,2),eVec(2,2));
-              const ROOT::Math::XYZVector norm = u.Cross(v);
               // got everything we need -----------------------------------------------------
 
               static const double radDeg(180./TMath::Pi());

@@ -401,9 +401,7 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
     // current measurement point
     TrackPoint* point_meas = trk->getPointWithMeasurement(ipoint_meas);    
     // Current detector plane
-    SharedPlanePtr plane = point_meas->getRawMeasurement(0)->constructPlane(reference);    
-    // track direction at plane (in global coords)
-    ROOT::Math::XYZVector trackDir = rep->getDir(reference);
+    SharedPlanePtr plane = point_meas->getRawMeasurement(0)->constructPlane(reference);
     // track momentum direction vector at plane (in global coords)
     double trackMomMag = rep->getMomMag(reference);
     // charge of particle

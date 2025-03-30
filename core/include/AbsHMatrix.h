@@ -64,7 +64,6 @@ class AbsHMatrix {
 
  protected:
   // protect from calling copy c'tor or assignment operator from outside the class. Use #clone() if you want a copy!
-  AbsHMatrix(const AbsHMatrix& o) {;}
   AbsHMatrix& operator=(const AbsHMatrix&);
 
  public:
