@@ -131,7 +131,7 @@ class AbsTrackRep {
     dirInPoca = this->getMom(state);
     dirInPoca = dirInPoca.Unit();
 
-    poca_onwire = point1 + wireDir*((poca - point1)*wireDir);
+    poca_onwire = point1 + wireDir*((poca - point1).Dot(wireDir));
     
     return retval;
   }
@@ -248,7 +248,7 @@ class AbsTrackRep {
   virtual void getPosMom(const StateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const = 0;
 
   //! Get cartesian position and direction vector of a state.
-  void getPosDir(const StateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {getPosMom(state, pos, dir); dir.SetMag(1.);}
+  void getPosDir(const StateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {getPosMom(state, pos, dir); dir *= 1. / dir.R();}
 
   //! Get the 6D state vector (x, y, z, p_x, p_y, p_z).
   virtual TVectorD get6DState(const StateOnPlane& state) const;

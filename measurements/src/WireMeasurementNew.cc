@@ -30,6 +30,8 @@
 #include <RKTrackRep.h>
 #include <HMatrixU.h>
 
+#include <Math/VectorUtil.h>
+
 #include <cassert>
 
 
@@ -66,23 +68,23 @@ SharedPlanePtr WireMeasurementNew::constructPlane(const StateOnPlane& state) con
   // copy state. Neglect covariance.
   StateOnPlane st(state);
 
-  ROOT::Math::XYZVector wire1(wireEndPoint1_);
-  ROOT::Math::XYZVector wire2(wireEndPoint2_);
+  ROOT::Math::XYZVector wire1(wireEndPoint1_[0], wireEndPoint1_[1], wireEndPoint1_[2]);
+  ROOT::Math::XYZVector wire2(wireEndPoint2_[0], wireEndPoint2_[1], wireEndPoint2_[2]);
 
   // unit vector along the wire (V)
   ROOT::Math::XYZVector wireDirection = wire2 - wire1; 
-  wireDirection.SetMag(1.);
+  wireDirection *= 1. / wireDirection.R();
 
   // point of closest approach
   const AbsTrackRep* rep = state.getRep();
   rep->extrapolateToLine(st, wire1, wireDirection);
   const ROOT::Math::XYZVector& poca = rep->getPos(st);
   ROOT::Math::XYZVector dirInPoca = rep->getMom(st);
-  dirInPoca.SetMag(1.);
+  dirInPoca *= 1. / dirInPoca.R();
   const ROOT::Math::XYZVector& pocaOnWire = wire1 + wireDirection.Dot(poca - wire1)*wireDirection;
  
   // check if direction is parallel to wire
-  if (fabs(wireDirection.Angle(dirInPoca)) < 0.01){
+  if (fabs(ROOT::Math::VectorUtil::Angle(wireDirection, dirInPoca)) < 0.01) {
     Exception exc("WireMeasurementNew::detPlane(): Cannot construct detector plane, direction is parallel to wire", __LINE__,__FILE__);
     throw exc;
   }

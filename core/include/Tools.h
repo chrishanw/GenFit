@@ -27,6 +27,7 @@
 #include <TVectorD.h>
 #include <TMatrixD.h>
 #include <TMatrixDSym.h>
+#include <Math/Vector3D.h>
 
 /**
  * @brief Matrix inversion tools.
@@ -93,6 +94,47 @@ void
 kalmanUpdateSqrt(const TMatrixD& S,
 		 const TVectorD& res, const TMatrixD& R, const AbsHMatrix* H,
 		 TVectorD& update, TMatrixD& SNew);
+
+/** @brief Calculate an arbitrary orthogonal vector to a 3D vector in 3D space.
+ * The implementation is the same as in TVector3.
+ * v1, v2: 
+ */
+inline ROOT::Math::XYZVector Orthogonal(const ROOT::Math::XYZVector& v);
+
+/**
+ * Set vector by polar coordinates.
+ * @param[out] vector Vector.
+ * @param[in]  mag    Magnitude.
+ * @param[in]  theta  Polar angle.
+ * @param[in]  phi    Azimuthal angle.
+ */
+inline void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, double phi);
+
+
+/**
+ * Set vector magnitude mag
+ * @param[inout] vector Vector
+ * @param[in]    mag    Magnitude
+ */
+inline void setMag(ROOT::Math::XYZVector& vector, double mag);
+
+/**
+ * Set vector azimuthal angle theta
+ * @param[inout] vector Vector
+ * @param[in]    theta  Azimuthal angle
+ */
+inline void setTheta(ROOT::Math::XYZVector& vector, double theta);
+
+/**
+ * Set vector polar angle phi
+ * @param[inout] vector Vector
+ * @param[in]    phi    Polar angle
+ */
+inline void setPhi(ROOT::Math::XYZVector& vector, double phi);
+
+/** @brief Print a 3D vector
+ */
+inline std::string printVector3D(const ROOT::Math::XYZVector& v);
 
 } /* End of namespace tools */
 } /* End of namespace genfit */

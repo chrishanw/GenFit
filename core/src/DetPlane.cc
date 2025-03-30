@@ -19,6 +19,7 @@
 
 #include "DetPlane.h"
 #include "IO.h"
+#include "Tools.h"
 
 #include <cassert>
 #include <cmath>
@@ -161,10 +162,10 @@ void DetPlane::setNormal(double X,double Y,double Z){
 }
 
 void DetPlane::setNormal(const ROOT::Math::XYZVector& n){
-  u_ = n.Orthogonal();
+  u_ = genfit::tools::Orthogonal(n); // n.Orthogonal();
   v_ = n.Cross(u_);
-  u_.SetMag(1.);
-  v_.SetMag(1.);
+  u_ *= 1. / u_.R();
+  v_ *= 1. / v_.R();
 }
 
 void DetPlane::setNormal(const double& theta, const double& phi){
@@ -174,7 +175,7 @@ void DetPlane::setNormal(const double& theta, const double& phi){
 
 ROOT::Math::XYVector DetPlane::project(const ROOT::Math::XYZVector& x)const
 {
-  return ROOT::Math::XYVector(u_*x, v_*x);
+  return ROOT::Math::XYVector(u_.Dot(x), v_.Dot(x));
 }
 
 
@@ -203,8 +204,8 @@ void DetPlane::sane(){
   assert(u_!=v_);
 
   // ensure unit vectors
-  u_.SetMag(1.);
-  v_.SetMag(1.);
+  u_ *= 1. / u_.R();
+  v_ *= 1. / v_.R();
 
   // check if already orthogonal
   if (u_.Dot(v_) < 1.E-5) return;
@@ -280,11 +281,11 @@ double DetPlane::distance(double x, double y, double z) const {
 ROOT::Math::XYVector DetPlane::straightLineToPlane (const ROOT::Math::XYZVector& point, const ROOT::Math::XYZVector& dir) const {
   ROOT::Math::XYZVector dirNorm(dir.Unit());
   ROOT::Math::XYZVector normal = getNormal();
-  double dirTimesN = dirNorm*normal;
+  double dirTimesN = dirNorm.Dot(normal);
   if(fabs(dirTimesN)<1.E-6){//straight line is parallel to plane, so return infinity
     return ROOT::Math::XYVector(1.E100,1.E100);
   }
-  double t = 1./dirTimesN * ((o_-point)*normal);
+  double t = 1./dirTimesN * ((o_-point).Dot(normal));
   return project(point - o_ + t * dirNorm);
 }
 

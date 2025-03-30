@@ -194,7 +194,7 @@ e_testStatus checkSetGetPosMom(bool writeHisto = false) {
   //ROOT::Math::XYZVector pos(0,0,0);
   ROOT::Math::XYZVector pos(gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1));
   ROOT::Math::XYZVector mom(0,0.5,gRandom->Gaus(0,0.3));
-  mom.SetMag(0.5);
+  mom *= 0.5 / mom.R();
   mom *= randomSign();
 
 
@@ -213,7 +213,7 @@ e_testStatus checkSetGetPosMom(bool writeHisto = false) {
 
     // new random momentum
     mom.SetXYZ(0,0.5,gRandom->Gaus(0,0.3));
-    mom.SetMag(0.5);
+    mom *= 0.5 / mom.R();
     mom *= randomSign();
 
     rep->setPosMom(state, pos, mom);
@@ -230,13 +230,13 @@ e_testStatus checkSetGetPosMom(bool writeHisto = false) {
 
 
   // compare
-  if ((pos - rep->getPos(state)).Mag() > epsilonLen ||
-      (mom - rep->getMom(state)).Mag() > epsilonMom) {
+  if ((pos - rep->getPos(state)).R() > epsilonLen ||
+      (mom - rep->getMom(state)).R() > epsilonMom) {
 
     if (verbose) {
       state.Print();
-      std::cout << "pos difference = " << (pos - rep->getPos(state)).Mag() << "\n";
-      std::cout << "mom difference = " << (mom - rep->getMom(state)).Mag() << "\n";
+      std::cout << "pos difference = " << (pos - rep->getPos(state)).R() << "\n";
+      std::cout << "mom difference = " << (mom - rep->getMom(state)).R() << "\n";
 
       std::cout << std::endl;
     }
@@ -309,11 +309,11 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
   //ROOT::Math::XYZVector pos(0,0,0);
   ROOT::Math::XYZVector pos(gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1));
   ROOT::Math::XYZVector mom(0,0.5,gRandom->Gaus(0,0.3));
-  mom.SetMag( exp(gRandom->Uniform(-4, 8)) * mass );
+  genfit::tools::SetMag(mom, exp(gRandom->Uniform(-4, 8)) * mass );
   mom *= randomSign();
 
 
-  double betaGamma = log(mom.Mag()/mass);
+  double betaGamma = log(mom.R()/mass);
 
   //mom.Print();
 
@@ -334,7 +334,7 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
     extrapLen = rep->extrapolateToPlane(state, plane);
 
     mom2 = state.getMom();
-    momLoss1 = mom.Mag()-mom2.Mag();
+    momLoss1 = mom.R()-mom2.R();
 
     //mom2.Print();
     //std::cout << "MomLoss = " << momLoss1 << "\n";
@@ -357,18 +357,18 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
   try {
     backExtrapLen = rep->extrapolateToPlane(state, origPlane);
 
-    momLoss2 = mom2.Mag()-state.getMom().Mag();
+    momLoss2 = mom2.R()-state.getMom().R();
 
     //state.getMom().Print();
     //std::cout << "MomLoss = " << momLoss2 << "\n";
 
     double deviation = 1. + momLoss1/momLoss2;
     histoMap[abs(pdg)][0]->Fill(deviation, betaGamma);
-    histoMap[abs(pdg)][1]->Fill((mom.Mag() - state.getMom().Mag())*1e6, betaGamma);
+    histoMap[abs(pdg)][1]->Fill((mom.R() - state.getMom().R())*1e6, betaGamma);
     histoMap[abs(pdg)][2]->Fill(deviation, extrapLen+backExtrapLen);
 
     histoMap[0][0]->Fill(deviation, betaGamma);
-    histoMap[0][1]->Fill((mom.Mag() - state.getMom().Mag())*1e6, betaGamma);
+    histoMap[0][1]->Fill((mom.R() - state.getMom().R())*1e6, betaGamma);
     histoMap[0][2]->Fill(deviation, extrapLen+backExtrapLen);
 
     //std::cout << "deviation = " << deviation << "\n";
@@ -387,16 +387,16 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
   }
 
   // compare
-  if ((rep->getPos(origState) - rep->getPos(state)).Mag() > epsilonLen ||
-      (rep->getMom(origState) - rep->getMom(state)).Mag() > epsilonMom ||
+  if ((rep->getPos(origState) - rep->getPos(state)).R() > epsilonLen ||
+      (rep->getMom(origState) - rep->getMom(state)).R() > epsilonMom ||
       fabs(extrapLen + backExtrapLen) > epsilonLen) {
 
     if (verbose) {
         origState.Print();
         state.Print();
 
-        std::cout << "pos difference = " << (rep->getPos(origState) - rep->getPos(state)).Mag() << "\n";
-        std::cout << "mom difference = " << (rep->getMom(origState) - rep->getMom(state)).Mag() << "\n";
+        std::cout << "pos difference = " << (rep->getPos(origState) - rep->getPos(state)).R() << "\n";
+        std::cout << "mom difference = " << (rep->getMom(origState) - rep->getMom(state)).R() << "\n";
         std::cout << "len difference = " << extrapLen + backExtrapLen << "\n";
 
         std::cout << std::endl;
@@ -440,7 +440,7 @@ e_testStatus compareForthBackJacNoise(bool writeHisto = false) {
   ROOT::Math::XYZVector pos(gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1));
   ROOT::Math::XYZVector mom(0, 0.5, gRandom->Gaus(0, 1));
   mom *= randomSign();
-  mom.SetMag(gRandom->Uniform(2)+0.3);
+  genfit::tools::SetMag(mom, gRandom->Uniform(2)+0.3);
   //mom.SetMag(3);
 
   TMatrixD jac_f, jac_fi, jac_b, jac_bi;
@@ -454,7 +454,7 @@ e_testStatus compareForthBackJacNoise(bool writeHisto = false) {
 
   static const double smear = 0.2;
   ROOT::Math::XYZVector normal(mom);
-  normal.SetMag(1);
+  normal *= 1. / normal.R();
   normal.SetXYZ(gRandom->Gaus(normal.X(), smear),
       gRandom->Gaus(normal.Y(), smear),
       gRandom->Gaus(normal.Z(), smear));
@@ -471,12 +471,12 @@ e_testStatus compareForthBackJacNoise(bool writeHisto = false) {
 
   // dest plane
   normal = mom;
-  normal.SetMag(1);
+  normal *= 1. / normal.R();
   normal.SetXYZ(gRandom->Gaus(normal.X(), smear),
       gRandom->Gaus(normal.Y(), smear),
       gRandom->Gaus(normal.Z(), smear));
   ROOT::Math::XYZVector dest(mom);
-  dest.SetMag(10);
+  dest *= 10. / dest.R();
   genfit::DetPlane* planePtr = new genfit::DetPlane (dest, normal);
   //genfit::DetPlane* planePtr = new genfit::DetPlane (dest, ROOT::Math::XYZVector(1,0,0), ROOT::Math::XYZVector(0,0,1));
   double rotAngle = gRandom->Uniform(2.*TMath::Pi());
@@ -918,13 +918,13 @@ e_testStatus checkExtrapolateToCylinder(bool writeHisto = false) {
   // compare
   if (fabs(state.getPlane()->getNormal()*radiusVec.Unit())-1 > epsilonLen ||
       fabs(lineDirection*radiusVec) > epsilonLen ||
-      fabs(radiusVec.Mag()-radius) > epsilonLen) {
+      fabs(radiusVec.R()-radius) > epsilonLen) {
       if (verbose) {
         origState.Print();
         state.Print();
 
         std::cout << "lineDirection*radiusVec = " << lineDirection * radiusVec << "\n";
-        std::cout << "radiusVec.Mag()-radius = " << radiusVec.Mag() - radius << "\n";
+        std::cout << "radiusVec.R()-radius = " << radiusVec.R() - radius << "\n";
       }
       delete rep;
       return kFailed;
@@ -980,13 +980,13 @@ e_testStatus checkExtrapolateToSphere(bool writeHisto = false) {
 
   // compare
   if (fabs(state.getPlane()->getNormal()*radiusVec.Unit())-1 > epsilonLen ||
-      fabs(radiusVec.Mag()-radius) > epsilonLen) {
+      fabs(radiusVec.R()-radius) > epsilonLen) {
       if (verbose) {
         origState.Print();
         state.Print();
 
         std::cout << "state.getPlane()->getNormal()*radiusVec = " << state.getPlane()->getNormal() * radiusVec << "\n";
-        std::cout << "radiusVec.Mag()-radius = " << radiusVec.Mag() - radius << "\n";
+        std::cout << "radiusVec.R()-radius = " << radiusVec.R() - radius << "\n";
       }
       delete rep;
       return kFailed;
@@ -1041,7 +1041,7 @@ e_testStatus checkExtrapolateBy(bool writeHisto = false) {
 
   // compare
   if (fabs(extrapolatedLen-step) > epsilonLen ||
-      (posOrig - posExt).Mag() > fabs(step)) {
+      (posOrig - posExt).R() > fabs(step)) {
       if (verbose) {
         origState.Print();
         state.Print();
@@ -1051,8 +1051,8 @@ e_testStatus checkExtrapolateBy(bool writeHisto = false) {
         posOrig.Print();
         std::cout << "extrapolated to ";
         posExt.Print();
-        std::cout << "difference = " << (posOrig - posExt).Mag() << "; step = " << step << "; delta = "
-                  << (posOrig - posExt).Mag() - fabs(step) << "\n";
+        std::cout << "difference = " << (posOrig - posExt).R() << "; step = " << step << "; delta = "
+                  << (posOrig - posExt).R() - fabs(step) << "\n";
       }
       delete rep;
       return kFailed;

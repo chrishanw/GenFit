@@ -23,6 +23,8 @@
 #include <RKTrackRep.h>
 #include <HMatrixUV.h>
 
+#include <Math/VectorUtil.h>
+
 #include <cassert>
 #include <algorithm>
 
@@ -52,18 +54,18 @@ SharedPlanePtr WirePointMeasurement::constructPlane(const StateOnPlane& state) c
 
   // unit vector along the wire (V)
   ROOT::Math::XYZVector wireDirection = wire2 - wire1;
-  wireDirection.SetMag(1.);
+  wireDirection *= 1. / wireDirection.R();
 
   // point of closest approach
   const AbsTrackRep* rep = state.getRep();
   rep->extrapolateToLine(st, wire1, wireDirection);
   //const ROOT::Math::XYZVector& poca = rep->getPos(st);
   ROOT::Math::XYZVector dirInPoca = rep->getMom(st);
-  dirInPoca.SetMag(1.);
+  dirInPoca *= 1. / dirInPoca.R();
   //const ROOT::Math::XYZVector& pocaOnWire = wire1 + wireDirection.Dot(poca - wire1)*wireDirection;
 
   // check if direction is parallel to wire
-  if (fabs(wireDirection.Angle(dirInPoca)) < 0.01){
+  if (fabs(ROOT::Math::VectorUtil::Angle(wireDirection, dirInPoca)) < 0.01) {
     Exception exc("WireMeasurement::detPlane(): Cannot construct detector plane, direction is parallel to wire", __LINE__,__FILE__);
     throw exc;
   }

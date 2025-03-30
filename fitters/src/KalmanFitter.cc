@@ -443,7 +443,7 @@ KalmanFitter::processTrackPoint(TrackPoint* tp,
   }
 
   if (debugLvl_ > 0) {
-    debugOut << "its plane is at R = " << plane->getO().Perp()
+    debugOut << "its plane is at R = " << plane->getO().Rho()
 	          << " with normal pointing along (" << plane->getNormal().X() << ", " << plane->getNormal().Y() << ", " << plane->getNormal().Z() << ")" << std::endl;
   }
 

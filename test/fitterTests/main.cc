@@ -342,10 +342,7 @@ int main() {
       // true start values
       ROOT::Math::XYZVector pos(0, 0, 0);
       ROOT::Math::XYZVector mom(1.,0,0);
-      mom.SetPhi(gRandom->Uniform(0.,2*TMath::Pi()));
-      //mom.SetTheta(gRandom->Uniform(0.5*TMath::Pi(),0.9*TMath::Pi()));
-      mom.SetTheta(theta*TMath::Pi()/180);
-      mom.SetMag(momentum);
+      genfit::tools::setMagThetaPhi(mom, momentum, theta*TMath::Pi()/180, gRandom->Uniform(0.,2*TMath::Pi()));
       TMatrixDSym covM(6);
       for (int i = 0; i < 3; ++i)
         covM(i,i) = resolution*resolution;
@@ -370,9 +367,10 @@ int main() {
         posM.SetY(gRandom->Gaus(posM.Y(),posSmear));
         posM.SetZ(gRandom->Gaus(posM.Z(),zSmearFac*posSmear));
 
-        momM.SetPhi(gRandom->Gaus(mom.Phi(),momSmear));
-        momM.SetTheta(gRandom->Gaus(mom.Theta(),momSmear));
-        momM.SetMag(gRandom->Gaus(mom.Mag(), momMagSmear*mom.Mag()));
+        genfit::tools::setMagThetaPhi(momM,
+                                      gRandom->Gaus(mom.R(), momMagSmear*mom.R()),
+                                      gRandom->Gaus(mom.Theta(),momSmear),
+                                      gRandom->Gaus(mom.Phi(),momSmear));
       }
 
 

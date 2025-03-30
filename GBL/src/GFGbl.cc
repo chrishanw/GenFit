@@ -334,7 +334,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
   // It is switched off automatically if no B-field at (0,0,0) is detected.
   bool fitQoverP = true;
   //TODO: Use clever way to determine zero B-field
-  double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).Mag();
+  double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).R();
   if (!(Bfield > 0.))
     fitQoverP = false;
   
@@ -555,9 +555,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
         
       // labels for global derivatives
       std::vector<int> labGlobal;
-        
-      // track direction in global coords
-      ROOT::Math::XYZVector tDir = trackDir;
+
       // sensor u direction in global coords
       ROOT::Math::XYZVector uDir = plane->getU();
       // sensor v direction in global coords
@@ -569,12 +567,12 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       //outputVector(vDir, "V");
       //outputVector(nDir, "Normal");
       // track direction in local sensor system
-      ROOT::Math::XYZVector tLoc = ROOT::Math::XYZVector(uDir.Dot(tDir), vDir.Dot(tDir), nDir.Dot(tDir));
+      ROOT::Math::XYZVector tLoc = ROOT::Math::XYZVector(uDir.Dot(trackDir), vDir.Dot(trackDir), nDir.Dot(trackDir));
         
       // track u-slope in local sensor system
-      double uSlope = tLoc[0] / tLoc[2];
+      double uSlope = tLoc.X() / tLoc.Z();
       // track v-slope in local sensor system
-      double vSlope = tLoc[1] / tLoc[2];
+      double vSlope = tLoc.Y() / tLoc.Z();
         
       // Measured track u-position in local sensor system
       double uPos = raw_coor[0];
@@ -616,21 +614,24 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       //cout << "pred" << endl;
       //pred.Print();
 
-      double xPred = pred[0];
-      double yPred = pred[1];
-      double zPred = pred[2];
+      double xPred = pred.X();
+      double yPred = pred.Y();
+      double zPred = pred.Z();
 
       // scalar product of sensor normal and track direction
-      double tn = tDir.Dot(nDir);
+      double tn = trackDir.Dot(nDir);
       //cout << "tn" << endl;
       //cout << tn << endl;
 
       // derivatives of local residuals versus measurements
       TMatrixD drdm(3, 3);
       drdm.UnitMatrix();
+      // Helper variables to loop over, as it's not possible to access the members of an XYZVector by index
+      const std::array<double, 3> tDir = {trackDir.X(), trackDir.Y(), trackDir.Z()};
+      const std::array<double, 3> nnDir = {nDir.X(), nDir.Y(), nDir.Z()};
       for (int row = 0; row < 3; row++)
-	for (int col = 0; col < 3; col++)
-	  drdm(row, col) -= tDir[row] * nDir[col] / tn;
+	      for (int col = 0; col < 3; col++)
+	        drdm(row, col) -= tDir[row] * nnDir[col] / tn;
 
       //cout << "drdm" << endl;
       //drdm.Print();
@@ -648,8 +649,8 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       // derivatives of local residuals versus global alignment parameters
       TMatrixD drldrg(3, 3);
       drldrg.Zero();
-      drldrg(0, 0) = uDir[0]; drldrg(0, 1) = uDir[1]; drldrg(0, 2) = uDir[2];
-      drldrg(1, 0) = vDir[0]; drldrg(1, 1) = vDir[1]; drldrg(1, 2) = vDir[2];
+      drldrg(0, 0) = uDir.X(); drldrg(0, 1) = uDir.Y(); drldrg(0, 2) = uDir.Z();
+      drldrg(1, 0) = vDir.X(); drldrg(1, 1) = vDir.Y(); drldrg(1, 2) = vDir.Z();
 
       //cout << "drldrg" << endl;
       //drldrg.Print();

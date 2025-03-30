@@ -57,9 +57,10 @@ int main() {
     // true start values
     ROOT::Math::XYZVector pos(0, 0, 0);
     ROOT::Math::XYZVector mom(1.,0,0);
-    mom.SetPhi(gRandom->Uniform(0.,2*TMath::Pi()));
-    mom.SetTheta(gRandom->Uniform(0.4*TMath::Pi(),0.6*TMath::Pi()));
-    mom.SetMag(gRandom->Uniform(0.2, 1.));
+    genfit::tools::setMagThetaPhi(mom,
+      gRandom->Uniform(0.2, 1.),
+      gRandom->Uniform(0.4*TMath::Pi(),0.6*TMath::Pi()),
+      gRandom->Uniform(0.,2*TMath::Pi()));
 
 
     // helix track model
@@ -85,9 +86,10 @@ int main() {
       posM.SetY(gRandom->Gaus(posM.Y(),posSmear));
       posM.SetZ(gRandom->Gaus(posM.Z(),posSmear));
 
-      momM.SetPhi(gRandom->Gaus(mom.Phi(),momSmear));
-      momM.SetTheta(gRandom->Gaus(mom.Theta(),momSmear));
-      momM.SetMag(gRandom->Gaus(mom.Mag(), momMagSmear*mom.Mag()));
+      genfit::tools::setMagThetaPhi(momM,
+        gRandom->Gaus(mom.R(), momMagSmear*mom.R()),
+        gRandom->Gaus(mom.Theta(),momSmear),
+        gRandom->Gaus(mom.Phi(),momSmear));
     }
     // approximate covariance
     TMatrixDSym covM(6);

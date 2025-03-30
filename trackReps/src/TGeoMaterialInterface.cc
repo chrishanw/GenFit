@@ -20,6 +20,7 @@
 #include "TGeoMaterialInterface.h"
 #include "Exception.h"
 #include "IO.h"
+#include <Tools.h>
 
 #include <TGeoMedium.h>
 #include <TGeoMaterial.h>
@@ -50,8 +51,8 @@ TGeoMaterialInterface::initTrack(double posX, double posY, double posZ,
 
   if (debugLvl_ > 0) {
     debugOut << "      TGeoMaterialInterface::initTrack at \n";
-    debugOut << "      position:  "; ROOT::Math::XYZVector(posX, posY, posZ).Print();
-    debugOut << "      direction: "; ROOT::Math::XYZVector(dirX, dirY, dirZ).Print();
+    debugOut << "      position:  "; genfit::tools::printVector3D(ROOT::Math::XYZVector(posX, posY, posZ));
+    debugOut << "      direction: "; genfit::tools::printVector3D(ROOT::Math::XYZVector(dirX, dirY, dirZ));
   }
 
   return result;

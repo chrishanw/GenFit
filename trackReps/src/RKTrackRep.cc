@@ -25,9 +25,11 @@
 #include <MaterialEffects.h>
 #include <MeasuredStateOnPlane.h>
 #include <MeasurementOnPlane.h>
+#include <Tools.h>
 
 #include <TDecompLU.h>
 #include <TMath.h>
+#include <Math/VectorUtil.h>
 
 #include <algorithm>
 
@@ -193,8 +195,8 @@ double RKTrackRep::extrapolateToLine(StateOnPlane& state,
       break;
     }
 
-    angle = fabs(dir.Angle((poca_onwire-poca))-TMath::PiOver2()); // angle between direction and connection to point - 90 deg
-    distToPoca = (poca_onwire-poca).Mag();
+    angle = fabs(ROOT::Math::VectorUtil::Angle(dir, (poca_onwire-poca))-TMath::PiOver2()); // angle between direction and connection to point - 90 deg
+    distToPoca = (poca_onwire-poca).R();
     if (angle*distToPoca < 0.1*MINSTEP) break;
 
     // if lastStep and step have opposite sign, the real normal vector lies somewhere between the last two normal vectors (i.e. the directions)
@@ -223,7 +225,7 @@ double RKTrackRep::extrapolateToLine(StateOnPlane& state,
   }
 
   if (debugLvl_ > 0) {
-    debugOut << "RKTrackRep::extrapolateToLine(): Reached POCA after " << iterations+1 << " iterations. Distance: " << (poca_onwire-poca).Mag() << " cm. Angle deviation: " << dir.Angle((poca_onwire-poca))-TMath::PiOver2() << " rad \n";
+    debugOut << "RKTrackRep::extrapolateToLine(): Reached POCA after " << iterations+1 << " iterations. Distance: " << (poca_onwire-poca).R() << " cm. Angle deviation: " << ROOT::Math::VectorUtil::Angle(dir, (poca_onwire-poca))-TMath::PiOver2() << " rad \n";
   }
 
   lastEndState_ = state;
@@ -305,16 +307,16 @@ double RKTrackRep::extrapToPoint(StateOnPlane& state,
       break;
     }
 
-    angle = fabs(dir.Angle((point-poca))-TMath::PiOver2()); // angle between direction and connection to point - 90 deg
-    distToPoca = (point-poca).Mag();
+    angle = fabs(ROOT::Math::VectorUtil::Angle(dir, (point-poca))-TMath::PiOver2()); // angle between direction and connection to point - 90 deg
+    distToPoca = (point-poca).R();
     if (angle*distToPoca < 0.1*MINSTEP) break;
 
     // if lastStep and step have opposite sign, the real normal vector lies somewhere between the last two normal vectors (i.e. the directions)
     // -> try mean value of the two
     if (lastStep*step < 0){
       if (G != nullptr) { // after multiplication with G, dir has not length 1 anymore in general
-        dir.SetMag(1.);
-        lastDir.SetMag(1.);
+        dir *= 1. / dir.R();
+        lastDir *= 1. / lastDir.R();
       }
       dir += lastDir;
       maxStep = 0.5*fabs(lastStep); // make it converge!
@@ -340,7 +342,7 @@ double RKTrackRep::extrapToPoint(StateOnPlane& state,
 
 
   if (debugLvl_ > 0) {
-    debugOut << "RKTrackRep::extrapolateToPoint(): Reached POCA after " << iterations+1 << " iterations. Distance: " << (point-poca).Mag() << " cm. Angle deviation: " << dir.Angle((point-poca))-TMath::PiOver2() << " rad \n";
+    debugOut << "RKTrackRep::extrapolateToPoint(): Reached POCA after " << iterations+1 << " iterations. Distance: " << (point-poca).R() << " cm. Angle deviation: " << ROOT::Math::VectorUtil::Angle(dir, (point-poca))-TMath::PiOver2() << " rad \n";
   }
 
   lastEndState_ = state;
@@ -402,10 +404,10 @@ double RKTrackRep::extrapolateToCylinder(StateOnPlane& state,
     ROOT::Math::XYZVector AO = (pos - linePoint);
     ROOT::Math::XYZVector AOxAB = (AO.Cross(lineDirection));
     ROOT::Math::XYZVector VxAB  = (dir.Cross(lineDirection));
-    float ab2    = (lineDirection * lineDirection);
-    float a      = (VxAB * VxAB);
-    float b      = 2 * (VxAB * AOxAB);
-    float c      = (AOxAB * AOxAB) - (radius*radius * ab2);
+    float ab2    = lineDirection.Dot(lineDirection);
+    float a      = VxAB.Dot(VxAB);
+    float b      = 2 * VxAB.Dot(AOxAB);
+    float c      = (AOxAB.Dot(AOxAB)) - (radius*radius * ab2);
     double arg = b*b - 4.*a*c;
     if(arg < 0) {
       Exception exc("RKTrackRep::extrapolateToCylinder ==> cannot solve",__LINE__,__FILE__);
@@ -530,11 +532,11 @@ double RKTrackRep::extrapolateToCone(StateOnPlane& state,
     // Delta = P - V, P track point, U track direction, V cone point, D cone direction, alpha opening angle of cone
     ROOT::Math::XYZVector cDirection = coneDirection.Unit();
     ROOT::Math::XYZVector Delta = (pos - conePoint);
-    double DirDelta = cDirection * Delta;
-    double Delta2 = Delta*Delta;
-    double UDir = dir * cDirection;
-    double UDelta = dir * Delta;
-    double U2 = dir * dir;
+    double DirDelta = cDirection.Dot(Delta);
+    double Delta2 = Delta.Perp2();
+    double UDir = dir.Dot(cDirection);
+    double UDelta = dir.Dot(Delta);
+    double U2 = dir.Perp2();
     double cosAngle2 = cos(openingAngle)*cos(openingAngle);
     double a = UDir*UDir - cosAngle2*U2;
     double b = UDir*DirDelta - cosAngle2*UDelta;
@@ -658,8 +660,8 @@ double RKTrackRep::extrapolateToSphere(StateOnPlane& state,
 
     // solve quadratic equation
     ROOT::Math::XYZVector AO = (pos - point);
-    double dirAO = dir * AO;
-    double arg = dirAO*dirAO - AO*AO + radius*radius;
+    double dirAO = dir.Dot(AO);
+    double arg = dirAO*dirAO - AO.Dot(AO) + radius*radius;
     if(arg < 0) {
       Exception exc("RKTrackRep::extrapolateToSphere ==> cannot solve",__LINE__,__FILE__);
       exc.setFatal();
@@ -827,7 +829,7 @@ ROOT::Math::XYZVector RKTrackRep::getMom(const StateOnPlane& state) const {
   getState7(state, state7);
 
   ROOT::Math::XYZVector mom(state7[3], state7[4], state7[5]);
-  mom.SetMag(getCharge(state)/state7[6]);
+  mom *= (getCharge(state)/state7[6]) / mom.R();
   return mom;
 }
 
@@ -838,7 +840,7 @@ void RKTrackRep::getPosMom(const StateOnPlane& state, ROOT::Math::XYZVector& pos
 
   pos.SetXYZ(state7[0], state7[1], state7[2]);
   mom.SetXYZ(state7[3], state7[4], state7[5]);
-  mom.SetMag(getCharge(state)/state7[6]);
+  mom *= (getCharge(state)/state7[6]) / mom.R();
 }
 
 
@@ -1137,7 +1139,7 @@ void RKTrackRep::setPosMom(StateOnPlane& state, const ROOT::Math::XYZVector& pos
 
     TVectorD& state5(state.getState());
 
-    state5(0) = getCharge(state)/mom.Mag(); // q/p
+    state5(0) = getCharge(state)/mom.R(); // q/p
     state5(1) = 0.; // u'
     state5(2) = 0.; // v'
     state5(3) = 0.; // u
@@ -1168,13 +1170,13 @@ void RKTrackRep::setPosMomErr(MeasuredStateOnPlane& state, const ROOT::Math::XYZ
   const ROOT::Math::XYZVector& V(state.getPlane()->getV());
   ROOT::Math::XYZVector W(state.getPlane()->getNormal());
 
-  double pw = mom * W;
-  double pu = mom * U;
-  double pv = mom * V;
+  double pw = mom.Dot(W);
+  double pu = mom.Dot(U);
+  double pv = mom.Dot(V);
 
   TMatrixDSym& cov(state.getCov());
 
-  cov(0,0) = pow(getCharge(state), 2) / pow(mom.Mag(), 6) *
+  cov(0,0) = pow(getCharge(state), 2) / pow(mom.R(), 6) *
              (mom.X()*mom.X() * momErr.X()*momErr.X()+
               mom.Y()*mom.Y() * momErr.Y()*momErr.Y()+
               mom.Z()*mom.Z() * momErr.Z()*momErr.Z());
@@ -1831,8 +1833,8 @@ bool RKTrackRep::RKutta(const M1x4& SU,
 
   if (debugLvl_ > 0) {
     debugOut << "RKTrackRep::RKutta \n";
-    debugOut << "position: "; ROOT::Math::XYZVector(R[0], R[1], R[2]).Print();
-    debugOut << "direction: "; ROOT::Math::XYZVector(A[0], A[1], A[2]).Print();
+    debugOut << "position: "; genfit::tools::printVector3D(ROOT::Math::XYZVector(R[0], R[1], R[2]));
+    debugOut << "direction: "; genfit::tools::printVector3D(ROOT::Math::XYZVector(A[0], A[1], A[2]));
     debugOut << "momentum: " << momentum << " GeV\n";
     debugOut << "destination: "; plane.Print();
   }
@@ -2106,8 +2108,8 @@ double RKTrackRep::estimateStep(const M1x7& state7,
 
   if (debugLvl_ > 0) {
     debugOut << " RKTrackRep::estimateStep \n";
-    debugOut << "  position:  "; ROOT::Math::XYZVector(state7[0], state7[1], state7[2]).Print();
-    debugOut << "  direction: "; ROOT::Math::XYZVector(state7[3], state7[4], state7[5]).Print();
+    debugOut << "  position:  "; genfit::tools::printVector3D(ROOT::Math::XYZVector(state7[0], state7[1], state7[2]));
+    debugOut << "  direction: "; genfit::tools::printVector3D(ROOT::Math::XYZVector(state7[3], state7[4], state7[5]));
   }
 
   // calculate SL distance to surface
@@ -2299,7 +2301,7 @@ ROOT::Math::XYZVector RKTrackRep::pocaOnLine(const ROOT::Math::XYZVector& linePo
 
   ROOT::Math::XYZVector retVal(lineDirection);
 
-  double t = 1./(retVal.Mag2()) * ((point*retVal) - (linePoint*retVal));
+  double t = 1./(retVal.Mag2()) * ((point.Dot(retVal)) - (linePoint.Dot(retVal)));
   retVal *= t;
   retVal += linePoint;
   return retVal; // = linePoint + t*lineDirection
@@ -2332,7 +2334,7 @@ double RKTrackRep::Extrap(const DetPlane& startPlane,
   M1x4 SU = {{W.X(), W.Y(), W.Z(), destPlane.distance(0., 0., 0.)}};
 
   // make SU vector point away from origin
-  if (W*destPlane.getO() < 0) {
+  if (W.Dot(destPlane.getO()) < 0) {
     SU[0] *= -1;
     SU[1] *= -1;
     SU[2] *= -1;
@@ -2550,8 +2552,8 @@ double RKTrackRep::Extrap(const DetPlane& startPlane,
         else
           debugOut << "NOT in active area of plane. \n";
 
-        debugOut << "  position:  "; ROOT::Math::XYZVector(state7[0], state7[1], state7[2]).Print();
-        debugOut << "  direction: "; ROOT::Math::XYZVector(state7[3], state7[4], state7[5]).Print();
+        debugOut << "  position:  "; genfit::tools::printVector3D(ROOT::Math::XYZVector(state7[0], state7[1], state7[2]));
+        debugOut << "  direction: "; genfit::tools::printVector3D(ROOT::Math::XYZVector(state7[3], state7[4], state7[5]));
       }
       break;
     }

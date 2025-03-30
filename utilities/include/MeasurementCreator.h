@@ -71,7 +71,7 @@ class MeasurementCreator {
   void setOutlierRange(double outlierRange) {outlierRange_ = outlierRange;}
   void setThetaDetPlane(double thetaDetPlane) {thetaDetPlane_ = thetaDetPlane;}
   void setPhiDetPlane(double phiDetPlane) {phiDetPlane_ = phiDetPlane;}
-  void setWireDir(const ROOT::Math::XYZVector wireDir) {wireDir_ = wireDir; wireDir_.SetMag(1.);}
+  void setWireDir(const ROOT::Math::XYZVector wireDir) {wireDir_ = wireDir; wireDir_ *= 1. / wireDir.R();}
   void setMinDrift(double minDrift) {minDrift_ = minDrift;}
   void setMaxDrift(double maxDrift) {maxDrift_ = maxDrift;}
   void setIdealLRResolution(bool idealLRResolution) {idealLRResolution_ = idealLRResolution;}

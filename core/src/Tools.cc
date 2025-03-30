@@ -423,4 +423,45 @@ tools::kalmanUpdateSqrt(const TMatrixD& S,
   update *= K;
 }
 
+ROOT::Math::XYZVector tools::Orthogonal(const ROOT::Math::XYZVector& v) {
+  const double xx = v.X() < 0.0 ? -v.X() : v.X();
+  const double yy = v.Y() < 0.0 ? -v.Y() : v.Y();
+  const double zz = v.Z() < 0.0 ? -v.Z() : v.Z();
+  if (xx < yy) {
+      return xx < zz ? ROOT::Math::XYZVector(0,v.Z(),-v.Y()) : ROOT::Math::XYZVector(v.Y(),-v.X(),0);
+  } else {
+      return yy < zz ? ROOT::Math::XYZVector(-v.Z(),0,v.X()) : ROOT::Math::XYZVector(v.Y(),-v.X(),0);
+  }
+}
+
+void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, double phi)
+{
+  const double amag = std::abs(mag);
+  const double sinTheta = std::sin(theta);
+  const double x = amag * sinTheta * std::cos(phi);
+  const double y = amag * sinTheta * std::sin(phi);
+  const double z = amag * std::cos(theta);
+  vector.SetXYZ(x, y, z);
+}
+
+void setMag(ROOT::Math::XYZVector& vector, double mag)
+{
+  setMagThetaPhi(vector, mag, vector.Theta(), vector.Phi());
+}
+
+void setTheta(ROOT::Math::XYZVector& vector, double theta)
+{
+  setMagThetaPhi(vector, vector.R(), theta, vector.Phi());
+}
+
+void setPhi(ROOT::Math::XYZVector& vector, double phi)
+{
+  setMagThetaPhi(vector, vector.R(), vector.Theta(), phi);
+}
+
+std::string tools::printVector3D(const ROOT::Math::XYZVector& v)
+{
+  return "X: " + std::to_string(v.X()) + " Y: " + std::to_string(v.Y()) + " Z: " + std::to_string(v.Z()) + "\n";
+}
+
 } /* End of namespace genfit */

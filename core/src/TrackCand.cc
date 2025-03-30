@@ -258,14 +258,14 @@ void TrackCand::setPosMomSeed(const ROOT::Math::XYZVector& pos, const ROOT::Math
   if (pdg_ != 0 && q_ != charge)
     pdg_ = -pdg_;
   q_ = charge;
-  state6D_[0] = pos[0];  state6D_[1] = pos[1];  state6D_[2] = pos[2];
-  state6D_[3] = mom[0];  state6D_[4] = mom[1];  state6D_[5] = mom[2];
+  state6D_[0] = pos.X();  state6D_[1] = pos.Y();  state6D_[2] = pos.Z();
+  state6D_[3] = mom.X();  state6D_[4] = mom.Y();  state6D_[5] = mom.Z();
 }
 
 void TrackCand::setPosMomSeedAndPdgCode(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const int pdgCode) {
   setPdgCode(pdgCode);
-  state6D_[0] = pos[0];  state6D_[1] = pos[1];  state6D_[2] = pos[2];
-  state6D_[3] = mom[0];  state6D_[4] = mom[1];  state6D_[5] = mom[2];
+  state6D_[0] = pos.X();  state6D_[1] = pos.Y();  state6D_[2] = pos.Z();
+  state6D_[3] = mom.X();  state6D_[4] = mom.Y();  state6D_[5] = mom.Z();
 }
 
 

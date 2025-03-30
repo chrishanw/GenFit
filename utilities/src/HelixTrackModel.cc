@@ -19,6 +19,7 @@
 
 #include "HelixTrackModel.h"
 #include <FieldManager.h>
+#include "Tools.h"
 
 #include <assert.h>
 #include <math.h>
@@ -27,7 +28,7 @@ namespace genfit {
 
 HelixTrackModel::HelixTrackModel(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, double charge) {
 
-  mom_ = mom.Mag();
+  mom_ = mom.R();
 
   ROOT::Math::XYZVector B = genfit::FieldManager::getInstance()->getFieldVal(pos);
 
@@ -40,11 +41,11 @@ HelixTrackModel::HelixTrackModel(const ROOT::Math::XYZVector& pos, const ROOT::M
   // calc helix parameters
   ROOT::Math::XYZVector dir2D(mom);
   dir2D.SetZ(0);
-  dir2D.SetMag(1.);
-  R_ = 100.*mom.Perp()/(0.0299792458*Bz) / fabs(charge);
+  dir2D *= 1. / dir2D.R();
+  R_ = 100.*mom.Rho()/(0.0299792458*Bz) / fabs(charge);
   sgn_ = 1;
   if (charge<0) sgn_=-1.;
-  center_ = pos + sgn_ * R_ * dir2D.Orthogonal();
+  center_ = pos + sgn_ * R_ * genfit::tools::Orthogonal(dir2D);
   alpha0_ = (pos-center_).Phi();
 
   theta_ = mom.Theta();
@@ -61,8 +62,7 @@ ROOT::Math::XYZVector HelixTrackModel::getPos(double tracklength) const {
 
   double angle = alpha0_ - sgn_ * tracklength / R_ * sin(theta_);
 
-  ROOT::Math::XYZVector radius(R_,0,0);
-  radius.SetPhi(angle);
+  ROOT::Math::XYZVector radius(R_ * cos(angle),R_ * sin(angle),0);
   pos = center_ + radius;
   pos.SetZ(center_.Z() - sgn_ * ((alpha0_-angle)*R_ * tan(theta_-M_PI/2.)) );
 
@@ -73,15 +73,12 @@ void HelixTrackModel::getPosMom(double tracklength, ROOT::Math::XYZVector& pos, 
 
   double angle = alpha0_ - sgn_ * tracklength / R_ * sin(theta_);
 
-  ROOT::Math::XYZVector radius(R_,0,0);
-  radius.SetPhi(angle);
+  ROOT::Math::XYZVector radius(R_ * cos(angle),R_ * sin(angle),0);
   pos = center_ + radius;
   pos.SetZ(center_.Z() - sgn_ * ((alpha0_-angle)*R_ * tan(theta_-M_PI/2.)) );
 
   mom.SetXYZ(1,1,1);
-  mom.SetTheta(theta_);
-  mom.SetPhi(angle - sgn_*M_PI/2.);
-  mom.SetMag(mom_);
+  genfit::tools::setMagThetaPhi(mom, mom_, theta_, angle - sgn_*M_PI/2.);
 
   /*std::cout<<"tracklength " << tracklength << "\n";
   std::cout<<"angle " << angle << "\n";

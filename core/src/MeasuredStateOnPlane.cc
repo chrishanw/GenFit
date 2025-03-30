@@ -39,8 +39,8 @@ void MeasuredStateOnPlane::Print(Option_t*) const {
     ROOT::Math::XYZVector pos, mom;
     TMatrixDSym cov(6,6);
     getRep()->getPosMomCov(*this, pos, mom, cov);
-    printOut << " 3D position: "; pos.Print();
-    printOut << " 3D momentum: "; mom.Print();
+    printOut << " 3D position: "; genfit::tools::printVector3D(pos);
+    printOut << " 3D momentum: "; genfit::tools::printVector3D(mom);
     //printOut << " 6D covariance: "; cov.Print();
   }
 }

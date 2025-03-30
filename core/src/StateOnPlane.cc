@@ -20,6 +20,7 @@
 #include "StateOnPlane.h"
 #include "AbsTrackRep.h"
 #include "IO.h"
+#include "Tools.h"
 
 #include <cassert>
 
@@ -33,8 +34,8 @@ void StateOnPlane::Print(Option_t*) const {
     printOut << " defined in plane "; sharedPlane_->Print();
     ROOT::Math::XYZVector pos(0,0,0), mom(0,0,0);
     getRep()->getPosMom(*this, pos, mom);
-    printOut << " 3D position: "; pos.Print();
-    printOut << " 3D momentum: "; mom.Print();
+    printOut << " 3D position: "; genfit::tools::printVector3D(pos);
+    printOut << " 3D momentum: "; genfit::tools::printVector3D (mom);
   }
 }
 

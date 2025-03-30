@@ -24,6 +24,8 @@
 #include "Exception.h"
 #include "RKTrackRep.h"
 
+#include <Math/VectorUtil.h>
+
 
 namespace genfit {
 
@@ -52,10 +54,10 @@ SharedPlanePtr ProlateSpacepointMeasurement::constructPlane(const StateOnPlane& 
   rep->extrapolateToLine(st, wire1, largestErrorDirection_);
 
   ROOT::Math::XYZVector dirInPoca = rep->getMom(st);
-  dirInPoca.SetMag(1.);
+  dirInPoca *= 1. / dirInPoca.R();
 
   // check if direction is parallel to wire
-  if (fabs(largestErrorDirection_.Angle(dirInPoca)) < 0.01){
+  if (fabs(ROOT::Math::VectorUtil::Angle(largestErrorDirection_, dirInPoca)) < 0.01) {
     Exception exc("ProlateSpacepointMeasurement::constructPlane(): Cannot construct detector plane, track direction is parallel to largest error direction", __LINE__,__FILE__);
     throw exc;
   }

@@ -29,6 +29,7 @@
 #ifndef genfit_HelixTrackModel_h
 #define genfit_HelixTrackModel_h
 
+#include <Rtypes.h>
 #include <Math/Vector3D.h>
 
 
@@ -48,7 +49,7 @@ class HelixTrackModel {
   void getPosMom(double tracklength, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const;
   void getPosDir(double tracklength, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {
     getPosMom(tracklength, pos, dir);
-    dir.SetMag(1);
+    dir *= 1. / dir.R();
   }
 
 
