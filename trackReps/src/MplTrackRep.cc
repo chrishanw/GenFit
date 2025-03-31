@@ -47,7 +47,7 @@ double MplTrackRep::getCharge(const StateOnPlane& state) const {
     throw exc;
   }
 
-  double pdgCharge( m_magCharge * (this->getPDGCharge() > 0 ? 1.0 : -1.0));
+  const double pdgCharge( m_magCharge * (this->getPDGCharge() > 0 ? 1.0 : -1.0));
 
   // return pdgCharge with sign of q/p
   if (state.getState()(0) * pdgCharge < 0)

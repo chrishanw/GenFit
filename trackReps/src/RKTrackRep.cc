@@ -160,8 +160,8 @@ double RKTrackRep::extrapolateToLine(StateOnPlane& state,
 
   // cppcheck-suppress unreadVariable
   double step(0.), lastStep(0.), maxStep(1.E99), angle(0), distToPoca(0), tracklength(0);
-  double charge = getCharge(state);
-  double mass = getMass(state);
+  const double charge = getCharge(state);
+  const double mass = getMass(state);
   double flightTime = 0;
   ROOT::Math::XYZVector dir(state7[3], state7[4], state7[5]);
   ROOT::Math::XYZVector lastDir(0,0,0);
@@ -386,8 +386,8 @@ double RKTrackRep::extrapolateToCylinder(StateOnPlane& state,
   DetPlane startPlane(*(state.getPlane()));
   SharedPlanePtr plane(new DetPlane());
   unsigned int iterations(0);
-  double charge = getCharge(state);
-  double mass = getMass(state);
+  const double charge = getCharge(state);
+  const double mass = getMass(state);
   double flightTime = 0;
 
   while(true){
@@ -401,20 +401,20 @@ double RKTrackRep::extrapolateToCylinder(StateOnPlane& state,
     dir.SetXYZ(state7[3], state7[4], state7[5]);
 
     // solve quadratic equation
-    ROOT::Math::XYZVector AO = (pos - linePoint);
-    ROOT::Math::XYZVector AOxAB = (AO.Cross(lineDirection));
-    ROOT::Math::XYZVector VxAB  = (dir.Cross(lineDirection));
-    float ab2    = lineDirection.Dot(lineDirection);
-    float a      = VxAB.Dot(VxAB);
-    float b      = 2 * VxAB.Dot(AOxAB);
-    float c      = (AOxAB.Dot(AOxAB)) - (radius*radius * ab2);
-    double arg = b*b - 4.*a*c;
+    const ROOT::Math::XYZVector AO = (pos - linePoint);
+    const ROOT::Math::XYZVector& AOxAB = (AO.Cross(lineDirection));
+    const ROOT::Math::XYZVector& VxAB  = (dir.Cross(lineDirection));
+    const float ab2    = lineDirection.Dot(lineDirection);
+    const float a      = VxAB.Dot(VxAB);
+    const float b      = 2 * VxAB.Dot(AOxAB);
+    const float c      = (AOxAB.Dot(AOxAB)) - (radius*radius * ab2);
+    const double arg = b*b - 4.*a*c;
     if(arg < 0) {
       Exception exc("RKTrackRep::extrapolateToCylinder ==> cannot solve",__LINE__,__FILE__);
       exc.setFatal();
       throw exc;
     }
-    double term = sqrt(arg);
+    const double term = sqrt(arg);
     double k1, k2;
     if (b<0) {
       k1 = (-b + term)/(2.*a);
@@ -511,8 +511,8 @@ double RKTrackRep::extrapolateToCone(StateOnPlane& state,
   DetPlane startPlane(*(state.getPlane()));
   SharedPlanePtr plane(new DetPlane());
   unsigned int iterations(0);
-  double charge = getCharge(state);
-  double mass = getMass(state);
+  const double charge = getCharge(state);
+  const double mass = getMass(state);
   double flightTime = 0;
 
   while(true){
@@ -530,17 +530,17 @@ double RKTrackRep::extrapolateToCone(StateOnPlane& state,
     // b = (Delta . D) * (U . D) - cos^2 alpha * (U . Delta)
     // c = (Delta . D)^2 - cos^2 alpha * Delta^2
     // Delta = P - V, P track point, U track direction, V cone point, D cone direction, alpha opening angle of cone
-    ROOT::Math::XYZVector cDirection = coneDirection.Unit();
-    ROOT::Math::XYZVector Delta = (pos - conePoint);
-    double DirDelta = cDirection.Dot(Delta);
-    double Delta2 = Delta.Perp2();
-    double UDir = dir.Dot(cDirection);
-    double UDelta = dir.Dot(Delta);
-    double U2 = dir.Perp2();
-    double cosAngle2 = cos(openingAngle)*cos(openingAngle);
-    double a = UDir*UDir - cosAngle2*U2;
-    double b = UDir*DirDelta - cosAngle2*UDelta;
-    double c = DirDelta*DirDelta - cosAngle2*Delta2;
+    const ROOT::Math::XYZVector& cDirection = coneDirection.Unit();
+    const ROOT::Math::XYZVector Delta = (pos - conePoint);
+    const double DirDelta = cDirection.Dot(Delta);
+    const double Delta2 = Delta.Perp2();
+    const double UDir = dir.Dot(cDirection);
+    const double UDelta = dir.Dot(Delta);
+    const double U2 = dir.Perp2();
+    const double cosAngle2 = cos(openingAngle)*cos(openingAngle);
+    const double a = UDir*UDir - cosAngle2*U2;
+    const double b = UDir*DirDelta - cosAngle2*UDelta;
+    const double c = DirDelta*DirDelta - cosAngle2*Delta2;
     
     double arg = b*b - a*c;
     if(arg < -1e-9) {
@@ -551,10 +551,9 @@ double RKTrackRep::extrapolateToCone(StateOnPlane& state,
       arg = 0;
     }
 
-    double term = sqrt(arg);
-    double k1, k2;
-    k1 = (-b + term) / a;
-    k2 = (-b - term) / a;
+    const double term = sqrt(arg);
+    const double k1 = (-b + term) / a;
+    const double k2 = (-b - term) / a;
 
     // select smallest absolute solution -> closest cone surface
     double k = k1;
@@ -644,8 +643,8 @@ double RKTrackRep::extrapolateToSphere(StateOnPlane& state,
   DetPlane startPlane(*(state.getPlane()));
   SharedPlanePtr plane(new DetPlane());
   unsigned int iterations(0);
-  double charge = getCharge(state);
-  double mass = getMass(state);
+  const double charge = getCharge(state);
+  const double mass = getMass(state);
   double flightTime = 0;
 
   while(true){
@@ -659,18 +658,17 @@ double RKTrackRep::extrapolateToSphere(StateOnPlane& state,
     dir.SetXYZ(state7[3], state7[4], state7[5]);
 
     // solve quadratic equation
-    ROOT::Math::XYZVector AO = (pos - point);
-    double dirAO = dir.Dot(AO);
-    double arg = dirAO*dirAO - AO.Dot(AO) + radius*radius;
+    const ROOT::Math::XYZVector AO = (pos - point);
+    const double dirAO = dir.Dot(AO);
+    const double arg = dirAO*dirAO - AO.Dot(AO) + radius*radius;
     if(arg < 0) {
       Exception exc("RKTrackRep::extrapolateToSphere ==> cannot solve",__LINE__,__FILE__);
       exc.setFatal();
       throw exc;
     }
     double term = sqrt(arg);
-    double k1, k2;
-    k1 = -dirAO + term;
-    k2 = -dirAO - term;
+    const double k1 = -dirAO + term;
+    const double k2 = -dirAO - term;
 
     // select smallest absolute solution -> closest cylinder surface
     double k = k1;
@@ -754,8 +752,8 @@ double RKTrackRep::extrapolateBy(StateOnPlane& state,
   DetPlane startPlane(*(state.getPlane()));
   SharedPlanePtr plane(new DetPlane());
   unsigned int iterations(0);
-  double charge = getCharge(state);
-  double mass = getMass(state);
+  const double charge = getCharge(state);
+  const double mass = getMass(state);
   double flightTime = 0;
 
   while(true){
@@ -867,7 +865,7 @@ double RKTrackRep::getCharge(const StateOnPlane& state) const {
     throw exc;
   }
 
-  double pdgCharge( this->getPDGCharge() );
+  const double pdgCharge( this->getPDGCharge() );
 
   // return pdgCharge with sign of q/p
   if (state.getState()(0) * pdgCharge < 0)
@@ -879,7 +877,7 @@ double RKTrackRep::getCharge(const StateOnPlane& state) const {
 
 double RKTrackRep::getMomMag(const StateOnPlane& state) const {
   // p = q / qop
-  double p = getCharge(state)/state.getState()(0);
+  const double p = getCharge(state)/state.getState()(0);
   assert (p>=0);
   return p;
 }
@@ -1168,11 +1166,11 @@ void RKTrackRep::setPosMomErr(MeasuredStateOnPlane& state, const ROOT::Math::XYZ
 
   const ROOT::Math::XYZVector& U(state.getPlane()->getU());
   const ROOT::Math::XYZVector& V(state.getPlane()->getV());
-  ROOT::Math::XYZVector W(state.getPlane()->getNormal());
+  const ROOT::Math::XYZVector W(state.getPlane()->getNormal());
 
-  double pw = mom.Dot(W);
-  double pu = mom.Dot(U);
-  double pv = mom.Dot(V);
+  const double pw = mom.Dot(W);
+  const double pu = mom.Dot(U);
+  const double pv = mom.Dot(V);
 
   TMatrixDSym& cov(state.getCov());
 
@@ -1232,8 +1230,8 @@ void RKTrackRep::setPosMomCov(MeasuredStateOnPlane& state, const TVectorD& state
     throw exc;
   }
 
-  ROOT::Math::XYZVector pos(state6(0), state6(1), state6(2));
-  ROOT::Math::XYZVector mom(state6(3), state6(4), state6(5));
+  const ROOT::Math::XYZVector pos(state6(0), state6(1), state6(2));
+  const ROOT::Math::XYZVector mom(state6(3), state6(4), state6(5));
   setPosMom(state, pos, mom); // charge does not change!
 
   M1x7 state7;
@@ -1513,7 +1511,7 @@ void RKTrackRep::getState7(const StateOnPlane& state, M1x7& state7) const {
   assert(state.getState().GetNrows() == 5);
   const double* state5 = state.getState().GetMatrixArray();
 
-  double spu = getSpu(state);
+  const double spu = getSpu(state);
 
   state7[0] = O.X() + state5[3]*U.X() + state5[4]*V.X(); // x
   state7[1] = O.Y() + state5[3]*U.Y() + state5[4]*V.Y(); // y
@@ -1543,7 +1541,7 @@ void RKTrackRep::getState5(StateOnPlane& state, const M1x7& state7) const {
   const ROOT::Math::XYZVector& W(state.getPlane()->getNormal());
 
   // force A to be in normal direction and set spu accordingly
-  double AtW( state7[3]*W.X() + state7[4]*W.Y() + state7[5]*W.Z() );
+  const double AtW( state7[3]*W.X() + state7[4]*W.Y() + state7[5]*W.Z() );
   if (AtW < 0.) {
     //fDir *= -1.;
     //AtW *= -1.;
@@ -1620,7 +1618,7 @@ void RKTrackRep::transformPM6(const MeasuredStateOnPlane& state,
   const ROOT::Math::XYZVector& W(state.getPlane()->getNormal());
 
   const TVectorD& state5(state.getState());
-  double spu(getSpu(state));
+  const double spu(getSpu(state));
 
   M1x3 pTilde;
   pTilde[0] = spu * (W.X() + state5(1)*U.X() + state5(2)*V.X()); // a_x
@@ -1691,7 +1689,7 @@ void RKTrackRep::calcJ_Mp_7x5(M7x5& J_Mp, const ROOT::Math::XYZVector& U, const 
   // J_Mp matrix is d(q/p,u',v',u,v) / d(x,y,z,ax,ay,az,q/p)   (in is 7x7)
 
   // d(u')/d(ax,ay,az)
-  double fact = 1./(AtW*AtW);
+  const double fact = 1./(AtW*AtW);
   J_Mp[16] = fact * (U.X()*AtW - W.X()*AtU); // [3][1]
   J_Mp[21] = fact * (U.Y()*AtW - W.Y()*AtU); // [4][1]
   J_Mp[26] = fact * (U.Z()*AtW - W.Z()*AtU); // [5][1]
@@ -1824,7 +1822,7 @@ bool RKTrackRep::RKutta(const M1x4& SU,
   M1x3&   A          ( *((M1x3*) &state7[3]) );  // Start directions         (ax, ay, az);   ax^2+ay^2+az^2=1
   M1x3    SA         = {{0.,0.,0.}};             // Start directions derivatives dA/S
   double  Way        ( 0. );                     // Sum of absolute values of all extrapolation steps [cm]
-  double  momentum   ( fabs(charge/state7[6]) ); // momentum [GeV]
+  const double  momentum   ( fabs(charge/state7[6]) ); // momentum [GeV]
   double  relMomLoss ( 0 );                      // relative momentum loss in RKutta
   double  deltaAngle ( 0. );                     // total angle by which the momentum has changed during extrapolation
   // cppcheck-suppress unreadVariable
@@ -1870,14 +1868,14 @@ bool RKTrackRep::RKutta(const M1x4& SU,
       debugOut << "------ RKutta main loop nr. " << counter-1 << " ------\n";
     }
 
-    M1x3 ABefore = {{ A[0], A[1], A[2] }};
+    const M1x3 ABefore = {{ A[0], A[1], A[2] }};
     RKPropagate(state7, jacobianT, SA, S, true, calcOnlyLastRowOfJ); // the actual Runge Kutta propagation
 
     // update paths
     coveredDistance += S;       // add stepsize to way (signed)
     Way  += fabs(S);
 
-    double beta = 1/hypot(1, mass*state7[6]/charge);
+    const double beta = 1/hypot(1, mass*state7[6]/charge);
     flightTime += S / beta / 29.9792458; // in ns
 
     // check way limit
@@ -2301,7 +2299,7 @@ ROOT::Math::XYZVector RKTrackRep::pocaOnLine(const ROOT::Math::XYZVector& linePo
 
   ROOT::Math::XYZVector retVal(lineDirection);
 
-  double t = 1./(retVal.Mag2()) * ((point.Dot(retVal)) - (linePoint.Dot(retVal)));
+  const double t = 1./(retVal.Mag2()) * ((point.Dot(retVal)) - (linePoint.Dot(retVal)));
   retVal *= t;
   retVal += linePoint;
   return retVal; // = linePoint + t*lineDirection
@@ -2486,7 +2484,7 @@ double RKTrackRep::Extrap(const DetPlane& startPlane,
           state7[i] += 0.5 * dqop * J_MMT_[6*7 + i];
         }
         // normalize direction, just to make sure
-        double norm( 1. / sqrt(state7[3]*state7[3] + state7[4]*state7[4] + state7[5]*state7[5]) );
+        const double norm( 1. / sqrt(state7[3]*state7[3] + state7[4]*state7[4] + state7[5]*state7[5]) );
         for (unsigned int i=3; i<6; ++i)
           state7[i] *= norm;
 

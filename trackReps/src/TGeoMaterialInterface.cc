@@ -45,7 +45,7 @@ TGeoMaterialInterface::initTrack(double posX, double posY, double posZ,
   #endif
 
   // Move to the new point.
-  bool result = !gGeoManager->IsSameLocation(posX, posY, posZ, kTRUE);
+  const bool result = !gGeoManager->IsSameLocation(posX, posY, posZ, kTRUE);
   // Set the intended direction.
   gGeoManager->SetCurrentDirection(dirX, dirY, dirZ);
 
@@ -81,7 +81,7 @@ TGeoMaterialInterface::findNextBoundary(const RKTrackRep* rep,
   M1x7 state7, oldState7;
   oldState7 = stateOrig;
 
-  int stepSign(sMax < 0 ? -1 : 1);
+  const int stepSign(sMax < 0 ? -1 : 1);
 
   double s = 0;  // trajectory length to boundary
 
@@ -137,11 +137,11 @@ TGeoMaterialInterface::findNextBoundary(const RKTrackRep* rep,
 
     // Straight line distance² between extrapolation finish and
     // the end of the previously determined safe segment.
-    double dist2 = (pow(state7[0] - oldState7[0], 2)
+    const double dist2 = (pow(state7[0] - oldState7[0], 2)
         + pow(state7[1] - oldState7[1], 2)
         + pow(state7[2] - oldState7[2], 2));
     // Maximal lateral deviation².
-    double maxDeviation2 = 0.25*(step*step - dist2);
+    const double maxDeviation2 = 0.25*(step*step - dist2);
 
     if (step > safety
         && maxDeviation2 > epsilon*epsilon) {
@@ -156,7 +156,7 @@ TGeoMaterialInterface::findNextBoundary(const RKTrackRep* rep,
       step = std::max(step / 2, safety);
     } else {
       gGeoManager->PushPoint();
-      bool volChanged = initTrack(state7[0], state7[1], state7[2],
+      const bool volChanged = initTrack(state7[0], state7[1], state7[2],
           stepSign*state7[3], stepSign*state7[4],
           stepSign*state7[5]);
 
@@ -261,8 +261,8 @@ MeanExcEnergy_get(TGeoMaterial* mat) {
     double denom  = 0.;
     TGeoMixture* mix = (TGeoMixture*)mat;
     for (int i = 0; i < mix->GetNelements(); ++i) {
-      int index = int(mix->GetZmixt()[i]);
-      double weight = mix->GetWmixt()[i] * mix->GetZmixt()[i] / mix->GetAmixt()[i];
+      const int index = int(mix->GetZmixt()[i]);
+      const double weight = mix->GetWmixt()[i] * mix->GetZmixt()[i] / mix->GetAmixt()[i];
       logMEE += weight * MeanExcEnergy_get(index, true);
       denom  += weight;
     }

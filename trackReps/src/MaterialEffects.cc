@@ -139,7 +139,7 @@ double MaterialEffects::effects(const std::vector<RKStep>& steps,
     throw err;
   }
 
-  bool doNoise(noise != nullptr);
+  const bool doNoise(noise != nullptr);
 
   pdg_ = pdg;
   getParticleParameters();
@@ -391,8 +391,8 @@ void MaterialEffects::getMomGammaBeta(double Energy,
 
 double MaterialEffects::momentumLoss(double stepSign, double mom, bool linear)
 {
-  double E0 = hypot(mom, mass_);
-  double step = stepSize_*stepSign; // signed
+  const double E0 = hypot(mom, mass_);
+  const double step = stepSize_*stepSign; // signed
 
 
   // calc dEdx_, also needed in noiseBetheBloch!
@@ -428,7 +428,7 @@ double MaterialEffects::momentumLoss(double stepSign, double mom, bool linear)
 
   E_ = E0 - dEdx_*step*0.5;
 
-  double dE = step*dEdx_; // positive for positive stepSign
+  const double dE = step*dEdx_; // positive for positive stepSign
 
   double momLoss(0);
 
@@ -481,8 +481,8 @@ double MaterialEffects::dEdxBetheBloch(double betaSquare, double gamma, double g
 
   // calc dEdx_, also needed in noiseBetheBloch!
   double result( 0.307075 * matZ_ / matA_ * matDensity_ / betaSquare * charge_ * charge_ );
-  double massRatio( me_ / mass_ );
-  double argument( gammaSquare * betaSquare * me_ * 1.E3 * 2. / ((1.E-6 * mEE_) *
+  const double massRatio( me_ / mass_ );
+  const double argument( gammaSquare * betaSquare * me_ * 1.E3 * 2. / ((1.E-6 * mEE_) *
       sqrt(1. + 2. * gamma * massRatio + massRatio * massRatio)) );
   result *= log(argument) - betaSquare; // Bethe-Bloch [MeV/cm]
   result *= 1.E-3;  // in GeV/cm, hence 1.e-3
@@ -500,33 +500,33 @@ void MaterialEffects::noiseBetheBloch(M7x7& noise, double mom, double betaSquare
 
   // ENERGY LOSS FLUCTUATIONS; calculate sigma^2(E);
   double sigma2E ( 0. );
-  double zeta  ( 153.4E3 * charge_ * charge_ / betaSquare * matZ_ / matA_ * matDensity_ * fabs(stepSize_) ); // eV
-  double Emax  ( 2.E9 * me_ * betaSquare * gammaSquare / (1. + 2.*gamma * me_ / mass_ + (me_ / mass_) * (me_ / mass_)) ); // eV
-  double kappa ( zeta / Emax );
+  const double zeta  ( 153.4E3 * charge_ * charge_ / betaSquare * matZ_ / matA_ * matDensity_ * fabs(stepSize_) ); // eV
+  const double Emax  ( 2.E9 * me_ * betaSquare * gammaSquare / (1. + 2.*gamma * me_ / mass_ + (me_ / mass_) * (me_ / mass_)) ); // eV
+  const double kappa ( zeta / Emax );
 
   if (kappa > 0.01) { // Vavilov-Gaussian regime
     sigma2E += zeta * Emax * (1. - betaSquare / 2.); // eV^2
   } else { // Urban/Landau approximation
     // calculate number of collisions Nc
-    double I = 16. * pow(matZ_, 0.9); // eV
+    const double I = 16. * pow(matZ_, 0.9); // eV
     double f2 = 0.;
     if (matZ_ > 2.) f2 = 2. / matZ_;
-    double f1 = 1. - f2;
-    double e2 = 10.*matZ_ * matZ_; // eV
-    double e1 = pow((I / pow(e2, f2)), 1. / f1); // eV
+    const double f1 = 1. - f2;
+    const double e2 = 10.*matZ_ * matZ_; // eV
+    const double e1 = pow((I / pow(e2, f2)), 1. / f1); // eV
 
-    double mbbgg2 = 2.E9 * mass_ * betaSquare * gammaSquare; // eV
-    double Sigma1 = dEdx_ * 1.0E9 * f1 / e1 * (log(mbbgg2 / e1) - betaSquare) / (log(mbbgg2 / I) - betaSquare) * 0.6; // 1/cm
-    double Sigma2 = dEdx_ * 1.0E9 * f2 / e2 * (log(mbbgg2 / e2) - betaSquare) / (log(mbbgg2 / I) - betaSquare) * 0.6; // 1/cm
-    double Sigma3 = dEdx_ * 1.0E9 * Emax / (I * (Emax + I) * log((Emax + I) / I)) * 0.4; // 1/cm
+    const double mbbgg2 = 2.E9 * mass_ * betaSquare * gammaSquare; // eV
+    const double Sigma1 = dEdx_ * 1.0E9 * f1 / e1 * (log(mbbgg2 / e1) - betaSquare) / (log(mbbgg2 / I) - betaSquare) * 0.6; // 1/cm
+    const double Sigma2 = dEdx_ * 1.0E9 * f2 / e2 * (log(mbbgg2 / e2) - betaSquare) / (log(mbbgg2 / I) - betaSquare) * 0.6; // 1/cm
+    const double Sigma3 = dEdx_ * 1.0E9 * Emax / (I * (Emax + I) * log((Emax + I) / I)) * 0.4; // 1/cm
 
-    double Nc = (Sigma1 + Sigma2 + Sigma3) * fabs(stepSize_);
+    const double Nc = (Sigma1 + Sigma2 + Sigma3) * fabs(stepSize_);
 
     if (Nc > 50.) { // truncated Landau distribution
       double sigmaalpha = 15.76;
       // calculate sigmaalpha  (see GEANT3 manual W5013)
-      double RLAMED = -0.422784 - betaSquare - log(zeta / Emax);
-      double RLAMAX =  0.60715 + 1.1934 * RLAMED + (0.67794 + 0.052382 * RLAMED) * exp(0.94753 + 0.74442 * RLAMED);
+      const double RLAMED = -0.422784 - betaSquare - log(zeta / Emax);
+      const double RLAMAX =  0.60715 + 1.1934 * RLAMED + (0.67794 + 0.052382 * RLAMED) * exp(0.94753 + 0.74442 * RLAMED);
       // from lambda max to sigmaalpha=sigma (empirical polynomial)
       if (RLAMAX <= 1010.) {
         sigmaalpha =  1.975560
@@ -541,8 +541,8 @@ void MaterialEffects::noiseBetheBloch(M7x7& noise, double mom, double betaSquare
       sigma2E += sigmaalpha * sigmaalpha * zeta * zeta; // eV^2
     } else { // Urban model
       static const double alpha = 0.996;
-      double Ealpha  = I / (1. - (alpha * Emax / (Emax + I))); // eV
-      double meanE32 = I * (Emax + I) / Emax * (Ealpha - I); // eV^2
+      const double Ealpha  = I / (1. - (alpha * Emax / (Emax + I))); // eV
+      const double meanE32 = I * (Emax + I) / Emax * (Ealpha - I); // eV^2
       sigma2E += fabs(stepSize_) * (Sigma1 * e1 * e1 + Sigma2 * e2 * e2 + Sigma3 * meanE32); // eV^2
     }
   }
@@ -567,8 +567,8 @@ void MaterialEffects::noiseCoulomb(M7x7& noise,
     sigma2 = 225.E-6 * charge_ * charge_ / (betaSquare * momSquare) * step / radiationLength_ * matZ_ / (matZ_ + 1) * log(159.*pow(matZ_, -1. / 3.)) / log(287.*pow(matZ_, -0.5)); // sigma^2 = 225E-6*z^2/mom^2 * XX0/beta_^2 * Z/(Z+1) * ln(159*Z^(-1/3))/ln(287*Z^(-1/2)
 
   } else if (mscModelCode_ == 1) { //Highland not linear in step length formula taken from PDG book 2011 edition
-    double stepOverRadLength = step / radiationLength_;
-    double logCor = (1 + 0.038 * log(stepOverRadLength));
+    const double stepOverRadLength = step / radiationLength_;
+    const double logCor = (1 + 0.038 * log(stepOverRadLength));
     sigma2 = 0.0136 * 0.0136 * charge_ * charge_ / (betaSquare * momSquare) * stepOverRadLength * logCor * logCor;
   }
   //assert(sigma2 >= 0.0);
@@ -668,8 +668,8 @@ double MaterialEffects::dEdxBrems(double mom) const
     if (BCUT > T)
       kc = T;
 
-    double X = log(T / me_);
-    double Y = log(kc / (E * vl));
+    const double X = log(T / me_);
+    const double Y = log(kc / (E * vl));
 
     double XX;
     int    K;
@@ -811,7 +811,7 @@ void MaterialEffects::noiseBrems(M7x7& noise, double momSquare, double betaSquar
 
   if (abs(pdg_) != 11) return; // only for electrons and positrons
 
-  double minusXOverLn2  = -1.442695 * fabs(stepSize_) / radiationLength_;
+  const double minusXOverLn2  = -1.442695 * fabs(stepSize_) / radiationLength_;
   double sigma2E = 1.44*(pow(3., minusXOverLn2) - pow(4., minusXOverLn2)) * momSquare;
   sigma2E = std::max(sigma2E, 0.0); // must be positive
   
@@ -834,7 +834,7 @@ void MaterialEffects::drawdEdx(int pdg) {
   stepSize_ = 1;
 
   materialInterface_->initTrack(0, 0, 0, 1, 1, 1);
-  auto currentMaterial = materialInterface_->getMaterialParameters();
+  const auto& currentMaterial = materialInterface_->getMaterialParameters();
   matDensity_ = currentMaterial.density;
   matZ_ = currentMaterial.Z;
   matA_ = currentMaterial.A;
@@ -850,8 +850,8 @@ void MaterialEffects::drawdEdx(int pdg) {
   TH1D hdEdxBrems("dEdxBrems", "dEdxBrems; log10(mom)", nSteps, log10(minMom), log10(maxMom));
 
   for (int i=0; i<nSteps; ++i) {
-    double mom = pow(10., log10(minMom) + i*logStepSize);
-    double E = hypot(mom, mass_);
+    const double mom = pow(10., log10(minMom) + i*logStepSize);
+    const double E = hypot(mom, mass_);
     if (pdg_ == c_monopolePDGCode) {
       charge_ = mag_charge_ * mom / E; //effective charge for monopoles
     }
