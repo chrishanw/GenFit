@@ -5,6 +5,7 @@
 #include <StateOnPlane.h>
 #include <Track.h>
 #include <TrackPoint.h>
+#include <Tools.h>
 
 #include <MaterialEffects.h>
 #include <RKTrackRep.h>

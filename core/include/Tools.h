@@ -99,7 +99,7 @@ kalmanUpdateSqrt(const TMatrixD& S,
  * The implementation is the same as in TVector3.
  * v1, v2: 
  */
-inline ROOT::Math::XYZVector Orthogonal(const ROOT::Math::XYZVector& v);
+ROOT::Math::XYZVector Orthogonal(const ROOT::Math::XYZVector& v);
 
 /**
  * Set vector by polar coordinates.
@@ -108,7 +108,7 @@ inline ROOT::Math::XYZVector Orthogonal(const ROOT::Math::XYZVector& v);
  * @param[in]  theta  Polar angle.
  * @param[in]  phi    Azimuthal angle.
  */
-inline void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, double phi);
+void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, double phi);
 
 
 /**
@@ -116,25 +116,25 @@ inline void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double the
  * @param[inout] vector Vector
  * @param[in]    mag    Magnitude
  */
-inline void setMag(ROOT::Math::XYZVector& vector, double mag);
+void setMag(ROOT::Math::XYZVector& vector, double mag);
 
 /**
  * Set vector azimuthal angle theta
  * @param[inout] vector Vector
  * @param[in]    theta  Azimuthal angle
  */
-inline void setTheta(ROOT::Math::XYZVector& vector, double theta);
+void setTheta(ROOT::Math::XYZVector& vector, double theta);
 
 /**
  * Set vector polar angle phi
  * @param[inout] vector Vector
  * @param[in]    phi    Polar angle
  */
-inline void setPhi(ROOT::Math::XYZVector& vector, double phi);
+void setPhi(ROOT::Math::XYZVector& vector, double phi);
 
 /** @brief Print a 3D vector
  */
-inline std::string printVector3D(const ROOT::Math::XYZVector& v);
+std::string printVector3D(const ROOT::Math::XYZVector& v);
 
 } /* End of namespace tools */
 } /* End of namespace genfit */

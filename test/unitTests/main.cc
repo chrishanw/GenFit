@@ -309,7 +309,7 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
   //ROOT::Math::XYZVector pos(0,0,0);
   ROOT::Math::XYZVector pos(gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1));
   ROOT::Math::XYZVector mom(0,0.5,gRandom->Gaus(0,0.3));
-  genfit::tools::SetMag(mom, exp(gRandom->Uniform(-4, 8)) * mass );
+  genfit::tools::setMag(mom, exp(gRandom->Uniform(-4, 8)) * mass );
   mom *= randomSign();
 
 
@@ -342,7 +342,7 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
   catch (genfit::Exception& e) {
     if (verbose) {
       std::cerr << "Exception in forth Extrapolation. PDG = " << pdg << "; mom: \n";
-      mom.Print();
+      genfit::tools::printVector3D(mom);
 
       std::cerr << e.what();
     }
@@ -376,9 +376,9 @@ e_testStatus compareForthBackExtrapolation(bool writeHisto = false) {
   catch (genfit::Exception& e) {
     if (verbose) {
       std::cerr << "Exception in back Extrapolation. PDG = " << pdg << "; mom:  \n";
-      mom.Print();
+      genfit::tools::printVector3D(mom);
       std::cerr << "mom2:  \n";
-      mom2.Print();
+      genfit::tools::printVector3D(mom2);
     }
     std::cerr << e.what();
 
@@ -440,7 +440,7 @@ e_testStatus compareForthBackJacNoise(bool writeHisto = false) {
   ROOT::Math::XYZVector pos(gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1),gRandom->Gaus(0,0.1));
   ROOT::Math::XYZVector mom(0, 0.5, gRandom->Gaus(0, 1));
   mom *= randomSign();
-  genfit::tools::SetMag(mom, gRandom->Uniform(2)+0.3);
+  genfit::tools::setMag(mom, gRandom->Uniform(2)+0.3);
   //mom.SetMag(3);
 
   TMatrixD jac_f, jac_fi, jac_b, jac_bi;
@@ -674,12 +674,12 @@ e_testStatus checkStopAtBoundary(bool writeHisto = false) {
 
 
   // compare
-  if (fabs(rep->getPos(state).Perp() - matRadius) > epsilonLen) {
+  if (fabs(rep->getPos(state).Rho() - matRadius) > epsilonLen) {
       if (verbose) {
         origState.Print();
         state.Print();
 
-        std::cerr << "radius difference = " << rep->getPos(state).Perp() - matRadius << "\n";
+        std::cerr << "radius difference = " << rep->getPos(state).Rho() - matRadius << "\n";
 
         std::cerr << std::endl;
       }
@@ -789,7 +789,7 @@ e_testStatus checkExtrapolateToLine(bool writeHisto = false) {
   // compare
   if (fabs(state.getPlane()->distance(linePoint)) > epsilonLen ||
       fabs(state.getPlane()->distance(linePoint+lineDirection)) > epsilonLen ||
-      (rep->getMom(state).Unit() * state.getPlane()->getNormal()) > epsilonMom) {
+      (rep->getMom(state).Unit().Dot(state.getPlane()->getNormal())) > epsilonMom) {
 
       if (verbose) {
         origState.Print();
@@ -798,7 +798,7 @@ e_testStatus checkExtrapolateToLine(bool writeHisto = false) {
         std::cout << "distance of linePoint to plane = " << state.getPlane()->distance(linePoint) << "\n";
         std::cout << "distance of linePoint+lineDirection to plane = "
                   << state.getPlane()->distance(linePoint + lineDirection) << "\n";
-        std::cout << "direction * plane normal = " << rep->getMom(state).Unit() * state.getPlane()->getNormal() << "\n";
+        std::cout << "direction * plane normal = " << rep->getMom(state).Unit().Dot(state.getPlane()->getNormal()) << "\n";
       }
       delete rep;
       return kFailed;
@@ -850,13 +850,13 @@ e_testStatus checkExtrapolateToPoint(bool writeHisto = false) {
 
   // compare
   if (fabs(state.getPlane()->distance(point)) > epsilonLen ||
-      fabs((rep->getMom(state).Unit() * state.getPlane()->getNormal())) - 1 > epsilonMom) {
+      fabs((rep->getMom(state).Unit().Dot(state.getPlane()->getNormal()))) - 1 > epsilonMom) {
       if (verbose) {
         origState.Print();
         state.Print();
 
         std::cout << "distance of point to plane = " << state.getPlane()->distance(point) << "\n";
-        std::cout << "direction * plane normal = " << rep->getMom(state).Unit() * state.getPlane()->getNormal() << "\n";
+        std::cout << "direction * plane normal = " << rep->getMom(state).Unit().Dot(state.getPlane()->getNormal()) << "\n";
       }
       delete rep;
       return kFailed;
@@ -909,21 +909,21 @@ e_testStatus checkExtrapolateToCylinder(bool writeHisto = false) {
   }
 
   ROOT::Math::XYZVector pocaOnLine(lineDirection);
-  double t = 1./(pocaOnLine.Mag2()) * ((rep->getPos(state)*pocaOnLine) - (linePoint*pocaOnLine));
+  double t = 1./(pocaOnLine.Mag2()) * ((rep->getPos(state).Dot(pocaOnLine)) - (linePoint.Dot(pocaOnLine)));
   pocaOnLine *= t;
   pocaOnLine += linePoint;
 
   ROOT::Math::XYZVector radiusVec = rep->getPos(state) - pocaOnLine;
 
   // compare
-  if (fabs(state.getPlane()->getNormal()*radiusVec.Unit())-1 > epsilonLen ||
-      fabs(lineDirection*radiusVec) > epsilonLen ||
+  if (fabs(state.getPlane()->getNormal().Dot(radiusVec.Unit()))-1 > epsilonLen ||
+      fabs(lineDirection.Dot(radiusVec)) > epsilonLen ||
       fabs(radiusVec.R()-radius) > epsilonLen) {
       if (verbose) {
         origState.Print();
         state.Print();
 
-        std::cout << "lineDirection*radiusVec = " << lineDirection * radiusVec << "\n";
+        std::cout << "lineDirection*radiusVec = " << lineDirection.Dot(radiusVec) << "\n";
         std::cout << "radiusVec.R()-radius = " << radiusVec.R() - radius << "\n";
       }
       delete rep;
@@ -979,13 +979,13 @@ e_testStatus checkExtrapolateToSphere(bool writeHisto = false) {
   ROOT::Math::XYZVector radiusVec = rep->getPos(state) - centerPoint;
 
   // compare
-  if (fabs(state.getPlane()->getNormal()*radiusVec.Unit())-1 > epsilonLen ||
+  if (fabs(state.getPlane()->getNormal().Dot(radiusVec.Unit()))-1 > epsilonLen ||
       fabs(radiusVec.R()-radius) > epsilonLen) {
       if (verbose) {
         origState.Print();
         state.Print();
 
-        std::cout << "state.getPlane()->getNormal()*radiusVec = " << state.getPlane()->getNormal() * radiusVec << "\n";
+        std::cout << "state.getPlane()->getNormal()*radiusVec = " << state.getPlane()->getNormal().Dot(radiusVec) << "\n";
         std::cout << "radiusVec.R()-radius = " << radiusVec.R() - radius << "\n";
       }
       delete rep;
@@ -1048,9 +1048,9 @@ e_testStatus checkExtrapolateBy(bool writeHisto = false) {
 
         std::cout << "extrapolatedLen-step = " << extrapolatedLen - step << "\n";
         std::cout << "started extrapolation from: ";
-        posOrig.Print();
+        genfit::tools::printVector3D(posOrig);
         std::cout << "extrapolated to ";
-        posExt.Print();
+        genfit::tools::printVector3D(posExt);
         std::cout << "difference = " << (posOrig - posExt).R() << "; step = " << step << "; delta = "
                   << (posOrig - posExt).R() - fabs(step) << "\n";
       }
@@ -1103,7 +1103,7 @@ int main() {
 
   const unsigned int nTests(1000);
 
-  std::vector<TestCase> testCases();
+  std::vector<TestCase> testCases;
   testCases.reserve(10);
   testCases.push_back(TestCase(std::string("checkSetGetPosMom()            "), &checkSetGetPosMom));
   testCases.push_back(TestCase(std::string("compareForthBackExtrapolation()"), &compareForthBackExtrapolation));

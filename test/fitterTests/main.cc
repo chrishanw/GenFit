@@ -352,8 +352,8 @@ int main() {
 
       if (debug) {
         std::cout << "start values \n";
-        pos.Print();
-        mom.Print();
+        genfit::tools::printVector3D(pos);
+        genfit::tools::printVector3D(mom);
       }
 
       // calc helix parameters

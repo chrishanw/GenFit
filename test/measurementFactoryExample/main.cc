@@ -6,6 +6,7 @@
 #include <Track.h>
 #include <TrackCand.h>
 #include <TrackPoint.h>
+#include <Tools.h>
 
 #include <MeasurementProducer.h>
 #include <MeasurementFactory.h>

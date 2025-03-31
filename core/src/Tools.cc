@@ -434,7 +434,7 @@ ROOT::Math::XYZVector tools::Orthogonal(const ROOT::Math::XYZVector& v) {
   }
 }
 
-void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, double phi)
+void tools::setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, double phi)
 {
   const double amag = std::abs(mag);
   const double sinTheta = std::sin(theta);
@@ -444,17 +444,17 @@ void setMagThetaPhi(ROOT::Math::XYZVector& vector, double mag, double theta, dou
   vector.SetXYZ(x, y, z);
 }
 
-void setMag(ROOT::Math::XYZVector& vector, double mag)
+void tools::setMag(ROOT::Math::XYZVector& vector, double mag)
 {
   setMagThetaPhi(vector, mag, vector.Theta(), vector.Phi());
 }
 
-void setTheta(ROOT::Math::XYZVector& vector, double theta)
+void tools::setTheta(ROOT::Math::XYZVector& vector, double theta)
 {
   setMagThetaPhi(vector, vector.R(), theta, vector.Phi());
 }
 
-void setPhi(ROOT::Math::XYZVector& vector, double phi)
+void tools::setPhi(ROOT::Math::XYZVector& vector, double phi)
 {
   setMagThetaPhi(vector, vector.R(), vector.Theta(), phi);
 }
