@@ -280,7 +280,7 @@ void getScattererFromMatList(double& length, double& theta, double& s, double& d
   for (unsigned int i = 0; i < steps.size(); i++) {
     const MatStep step = steps.at(i);
     // inverse of material radiation length ... (in 1/cm) ... "density of scattering"
-    double rho = 1. / step.material_.radiationLength;
+    const double rho = 1. / step.material_.radiationLength;
     len += fabs(step.stepSize_);
     xmin = xmax;
     xmax = xmin + fabs(step.stepSize_);
@@ -298,19 +298,19 @@ void getScattererFromMatList(double& length, double& theta, double& s, double& d
   // Calculate theta from total sum of radiation length
   // instead of summimg squares of individual deflection angle variances
   // PDG formula:
-  double beta = p / sqrt(p * p + mass * mass);
+  const double beta = p / sqrt(p * p + mass * mass);
   theta = (0.0136 / p / beta) * fabs(charge) * sqrt(sumxx) * (1. + 0.038 * log(sumxx));
   //theta = (0.015 / p / beta) * fabs(charge) * sqrt(sumxx);
   
   // track length
   length = len;
   // Normalization factor
-  double N = 1. / sumxx;
+  const double N = 1. / sumxx;
   // First moment
   s  = N * sumx2x2;
   // Square of second moment (variance)
   // integral of (x - s)*(x - s)*rho(x)
-  double ds_2 = N * (sumx3x3 - 2. * sumx2x2 * s + sumxx * s * s);
+  const double ds_2 = N * (sumx3x3 - 2. * sumx2x2 * s + sumxx * s * s);
   ds = sqrt(ds_2);
   
   #ifdef DEBUG
@@ -334,7 +334,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
   // It is switched off automatically if no B-field at (0,0,0) is detected.
   bool fitQoverP = true;
   //TODO: Use clever way to determine zero B-field
-  double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).R();
+  const double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).R();
   if (!(Bfield > 0.))
     fitQoverP = false;
   
@@ -414,15 +414,15 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
     // Reference StateOnPlane for extrapolation
     ReferenceStateOnPlane* reference = new ReferenceStateOnPlane(*fi->getReferenceState());//(dynamic_cast<const genfit::ReferenceStateOnPlane&>(*fi->getReferenceState()));
     // Representation state at plane
-    TVectorD state = reference->getState();
+    const TVectorD& state = reference->getState();
     // track direction at plane (in global coords)
-    ROOT::Math::XYZVector trackDir = rep->getDir(*reference);
+    const ROOT::Math::XYZVector& trackDir = rep->getDir(*reference);
     // track momentum vector at plane (in global coords)
     trackMomMag = rep->getMomMag(*reference);
     // charge of particle
     particleCharge = rep->getCharge(*reference);
     // mass of particle
-    double particleMass = rep->getMass(*reference);
+    const double particleMass = rep->getMass(*reference);
     
     // Parameters of a thick scatterer between measurements
     double trackLen = 0.;
@@ -478,19 +478,19 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       AbsMeasurement* raw_meas2 = point_meas->getRawMeasurement(1);
       // Decide which cluster is u and which v based on H-matrix
       if (raw_meas1->constructHMatrix(rep)->isEqual(genfit::HMatrixU())
-	  && raw_meas2->constructHMatrix(rep)->isEqual(genfit::HMatrixV())) {
-	// right order U, V
-	raw_measU = raw_meas1;
-	raw_measV = raw_meas2;
+          && raw_meas2->constructHMatrix(rep)->isEqual(genfit::HMatrixV())) {
+        // right order U, V
+        raw_measU = raw_meas1;
+        raw_measV = raw_meas2;
       } else if (raw_meas2->constructHMatrix(rep)->isEqual(genfit::HMatrixU())
-		 && raw_meas1->constructHMatrix(rep)->isEqual(genfit::HMatrixV())) {
+                  && raw_meas1->constructHMatrix(rep)->isEqual(genfit::HMatrixV())) {
         // inversed order V, U
         raw_measU = raw_meas2;
-	raw_measV = raw_meas1;
+        raw_measV = raw_meas1;
       } else {
-	// Incompatible measurements ... skip track ... I saw this once and just before a segfault ...
-	cout << " ERROR: Incompatible 1D measurements at meas. point " << ipoint_meas << ". Track will be skipped." << endl;
-	return;
+        // Incompatible measurements ... skip track ... I saw this once and just before a segfault ...
+        cout << " ERROR: Incompatible 1D measurements at meas. point " << ipoint_meas << ". Track will be skipped." << endl;
+        return;
       }
       // Combine raw measurements
       TVectorD _raw_coor(2);
@@ -519,13 +519,13 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
     // if we don't want to skip it (e.g. ghost SVD hit ... just 1D information)
     if (!skipMeasurement) {
       // 2D hit coordinates
-      TVectorD raw_coor = raw_meas->getRawHitCoords();
+      const TVectorD& raw_coor = raw_meas->getRawHitCoords();
       // Covariance matrix of measurement
       TMatrixDSym raw_cov = raw_meas->getRawHitCov();
       // Projection matrix from repository state to measurement coords
       std::unique_ptr<const AbsHMatrix> HitHMatrix(raw_meas->constructHMatrix(rep));
       // Residual between measured position and reference track position
-      TVectorD residual = -1. * (raw_coor - HitHMatrix->Hv(state));
+      const TVectorD& residual = -1. * (raw_coor - HitHMatrix->Hv(state));
 
       trkChi2 += residual(0) * residual(0) / raw_cov(0, 0) + residual(1) * residual(1) / raw_cov(1, 1);
         
@@ -557,17 +557,17 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       std::vector<int> labGlobal;
 
       // sensor u direction in global coords
-      ROOT::Math::XYZVector uDir = plane->getU();
+      const ROOT::Math::XYZVector& uDir = plane->getU();
       // sensor v direction in global coords
-      ROOT::Math::XYZVector vDir = plane->getV();
+      const ROOT::Math::XYZVector& vDir = plane->getV();
       // sensor normal direction in global coords
-      ROOT::Math::XYZVector nDir = plane->getNormal();
+      const ROOT::Math::XYZVector& nDir = plane->getNormal();
       //file << sensorId << endl;
       //outputVector(uDir, "U");
       //outputVector(vDir, "V");
       //outputVector(nDir, "Normal");
       // track direction in local sensor system
-      ROOT::Math::XYZVector tLoc = ROOT::Math::XYZVector(uDir.Dot(trackDir), vDir.Dot(trackDir), nDir.Dot(trackDir));
+      const ROOT::Math::XYZVector tLoc = ROOT::Math::XYZVector(uDir.Dot(trackDir), vDir.Dot(trackDir), nDir.Dot(trackDir));
         
       // track u-slope in local sensor system
       double uSlope = tLoc.X() / tLoc.Z();
@@ -605,21 +605,21 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       //TODO: Usage of this requires Hierarchy Constraints to be provided to MP2
   
       // sensor centre position in global system
-      ROOT::Math::XYZVector detPos = plane->getO();
+      const ROOT::Math::XYZVector& detPos = plane->getO();
       //cout << "detPos" << endl;
       //detPos.Print();
 
       // global prediction from raw measurement
-      ROOT::Math::XYZVector pred = detPos + uPos * uDir + vPos * vDir;
+      const ROOT::Math::XYZVector pred = detPos + uPos * uDir + vPos * vDir;
       //cout << "pred" << endl;
       //pred.Print();
 
-      double xPred = pred.X();
-      double yPred = pred.Y();
-      double zPred = pred.Z();
+      const double xPred = pred.X();
+      const double yPred = pred.Y();
+      const double zPred = pred.Z();
 
       // scalar product of sensor normal and track direction
-      double tn = trackDir.Dot(nDir);
+      const double tn = trackDir.Dot(nDir);
       //cout << "tn" << endl;
       //cout << tn << endl;
 
@@ -799,8 +799,8 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
 	// Therefore (because state is perpendicular to plane, NOT track)
 	// we have non-diaonal matrix of multiple scattering covariance
 	// We have to project scattering into plane coordinates
-	double c1 = trackDir.Dot(plane->getU());
-	double c2 = trackDir.Dot(plane->getV());
+	const double c1 = trackDir.Dot(plane->getU());
+	const double c2 = trackDir.Dot(plane->getV());
 	TMatrixDSym scatCov(2);
 	scatCov(0, 0) = 1. - c2 * c2;
 	scatCov(1, 1) = 1. - c1 * c1;
@@ -912,7 +912,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
       
       // Loop over all GBL points
       for (unsigned int p = 0; p < listOfPoints.size(); p++) {
-        unsigned int label = p + 1;
+        const unsigned int label = p + 1;
         unsigned int numRes;
         TVectorD residuals(2);
         TVectorD measErrors(2);

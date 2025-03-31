@@ -98,7 +98,7 @@ TMatrixDSym BorderedBandMatrix::getBlockMatrix(
 		const std::vector<unsigned int> &anIndex) const {
 
 	TMatrixDSym aMatrix(anIndex.size());
-	int nBorder = numBorder;
+	const int nBorder = numBorder;
 	for (unsigned int i = 0; i < anIndex.size(); ++i) {
 		int iIndex = anIndex[i] - 1; // anIndex has to be sorted
 		for (unsigned int j = 0; j <= i; ++j) {
@@ -150,19 +150,19 @@ void BorderedBandMatrix::solveAndInvertBorderedBand(
 	// decompose band
 	decomposeBand();
 	// invert band
-	VMatrix inverseBand = invertBand();
+	const VMatrix& inverseBand = invertBand();
 	if (numBorder > 0) { // need to use block matrix decomposition to solve
 		// solve for mixed part
-		const VMatrix auxMat = solveBand(theMixed); // = Xt
-		const VMatrix auxMatT = auxMat.transpose(); // = X
+		const VMatrix& auxMat = solveBand(theMixed); // = Xt
+		const VMatrix& auxMatT = auxMat.transpose(); // = X
 		// solve for border part
-		const VVector auxVec = aRightHandSide.getVec(numBorder)
+		const VVector& auxVec = aRightHandSide.getVec(numBorder)
 				- auxMat * aRightHandSide.getVec(numCol, numBorder); // = b1 - Xt*b2
 		VSymMatrix inverseBorder = theBorder - theMixed * auxMatT;
 		inverseBorder.invert(); // = E
-		const VVector borderSolution = inverseBorder * auxVec; // = x1
+		const VVector& borderSolution = inverseBorder * auxVec; // = x1
 		// solve for band part
-		const VVector bandSolution = solveBand(
+		const VVector& bandSolution = solveBand(
 				aRightHandSide.getVec(numCol, numBorder)); // = x
 		aSolution.putVec(borderSolution);
 		aSolution.putVec(bandSolution - auxMatT * borderSolution, numBorder); // = x2
@@ -198,8 +198,8 @@ void BorderedBandMatrix::printMatrix() const {
  */
 void BorderedBandMatrix::decomposeBand() {
 
-	int nRow = numBand + 1;
-	int nCol = numCol;
+	const int nRow = numBand + 1;
+	const int nCol = numCol;
 	VVector auxVec(nCol);
 	for (int i = 0; i < nCol; ++i) {
 		auxVec(i) = theBand(0, i) * 16.0; // save diagonal elements
@@ -215,7 +215,7 @@ void BorderedBandMatrix::decomposeBand() {
 			throw 2; // singular
 		}
 		for (int j = 1; j < std::min(nRow, nCol - i); ++j) {
-			double rxw = theBand(j, i) * theBand(0, i);
+			const double rxw = theBand(j, i) * theBand(0, i);
 			for (int k = 0; k < std::min(nRow, nCol - i) - j; ++k) {
 				theBand(k, i + j) -= theBand(k + j, i) * rxw;
 			}
@@ -233,8 +233,8 @@ void BorderedBandMatrix::decomposeBand() {
  */
 VVector BorderedBandMatrix::solveBand(const VVector &aRightHandSide) const {
 
-	int nRow = theBand.getNumRows();
-	int nCol = theBand.getNumCols();
+	const int nRow = theBand.getNumRows();
+	const int nCol = theBand.getNumCols();
 	VVector aSolution(aRightHandSide);
 	for (int i = 0; i < nCol; ++i) // forward substitution
 			{
@@ -262,8 +262,8 @@ VVector BorderedBandMatrix::solveBand(const VVector &aRightHandSide) const {
  */
 VMatrix BorderedBandMatrix::solveBand(const VMatrix &aRightHandSide) const {
 
-	int nRow = theBand.getNumRows();
-	int nCol = theBand.getNumCols();
+	const int nRow = theBand.getNumRows();
+	const int nCol = theBand.getNumCols();
 	VMatrix aSolution(aRightHandSide);
 	for (unsigned int iBorder = 0; iBorder < numBorder; iBorder++) {
 		for (int i = 0; i < nCol; ++i) // forward substitution
@@ -291,8 +291,8 @@ VMatrix BorderedBandMatrix::solveBand(const VMatrix &aRightHandSide) const {
  */
 VMatrix BorderedBandMatrix::invertBand() {
 
-	int nRow = numBand + 1;
-	int nCol = numCol;
+	const int nRow = numBand + 1;
+	const int nCol = numCol;
 	VMatrix inverseBand(nRow, nCol);
 
 	for (int i = nCol - 1; i >= 0; i--) {

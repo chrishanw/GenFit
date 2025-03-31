@@ -70,7 +70,7 @@ void GblPoint::addMeasurement(const TMatrixD &aProjection,
 		const TVectorD &aResiduals, const TVectorD &aPrecision,
 		double minPrecision) {
 	measDim = aResiduals.GetNrows();
-	unsigned int iOff = 5 - measDim;
+	const unsigned int iOff = 5 - measDim;
 	for (unsigned int i = 0; i < measDim; ++i) {
 		measResiduals(iOff + i) = aResiduals[i];
 		measPrecision(iOff + i) = (
@@ -100,10 +100,10 @@ void GblPoint::addMeasurement(const TMatrixD &aProjection,
 	measTransformation = measEigen.GetEigenVectors();
 	measTransformation.T();
 	transFlag = true;
-	TVectorD transResiduals = measTransformation * aResiduals;
-	TVectorD transPrecision = measEigen.GetEigenValues();
-	TMatrixD transProjection = measTransformation * aProjection;
-	unsigned int iOff = 5 - measDim;
+	const TVectorD transResiduals = measTransformation * aResiduals;
+	const TVectorD& transPrecision = measEigen.GetEigenValues();
+	const TMatrixD transProjection = measTransformation * aProjection;
+	const unsigned int iOff = 5 - measDim;
 	for (unsigned int i = 0; i < measDim; ++i) {
 		measResiduals(iOff + i) = transResiduals[i];
 		measPrecision(iOff + i) = (
@@ -125,7 +125,7 @@ void GblPoint::addMeasurement(const TMatrixD &aProjection,
 void GblPoint::addMeasurement(const TVectorD &aResiduals,
 		const TVectorD &aPrecision, double minPrecision) {
 	measDim = aResiduals.GetNrows();
-	unsigned int iOff = 5 - measDim;
+	const unsigned int iOff = 5 - measDim;
 	for (unsigned int i = 0; i < measDim; ++i) {
 		measResiduals(iOff + i) = aResiduals[i];
 		measPrecision(iOff + i) = (
@@ -151,8 +151,8 @@ void GblPoint::addMeasurement(const TVectorD &aResiduals,
 	measTransformation = measEigen.GetEigenVectors();
 	measTransformation.T();
 	transFlag = true;
-	TVectorD transResiduals = measTransformation * aResiduals;
-	TVectorD transPrecision = measEigen.GetEigenValues();
+	const TVectorD transResiduals = measTransformation * aResiduals;
+	const TVectorD& transPrecision = measEigen.GetEigenValues();
 	unsigned int iOff = 5 - measDim;
 	for (unsigned int i = 0; i < measDim; ++i) {
 		measResiduals(iOff + i) = transResiduals[i];
@@ -239,8 +239,8 @@ void GblPoint::addScatterer(const TVectorD &aResiduals,
 	TMatrixDSymEigen scatEigen(aPrecision);
 	TMatrixD aTransformation = scatEigen.GetEigenVectors();
 	aTransformation.T();
-	TVectorD transResiduals = aTransformation * aResiduals;
-	TVectorD transPrecision = scatEigen.GetEigenValues();
+	const TVectorD transResiduals = aTransformation * aResiduals;
+	const TVectorD& transPrecision = scatEigen.GetEigenValues();
 	for (unsigned int i = 0; i < 2; ++i) {
 		scatResiduals(i) = transResiduals[i];
 		scatPrecision(i) = transPrecision[i];
@@ -386,7 +386,7 @@ void GblPoint::addPrevJacobian(const SMatrix55 &aJac) {
 // to optimize: need only two last rows of inverse
 //	prevJacobian = aJac.InverseFast(ifail);
 //  block matrix algebra
-	SMatrix23 CA = aJac.Sub<SMatrix23>(3, 0)
+	const SMatrix23 CA = aJac.Sub<SMatrix23>(3, 0)
 			* aJac.Sub<SMatrix33>(0, 0).InverseFast(ifail); // C*A^-1
 	SMatrix22 DCAB = aJac.Sub<SMatrix22>(3, 3) - CA * aJac.Sub<SMatrix32>(0, 3); // D - C*A^-1 *B
 	DCAB.InvertFast();

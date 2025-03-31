@@ -66,7 +66,7 @@ void GblData::addDerivatives(unsigned int iRow,
 		const std::vector<int> &labGlobal, const TMatrixD &derGlobal,
 		unsigned int extOff, const TMatrixD &extDer) {
 
-	unsigned int nParMax = 5 + derLocal.GetNcols() + extDer.GetNcols();
+	const unsigned int nParMax = 5 + derLocal.GetNcols() + extDer.GetNcols();
 	theParameters.reserve(nParMax); // have to be sorted
 	theDerivatives.reserve(nParMax);
 
@@ -112,7 +112,7 @@ void GblData::addDerivatives(unsigned int iRow,
 		const std::vector<unsigned int> &labDer, const SMatrix27 &matDer,
 		unsigned int extOff, const TMatrixD &extDer) {
 
-	unsigned int nParMax = 7 + extDer.GetNcols();
+	const unsigned int nParMax = 7 + extDer.GetNcols();
 	theParameters.reserve(nParMax); // have to be sorted
 	theDerivatives.reserve(nParMax);
 
@@ -166,7 +166,7 @@ void GblData::setPrediction(const VVector &aVector) {
 double GblData::setDownWeighting(unsigned int aMethod) {
 
 	double aWeight = 1.;
-	double scaledResidual = fabs(theValue - thePrediction) * sqrt(thePrecision);
+	const double scaledResidual = fabs(theValue - thePrediction) * sqrt(thePrecision);
 	if (aMethod == 1) // Tukey
 			{
 		if (scaledResidual < 4.6851) {

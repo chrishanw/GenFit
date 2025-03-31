@@ -114,7 +114,7 @@ void GblFitter::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool res
   // It is switched off automatically if no B-field at (0,0,0) is detected.
   bool fitQoverP = true;
   //TODO: Use clever way to determine zero B-field
-  double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).R();
+  const double Bfield = genfit::FieldManager::getInstance()->getFieldVal(ROOT::Math::XYZVector(0., 0., 0.)).R();
   if (!(Bfield > 1.e-16))
     fitQoverP = false;
   // degrees of freedom after fit
@@ -257,11 +257,9 @@ void GblFitter::sortHits(Track* trk, const AbsTrackRep* rep) const {
   // Loop only between meas. points 
   for (int ipoint_meas = 0; ipoint_meas < npoints_meas - 1; ipoint_meas++) {
     // current measurement point
-    TrackPoint* point_meas = trk->getPointWithMeasurement(ipoint_meas);    
-    // Current detector plane
-    SharedPlanePtr plane = point_meas->getRawMeasurement(0)->constructPlane(reference);    
+    TrackPoint* point_meas = trk->getPointWithMeasurement(ipoint_meas);
     // Get the next plane
-    SharedPlanePtr nextPlane(trk->getPointWithMeasurement(ipoint_meas + 1)->getRawMeasurement(0)->constructPlane(reference));    
+    const SharedPlanePtr& nextPlane = trk->getPointWithMeasurement(ipoint_meas + 1)->getRawMeasurement(0)->constructPlane(reference);
     
     point_meas->setSortingParameter(arcLenPos);
     arcLenPos += reference.extrapolateToPlane(nextPlane);
@@ -271,10 +269,10 @@ void GblFitter::sortHits(Track* trk, const AbsTrackRep* rep) const {
   trk->sort();
 }
 
-std::vector<gbl::GblPoint> GblFitter::collectGblPoints(genfit::Track* trk, const genfit::AbsTrackRep* rep) {
+std::vector<gbl::GblPoint> GblFitter::collectGblPoints(const genfit::Track* trk, const genfit::AbsTrackRep* rep) {
   //TODO store collected points in in fit status? need streamer for GblPoint (or something like that)
   std::vector<gbl::GblPoint> thePoints;
-  thePoints.clear();
+  thePoints.reserve(trk->getNumPoints());
   
   // Collect points from track and fitterInfo(rep)
   for (unsigned int ip = 0; ip < trk->getNumPoints(); ip++) {   
@@ -333,7 +331,7 @@ void GblFitter::getScattererFromMatList(double& length,
   double xmax = 0.;
   
   for (unsigned int i = 0; i < steps.size(); i++) {
-    const MatStep step = steps.at(i);
+    const MatStep& step = steps.at(i);
     // inverse of material radiation length ... (in 1/cm) ... "density of scattering"
     double rho = 1. / step.material_.radiationLength;
     len += fabs(step.stepSize_);
@@ -353,19 +351,19 @@ void GblFitter::getScattererFromMatList(double& length,
   // Calculate theta from total sum of radiation length
   // instead of summimg squares of individual deflection angle variances
   // PDG formula:
-  double beta = p / sqrt(p * p + mass * mass);
+  const double beta = p / sqrt(p * p + mass * mass);
   theta = (0.0136 / p / beta) * fabs(charge) * sqrt(sumxx) * (1. + 0.038 * log(sumxx));
   //theta = (0.015 / p / beta) * fabs(charge) * sqrt(sumxx);
   
   // track length
   length = len;
   // Normalization factor
-  double N = 1. / sumxx;
+  const double N = 1. / sumxx;
   // First moment
   s  = N * sumx2x2;
   // Square of second moment (variance)
   // integral of (x - s)*(x - s)*rho(x)
-  double ds_2 = N * (sumx3x3 - 2. * sumx2x2 * s + sumxx * s * s);
+  const double ds_2 = N * (sumx3x3 - 2. * sumx2x2 * s + sumxx * s * s);
   ds = sqrt(ds_2);
   
   #ifdef DEBUG
@@ -376,9 +374,9 @@ void GblFitter::getScattererFromMatList(double& length,
 double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
 { 
   // All measurement points in ref. track
-  int npoints_meas = trk->getNumPointsWithMeasurement();  
+  const int npoints_meas = trk->getNumPointsWithMeasurement();  
   // Dimesion of representation/state
-  int dim = rep->getDim();  
+  const int dim = rep->getDim();  
   // Jacobian for point with measurement = how to propagate from previous point (scat/meas)
   TMatrixD jacPointToPoint(dim, dim);
   jacPointToPoint.UnitMatrix();
@@ -389,7 +387,7 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
   rep->setTime(reference, trk->getTimeSeed());
   rep->setPosMom(reference, trk->getStateSeed());
 
-  SharedPlanePtr firstPlane(trk->getPointWithMeasurement(0)->getRawMeasurement(0)->constructPlane(reference));  
+  const SharedPlanePtr& firstPlane = trk->getPointWithMeasurement(0)->getRawMeasurement(0)->constructPlane(reference);
   reference.extrapolateToPlane(firstPlane);
   
   double sumTrackLen = 0;
@@ -401,13 +399,13 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
     // current measurement point
     TrackPoint* point_meas = trk->getPointWithMeasurement(ipoint_meas);    
     // Current detector plane
-    SharedPlanePtr plane = point_meas->getRawMeasurement(0)->constructPlane(reference);
+    const SharedPlanePtr& plane = point_meas->getRawMeasurement(0)->constructPlane(reference);
     // track momentum direction vector at plane (in global coords)
-    double trackMomMag = rep->getMomMag(reference);
+    const double trackMomMag = rep->getMomMag(reference);
     // charge of particle
-    double particleCharge = rep->getCharge(reference);
+    const double particleCharge = rep->getCharge(reference);
     // mass of particle
-    double particleMass = rep->getMass(reference);    
+    const double particleMass = rep->getMass(reference);    
     // Parameters of a thick scatterer between measurements
     double trackLen = 0., scatTheta = 0., scatSMean = 0., scatDeltaS = 0.;
     // Parameters of two equivalent thin scatterers
@@ -434,13 +432,13 @@ double GblFitter::constructGblInfo(Track* trk, const AbsTrackRep* rep)
     // Use a temp copy of the StateOnPlane to propage between measurements
     StateOnPlane refCopy(reference);
     // Get the next plane
-    SharedPlanePtr nextPlane(trk->getPointWithMeasurement(ipoint_meas + 1)->getRawMeasurement(0)->constructPlane(reference));    
+    const SharedPlanePtr& nextPlane = trk->getPointWithMeasurement(ipoint_meas + 1)->getRawMeasurement(0)->constructPlane(reference);
     
     // Extrapolation for multiple scattering calculation
     // Extrap to point + 1, do NOT stop at boundary
-    ROOT::Math::XYZVector segmentEntry = refCopy.getPos();
+    const ROOT::Math::XYZVector& segmentEntry = refCopy.getPos();
     rep->extrapolateToPlane(refCopy, nextPlane, false, false);
-    ROOT::Math::XYZVector segmentExit = refCopy.getPos();
+    const ROOT::Math::XYZVector& segmentExit = refCopy.getPos();
     
     getScattererFromMatList(trackLen,
                             scatTheta,

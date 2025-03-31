@@ -192,7 +192,7 @@ namespace genfit {
      * 
      * @return const std::vector< gbl::GblPoint, std::allocator >&
      */
-    std::vector<gbl::GblPoint> collectGblPoints(genfit::Track* trk, const genfit::AbsTrackRep* rep);
+    std::vector<gbl::GblPoint> collectGblPoints(const genfit::Track* trk, const genfit::AbsTrackRep* rep);
     
     /**
      * @brief Remove all previous gbl fitter data from track

@@ -412,12 +412,12 @@ void GblTrajectory::calcJacobians() {
 std::pair<std::vector<unsigned int>, TMatrixD> GblTrajectory::getJacobian(
 		int aSignedLabel) const {
 
-	unsigned int nDim = theDimension.size();
-	unsigned int nCurv = numCurvature;
-	unsigned int nLocals = numLocals;
-	unsigned int nBorder = nCurv + nLocals;
-	unsigned int nParBRL = nBorder + 2 * nDim;
-	unsigned int nParLoc = nLocals + 5;
+	const unsigned int nDim = theDimension.size();
+	const unsigned int nCurv = numCurvature;
+	const unsigned int nLocals = numLocals;
+	const unsigned int nBorder = nCurv + nLocals;
+	const unsigned int nParBRL = nBorder + 2 * nDim;
+	const unsigned int nParLoc = nLocals + 5;
 	std::vector<unsigned int> anIndex;
 	anIndex.reserve(nParBRL);
 	TMatrixD aJacobian(nParLoc, nParBRL);
@@ -489,11 +489,11 @@ void GblTrajectory::getFitToLocalJacobian(std::vector<unsigned int> &anIndex,
 		SMatrix55 &aJacobian, const GblPoint &aPoint, unsigned int measDim,
 		unsigned int nJacobian) const {
 
-	unsigned int nDim = theDimension.size();
-	unsigned int nCurv = numCurvature;
-	unsigned int nLocals = numLocals;
+	const unsigned int nDim = theDimension.size();
+	const unsigned int nCurv = numCurvature;
+	const unsigned int nLocals = numLocals;
 
-	int nOffset = aPoint.getOffset();
+	const int nOffset = aPoint.getOffset();
 
 	if (nOffset < 0) // need interpolation
 			{
@@ -542,10 +542,10 @@ void GblTrajectory::getFitToLocalJacobian(std::vector<unsigned int> &anIndex,
 		// anIndex must be sorted
 		// forward : iOff2 = iOff1 + nDim, index1 = 1, index2 = 3
 		// backward: iOff2 = iOff1 - nDim, index1 = 3, index2 = 1
-		unsigned int iOff1 = nDim * nOffset + nCurv + nLocals + 1; // first offset ('i' in u_i)
-		unsigned int index1 = 3 - 2 * nJacobian; // index of first offset
-		unsigned int iOff2 = iOff1 + nDim * (nJacobian * 2 - 1); // second offset ('i' in u_i)
-		unsigned int index2 = 1 + 2 * nJacobian; // index of second offset
+		const unsigned int iOff1 = nDim * nOffset + nCurv + nLocals + 1; // first offset ('i' in u_i)
+		const unsigned int index1 = 3 - 2 * nJacobian; // index of first offset
+		const unsigned int iOff2 = iOff1 + nDim * (nJacobian * 2 - 1); // second offset ('i' in u_i)
+		const unsigned int index2 = 1 + 2 * nJacobian; // index of second offset
 		// local offset
 		aJacobian(3, index1) = 1.0; // from 1st Offset
 		aJacobian(4, index1 + 1) = 1.0;
@@ -558,7 +558,7 @@ void GblTrajectory::getFitToLocalJacobian(std::vector<unsigned int> &anIndex,
 			SMatrix22 matW, matWJ;
 			SVector2 vecWd;
 			aPoint.getDerivatives(nJacobian, matW, matWJ, vecWd); // W, W * J, W * d
-			double sign = (nJacobian > 0) ? 1. : -1.;
+			const double sign = (nJacobian > 0) ? 1. : -1.;
 			if (nCurv > 0) {
 				aJacobian(0, 0) = 1.0;
 				aJacobian.Place_in_col(-sign * vecWd, 1, 0); // from curvature
@@ -583,9 +583,9 @@ void GblTrajectory::getFitToLocalJacobian(std::vector<unsigned int> &anIndex,
 void GblTrajectory::getFitToKinkJacobian(std::vector<unsigned int> &anIndex,
 		SMatrix27 &aJacobian, const GblPoint &aPoint) const {
 
-	unsigned int nDim = theDimension.size();
-	unsigned int nCurv = numCurvature;
-	unsigned int nLocals = numLocals;
+	const unsigned int nDim = theDimension.size();
+	const unsigned int nCurv = numCurvature;
+	const unsigned int nLocals = numLocals;
 
 	int nOffset = aPoint.getOffset();
 
@@ -596,7 +596,7 @@ void GblTrajectory::getFitToKinkJacobian(std::vector<unsigned int> &anIndex,
 	const SMatrix22 sumWJ(prevWJ + nextWJ); // W- * J- + W+ * J+
 	const SVector2 sumWd(prevWd + nextWd); // W+ * d+ + W- * d-
 
-	unsigned int iOff = (nOffset - 1) * nDim + nCurv + nLocals + 1; // first offset ('i' in u_i)
+	const unsigned int iOff = (nOffset - 1) * nDim + nCurv + nLocals + 1; // first offset ('i' in u_i)
 
 	// local offset
 	if (nCurv > 0) {
@@ -665,7 +665,7 @@ unsigned int GblTrajectory::getMeasResults(unsigned int aLabel,
 	if (not fitOK)
 		return 1;
 
-	unsigned int firstData = measDataIndex[aLabel - 1]; // first data block with measurement
+	const unsigned int firstData = measDataIndex[aLabel - 1]; // first data block with measurement
 	numData = measDataIndex[aLabel] - firstData; // number of data blocks
 	for (unsigned int i = 0; i < numData; ++i) {
 		getResAndErr(firstData + i, aResiduals[i], aMeasErrors[i],
@@ -694,7 +694,7 @@ unsigned int GblTrajectory::getScatResults(unsigned int aLabel,
 	if (not fitOK)
 		return 1;
 
-	unsigned int firstData = scatDataIndex[aLabel - 1]; // first data block with scatterer
+	const unsigned int firstData = scatDataIndex[aLabel - 1]; // first data block with scatterer
 	numData = scatDataIndex[aLabel] - firstData; // number of data blocks
 	for (unsigned int i = 0; i < numData; ++i) {
 		getResAndErr(firstData + i, aResiduals[i], aMeasErrors[i],
@@ -713,7 +713,7 @@ unsigned int GblTrajectory::getLabels(std::vector<unsigned int> &aLabelList) {
 		return 1;
 
 	unsigned int aLabel = 0;
-	unsigned int nPoint = thePoints[0].size();
+	const unsigned int nPoint = thePoints[0].size();
 	aLabelList.resize(nPoint);
 	for (unsigned i = 0; i < nPoint; ++i) {
 		aLabelList[i] = ++aLabel;
@@ -766,7 +766,7 @@ void GblTrajectory::getResAndErr(unsigned int aData, double &aResidual,
 	for (unsigned int j = 0; j < nParBrl; ++j) {
 		aVec[j] = (*derLocal)[j];
 	}
-	TMatrixDSym aMat = theMatrix.getBlockMatrix(*indLocal); // compressed (covariance) matrix
+	const TMatrixDSym& aMat = theMatrix.getBlockMatrix(*indLocal); // compressed (covariance) matrix
 	double aFitVar = aMat.Similarity(aVec); // variance from track fit
 	aMeasError = sqrt(aMeasVar); // error of measurement
 	aResError = (aFitVar < aMeasVar ? sqrt(aMeasVar - aFitVar) : 0.); // error of residual
@@ -774,7 +774,7 @@ void GblTrajectory::getResAndErr(unsigned int aData, double &aResidual,
 
 /// Build linear equation system from data (blocks).
 void GblTrajectory::buildLinearEquationSystem() {
-	unsigned int nBorder = numCurvature + numLocals;
+	const unsigned int nBorder = numCurvature + numLocals;
 	theVector.resize(numParameters);
 	theMatrix.resize(numParameters, nBorder);
 	double aValue, aWeight;
@@ -795,9 +795,9 @@ void GblTrajectory::buildLinearEquationSystem() {
  * Generate data (blocks) from measurements, kinks, external seed and measurements.
  */
 void GblTrajectory::prepare() {
-	unsigned int nDim = theDimension.size();
+	const unsigned int nDim = theDimension.size();
 	// upper limit
-	unsigned int maxData = numMeasurements + nDim * (numOffsets - 2)
+	const unsigned int maxData = numMeasurements + nDim * (numOffsets - 2)
 			+ externalSeed.GetNrows();
 	theData.reserve(maxData);
 	measDataIndex.resize(numAllPoints + 3); // include external seed and measurements
@@ -912,7 +912,7 @@ void GblTrajectory::prepare() {
 		for (itPoint = thePoints[iTraj].begin() + 1;
 				itPoint < thePoints[iTraj].end() - 1; ++itPoint) {
 			SVector2 aMeas, aPrec;
-			unsigned int nLabel = itPoint->getLabel();
+			const unsigned int nLabel = itPoint->getLabel();
 			if (itPoint->hasScatterer()) {
 				itPoint->getScatterer(matT, aMeas, aPrec);
 				TMatrixD transDer;
@@ -948,7 +948,7 @@ void GblTrajectory::prepare() {
 					transDer = proDer * innerTransDer[iTraj];
 				}
 				for (unsigned int i = 0; i < nDim; ++i) {
-					unsigned int iDim = theDimension[i];
+					const unsigned int iDim = theDimension[i];
 					if (aPrec(iDim) > 0.) {
 						GblData aData(nLabel, aMeas(iDim), aPrec(iDim));
 						aData.addDerivatives(iDim, labDer, matTDer, numLocals,
@@ -970,7 +970,7 @@ void GblTrajectory::prepare() {
 		std::vector<unsigned int> externalSeedIndex = indexAndJacobian.first;
 		std::vector<double> externalSeedDerivatives(externalSeedIndex.size());
 		const TMatrixDSymEigen externalSeedEigen(externalSeed);
-		const TVectorD valEigen = externalSeedEigen.GetEigenValues();
+		const TVectorD& valEigen = externalSeedEigen.GetEigenValues();
 		TMatrixD vecEigen = externalSeedEigen.GetEigenVectors();
 		vecEigen = vecEigen.T() * indexAndJacobian.second;
 		for (int i = 0; i < externalSeed.GetNrows(); ++i) {

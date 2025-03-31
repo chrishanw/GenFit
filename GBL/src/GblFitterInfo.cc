@@ -95,8 +95,8 @@ namespace genfit {
   
   TMatrixDSym GblFitterInfo::getCovariance(double variance, ROOT::Math::XYZVector trackDirection, SharedPlanePtr measurementPlane) const {
     
-    double c1 = trackDirection.Dot(measurementPlane->getU());
-    double c2 = trackDirection.Dot(measurementPlane->getV());
+    const double c1 = trackDirection.Dot(measurementPlane->getU());
+    const double c2 = trackDirection.Dot(measurementPlane->getV());
     
     TMatrixDSym scatCov(2);
     scatCov(0, 0) = 1. - c2 * c2;
@@ -144,8 +144,8 @@ namespace genfit {
       TVectorD aResiduals(measurement.getState());
       TMatrixDSym aPrecision(measurement.getCov().Invert()); 
       if (HMatrixU().getMatrix() == hMatrix_) {
-        double res = aResiduals(0);
-        double prec = aPrecision(0, 0);
+        const double res = aResiduals(0);
+        const double prec = aPrecision(0, 0);
         aResiduals.ResizeTo(2);
         aPrecision.ResizeTo(TMatrixDSym(2));
         aResiduals.Zero();
@@ -154,8 +154,8 @@ namespace genfit {
         aPrecision(0, 0) = prec;
       }      
       if (HMatrixV().getMatrix() == hMatrix_) {
-        double res = aResiduals(0);
-        double prec = aPrecision(0, 0);
+        const double res = aResiduals(0);
+        const double prec = aPrecision(0, 0);
         aResiduals.ResizeTo(2);
         aPrecision.ResizeTo(TMatrixDSym(2));
         aResiduals.Zero();
@@ -172,12 +172,12 @@ namespace genfit {
     if (hasMeasurements() && (globals = dynamic_cast<ICalibrationParametersDerivatives*>(trackPoint_->getRawMeasurement(0)) )) {    
       std::pair<std::vector<int>, TMatrixD> labelsAndMatrix = globals->globalDerivatives(&sop);
       std::vector<int> labels = labelsAndMatrix.first;
-      TMatrixD derivs = labelsAndMatrix.second;
+      const TMatrixD& derivs = labelsAndMatrix.second;
       
       if (derivs.GetNcols() > 0 && !labels.empty() && (unsigned int)derivs.GetNcols() == labels.size()) {
         thePoint.addGlobals(labels, derivs);
       }        
-      TMatrixD locals = globals->localDerivatives(&sop);      
+      const TMatrixD& locals = globals->localDerivatives(&sop);      
       if (locals.GetNcols() > 0) {
         thePoint.addLocals(locals);
         GblFitStatus* gblfs = dynamic_cast<GblFitStatus*>(trackPoint_->getTrack()->getFitStatus(rep_));
@@ -200,7 +200,7 @@ namespace genfit {
       setPlane(sop.getPlane());
       return;
     }
-    std::vector<MeasurementOnPlane*> allMeas = trackPoint_->getRawMeasurement(0)->constructMeasurementsOnPlane(sop);
+    const std::vector<MeasurementOnPlane*>& allMeas = trackPoint_->getRawMeasurement(0)->constructMeasurementsOnPlane(sop);
     
     /*
     double normMin(9.99E99);
@@ -222,7 +222,7 @@ namespace genfit {
     }
     */
     unsigned int imop = 0;
-    double maxWeight = allMeas.at(0)->getWeight();
+    const double maxWeight = allMeas.at(0)->getWeight();
     for (unsigned int i = 0; i < allMeas.size(); i++)
       if (allMeas.at(i)->getWeight() > maxWeight)
         imop = i;
@@ -238,9 +238,6 @@ namespace genfit {
     
     for (unsigned int imeas = 0; imeas < allMeas.size(); imeas++)
       delete allMeas[imeas];
-    allMeas.clear();
-    
-
   }
   
   void GblFitterInfo::updateFitResults(gbl::GblTrajectory& traj) {  
@@ -251,7 +248,7 @@ namespace genfit {
     //----------------------------------------------
     unsigned int label = 0;
     // Loop over track and find index of this fitter info
-    genfit::Track* trk = trackPoint_->getTrack();
+    const genfit::Track* trk = trackPoint_->getTrack();
     for (unsigned int ip = 0; ip < trk->getNumPoints(); ip++) {
       // Indexing of GblFitter info in track (each gives one point to trajectory at trackpoint position)
       if (dynamic_cast<GblFitterInfo*>( trk->getPoint(ip)->getFitterInfo(rep_) )) {
