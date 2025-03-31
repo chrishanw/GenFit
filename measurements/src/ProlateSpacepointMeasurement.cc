@@ -63,7 +63,7 @@ SharedPlanePtr ProlateSpacepointMeasurement::constructPlane(const StateOnPlane& 
   }
 
   // construct orthogonal vector
-  ROOT::Math::XYZVector U = largestErrorDirection_.Cross(dirInPoca);
+  const ROOT::Math::XYZVector& U = largestErrorDirection_.Cross(dirInPoca);
 
   return SharedPlanePtr(new DetPlane(wire1, U, largestErrorDirection_));
 }

@@ -110,9 +110,7 @@ std::vector<MeasurementOnPlane*> SpacepointMeasurement::constructMeasurementsOnP
     V.SimilarityT(jac);
   }
 
-  std::vector<MeasurementOnPlane*> retVal;
-  retVal.push_back(mop);
-  return retVal;
+  return std::vector<MeasurementOnPlane*>({mop});
 }
 
 

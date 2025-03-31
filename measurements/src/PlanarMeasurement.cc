@@ -57,9 +57,7 @@ std::vector<MeasurementOnPlane*> PlanarMeasurement::constructMeasurementsOnPlane
        rawHitCov_,
        state.getPlane(), state.getRep(), constructHMatrix(state.getRep()));
 
-  std::vector<MeasurementOnPlane*> retVal;
-  retVal.push_back(mop);
-  return retVal;
+  return std::vector<MeasurementOnPlane*>({mop});
 }
 
 

@@ -49,8 +49,8 @@ SharedPlanePtr WirePointMeasurement::constructPlane(const StateOnPlane& state) c
   // copy state. Neglect covariance.
   StateOnPlane st(state);
 
-  ROOT::Math::XYZVector wire1(rawHitCoords_(0), rawHitCoords_(1), rawHitCoords_(2));
-  ROOT::Math::XYZVector wire2(rawHitCoords_(3), rawHitCoords_(4), rawHitCoords_(5));
+  const ROOT::Math::XYZVector wire1(rawHitCoords_(0), rawHitCoords_(1), rawHitCoords_(2));
+  const ROOT::Math::XYZVector wire2(rawHitCoords_(3), rawHitCoords_(4), rawHitCoords_(5));
 
   // unit vector along the wire (V)
   ROOT::Math::XYZVector wireDirection = wire2 - wire1;
@@ -71,7 +71,7 @@ SharedPlanePtr WirePointMeasurement::constructPlane(const StateOnPlane& state) c
   }
 
   // construct orthogonal vector
-  ROOT::Math::XYZVector U = dirInPoca.Cross(wireDirection);
+  const ROOT::Math::XYZVector& U = dirInPoca.Cross(wireDirection);
   // U.SetMag(1.); automatically assured
 
   return SharedPlanePtr(new DetPlane(wire1, U, wireDirection));
@@ -106,15 +106,12 @@ std::vector<MeasurementOnPlane*> WirePointMeasurement::constructMeasurementsOnPl
     mopR->setWeight(1);
   }
   else {
-    double val = 0.5 * pow(std::max(0., 1 - rawHitCoords_(6)/maxDistance_), 2.);
+    const double val = 0.5 * pow(std::max(0., 1 - rawHitCoords_(6)/maxDistance_), 2.);
     mopL->setWeight(val);
     mopR->setWeight(val);
   }
 
-  std::vector<MeasurementOnPlane*> retVal;
-  retVal.push_back(mopL);
-  retVal.push_back(mopR);
-  return retVal;
+  return std::vector<MeasurementOnPlane*>({mopL, mopR});
 }
 
 const AbsHMatrix* WirePointMeasurement::constructHMatrix(const AbsTrackRep* rep) const {
