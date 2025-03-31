@@ -268,7 +268,10 @@ double RKTrackRep::extrapToPoint(StateOnPlane& state,
       exc.setFatal();
       throw exc;
     }
-    dir = TMatrix(*G) * dir;
+    // Temporary helpers until TVectorD and TMatrix have been replaced
+    TVectorD tmpDir(dir.X(), dir.Y(), dir.Z());
+    tmpDir = TMatrixD(*G) * tmpDir;
+    dir = ROOT::Math::XYZVector(tmpDir[0], tmpDir[1], tmpDir[2]);
   }
   ROOT::Math::XYZVector lastDir(0,0,0);
 
@@ -297,7 +300,10 @@ double RKTrackRep::extrapToPoint(StateOnPlane& state,
 
     dir.SetXYZ(state7[3], state7[4], state7[5]);
     if (G != nullptr) {
-      dir = TMatrix(*G) * dir;
+      // Temporary helpers until TVectorD and TMatrix have been replaced
+      TVectorD tmpDir(dir.X(), dir.Y(), dir.Z());
+      tmpDir = TMatrixD(*G) * tmpDir;
+      dir = ROOT::Math::XYZVector(tmpDir[0], tmpDir[1], tmpDir[2]);
     }
     poca.SetXYZ(state7[0], state7[1], state7[2]);
 
