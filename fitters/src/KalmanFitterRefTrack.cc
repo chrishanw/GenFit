@@ -48,7 +48,7 @@ TrackPoint* KalmanFitterRefTrack::fitTrack(Track* tr, const AbsTrackRep* rep, do
 
   chi2 = 0;
   ndf = -1. * dim;
-  KalmanFitterInfo* prevFi(nullptr);
+  const KalmanFitterInfo* prevFi(nullptr);
 
   TrackPoint* retVal(nullptr);
 
@@ -211,8 +211,8 @@ void KalmanFitterRefTrack::processTrackWithRep(Track* tr, const AbsTrackRep* rep
       ++nIt;
 
 
-      double PvalBW = std::max(0.,ROOT::Math::chisquared_cdf_c(chi2BW, ndfBW));
-      double PvalFW = (debugLvl_ > 0) ? std::max(0.,ROOT::Math::chisquared_cdf_c(chi2FW, ndfFW)) : 0; // Don't calculate if not debugging as this function potentially takes a lot of time.
+      const double PvalBW = std::max(0.,ROOT::Math::chisquared_cdf_c(chi2BW, ndfBW));
+      const double PvalFW = (debugLvl_ > 0) ? std::max(0.,ROOT::Math::chisquared_cdf_c(chi2FW, ndfFW)) : 0; // Don't calculate if not debugging as this function potentially takes a lot of time.
 
       if (debugLvl_ > 0) {
         debugOut << "KalmanFitterRefTrack::Track after fit:"; tr->Print("C");
@@ -701,7 +701,7 @@ bool KalmanFitterRefTrack::prepareTrack(Track* tr, const AbsTrackRep* rep, bool 
 
 
       // get MeasurementsOnPlane
-      std::vector<double> oldWeights = fitterInfo->getWeights();
+      const std::vector<double>& oldWeights = fitterInfo->getWeights();
       bool oldWeightsFixed = fitterInfo->areWeightsFixed();
       fitterInfo->deleteMeasurementInfo();
       const std::vector<AbsMeasurement*>& rawMeasurements = trackPoint->getRawMeasurements();
@@ -817,7 +817,7 @@ KalmanFitterRefTrack::removeOutdated(Track* tr, const AbsTrackRep* rep, int& not
   // loop over TrackPoints
   for (unsigned int i=0; i<nPoints; ++i) {
 
-    TrackPoint* trackPoint = tr->getPoint(i);
+    const TrackPoint* trackPoint = tr->getPoint(i);
 
     // check if we have a measurement
     if (!trackPoint->hasRawMeasurements()) {
@@ -898,7 +898,7 @@ KalmanFitterRefTrack::removeOutdated(Track* tr, const AbsTrackRep* rep, int& not
 void
 KalmanFitterRefTrack::removeForwardBackwardInfo(Track* tr, const AbsTrackRep* rep, int notChangedUntil, int notChangedFrom) const {
 
-  unsigned int nPoints = tr->getNumPoints();
+  const unsigned int nPoints = tr->getNumPoints();
 
   if (refitAll_) {
     tr->deleteForwardInfo(0, -1, rep);
@@ -928,7 +928,7 @@ KalmanFitterRefTrack::processTrackPoint(KalmanFitterInfo* fi, const KalmanFitter
     debugOut << " KalmanFitterRefTrack::processTrackPoint " << fi->getTrackPoint() << "\n";
   }
 
-  unsigned int dim = fi->getRep()->getDim();
+  const unsigned int dim = fi->getRep()->getDim();
 
   p_.Zero(); // p_{k|k-1}
   C_.Zero(); // C_{k|k-1}
@@ -996,7 +996,7 @@ KalmanFitterRefTrack::processTrackPoint(KalmanFitterInfo* fi, const KalmanFitter
   // update(s)
   double chi2inc = 0;
   double ndfInc = 0;
-  const std::vector<MeasurementOnPlane *> measurements = getMeasurements(fi, tp, direction);
+  const std::vector<MeasurementOnPlane *>& measurements = getMeasurements(fi, tp, direction);
   for (std::vector<MeasurementOnPlane *>::const_iterator it = measurements.begin(); it != measurements.end(); ++it) {
     const MeasurementOnPlane& m = **it;
 
@@ -1131,7 +1131,7 @@ KalmanFitterRefTrack::processTrackPointSqrt(KalmanFitterInfo* fi, const KalmanFi
     debugOut << " KalmanFitterRefTrack::processTrackPointSqrt " << fi->getTrackPoint() << "\n";
   }
 
-  unsigned int dim = fi->getRep()->getDim();
+  const unsigned int dim = fi->getRep()->getDim();
 
   p_.Zero(); // p_{k|k-1}
   C_.Zero(); // C_{k|k-1}
@@ -1212,7 +1212,7 @@ KalmanFitterRefTrack::processTrackPointSqrt(KalmanFitterInfo* fi, const KalmanFi
   double chi2inc = 0;
   double ndfInc = 0;
 
-  const std::vector<MeasurementOnPlane *> measurements = getMeasurements(fi, tp, direction);
+  const std::vector<MeasurementOnPlane *>& measurements = getMeasurements(fi, tp, direction);
   for (std::vector<MeasurementOnPlane *>::const_iterator it = measurements.begin(); it != measurements.end(); ++it) {
     const MeasurementOnPlane& m = **it;
 

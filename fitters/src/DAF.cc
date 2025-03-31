@@ -308,11 +308,11 @@ bool DAF::calcWeights(Track* tr, const AbsTrackRep* rep, double beta) {
           debugOut<<"chi2 = " << chi2 << "\n";
         }
 
-	// The common factor beta is eliminated.
+	      // The common factor beta is eliminated.
         double norm = 1./sqrt(twoPiN * detV);
 
         phi[j] = norm*exp(-0.5*chi2/beta);
-	phi_sum += phi[j];
+	      phi_sum += phi[j];
         //errorOut << "hitDim " << hitDim << " fchi2Cuts[hitDim] " << fchi2Cuts[hitDim] << std::endl;
         double cutVal = chi2Cuts_[hitDim];
         assert(cutVal>1.E-6);
@@ -326,11 +326,11 @@ bool DAF::calcWeights(Track* tr, const AbsTrackRep* rep, double beta) {
     }
 
     for(unsigned int j=0; j<nMeas; j++) {
-      double weight = phi[j]/(phi_sum+phi_cut);
+      const double weight = phi[j]/(phi_sum+phi_cut);
       //debugOut << phi_sum << " " << phi_cut << " " << weight << std::endl;
 
       // check convergence
-      double absChange(fabs(weight - kfi->getMeasurementOnPlane(j)->getWeight()));
+      const double absChange(fabs(weight - kfi->getMeasurementOnPlane(j)->getWeight()));
       if (converged && absChange > deltaWeight_) {
         converged = false;
         if (absChange > maxAbsChange)

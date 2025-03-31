@@ -52,14 +52,14 @@ void AbsKalmanFitter::getChiSquNdf(const Track* tr, const AbsTrackRep* rep,
       continue;
 
     AbsFitterInfo* afi = (*tpIter)->getFitterInfo(rep);
-    KalmanFitterInfo* fi = dynamic_cast<KalmanFitterInfo*>(afi);
+    const KalmanFitterInfo* fi = dynamic_cast<KalmanFitterInfo*>(afi);
     if (!fi) {
       Exception exc("AbsKalmanFitter::getChiSqu(): fitterInfo is not a KalmanFitterInfo", __LINE__,__FILE__);
       throw exc;
     }
 
-    KalmanFittedStateOnPlane* fup = fi->getForwardUpdate();
-    KalmanFittedStateOnPlane* bup = fi->getBackwardUpdate();
+    const KalmanFittedStateOnPlane* fup = fi->getForwardUpdate();
+    const KalmanFittedStateOnPlane* bup = fi->getBackwardUpdate();
 
     if (fup == nullptr || bup == nullptr) {
       Exception exc("AbsKalmanFitter::getChiSqu(): fup == nullptr || bup == nullptr", __LINE__,__FILE__);
@@ -129,7 +129,7 @@ bool AbsKalmanFitter::isTrackPrepared(const Track* tr, const AbsTrackRep* rep) c
     return true;
 
   for (std::vector<TrackPoint*>::const_iterator pIt = points.begin(), pEnd = points.end(); pIt != pEnd; ++pIt) {
-    KalmanFitterInfo* fi = dynamic_cast<KalmanFitterInfo*>((*pIt)->getFitterInfo(rep));
+    const KalmanFitterInfo* fi = dynamic_cast<KalmanFitterInfo*>((*pIt)->getFitterInfo(rep));
 
     if (!fi)
       continue;

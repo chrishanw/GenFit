@@ -83,7 +83,7 @@ MeasurementOnPlane KalmanFitterInfo::getAvgWeightedMeasurementOnPlane(bool ignor
       retVal.setWeight(1.);
     }
     else {
-      double weight = (measurementsOnPlane_[0])->getWeight();
+      const double weight = (measurementsOnPlane_[0])->getWeight();
       if (weight != 1.) {
         retVal.getCov() *= 1. / weight;
       }
@@ -153,8 +153,8 @@ MeasurementOnPlane* KalmanFitterInfo::getClosestMeasurementOnPlane(const StateOn
       throw e;
     }
 
-    TVectorD res = measurementsOnPlane_[i]->getState() - H->Hv(sop->getState());
-    double norm = sqrt(res.Norm2Sqr());
+    const TVectorD& res = measurementsOnPlane_[i]->getState() - H->Hv(sop->getState());
+    const double norm = sqrt(res.Norm2Sqr());
     if (norm < normMin) {
       normMin = norm;
       iMin = i;

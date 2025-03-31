@@ -121,7 +121,7 @@ void KalmanFitter::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool)
   if (trackPoint->hasFitterInfo(rep) &&
       dynamic_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(rep)) != nullptr &&
       static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(rep))->hasUpdate(-1)) {
-    MeasuredStateOnPlane* update = static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(rep))->getUpdate(-1);
+    const MeasuredStateOnPlane* update = static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(rep))->getUpdate(-1);
     currentState_.reset(new MeasuredStateOnPlane(*update));
     if (debugLvl_ > 0)
       debugOut << "take backward update of previous iteration as seed \n";
@@ -211,8 +211,8 @@ void KalmanFitter::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool)
       }
       ++nIt;
 
-      double PvalBW = std::max(0.,ROOT::Math::chisquared_cdf_c(chi2BW, ndfBW));
-      double PvalFW = (debugLvl_ > 0) ? std::max(0.,ROOT::Math::chisquared_cdf_c(chi2FW, ndfFW)) : 0; // Don't calculate if not debugging as this function potentially takes a lot of time.
+      const double PvalBW = std::max(0.,ROOT::Math::chisquared_cdf_c(chi2BW, ndfBW));
+      const double PvalFW = (debugLvl_ > 0) ? std::max(0.,ROOT::Math::chisquared_cdf_c(chi2FW, ndfFW)) : 0; // Don't calculate if not debugging as this function potentially takes a lot of time.
       // See if p-value only changed little.  If the initial
       // parameters are very far off, initial chi^2 and the chi^2
       // after the first iteration will be both very close to zero, so
@@ -317,7 +317,7 @@ KalmanFitter::processTrackPartially(Track* tr, const AbsTrackRep* rep, int start
     direction = -1;
 
 
-  TrackPoint* trackPoint = tr->getPointWithMeasurement(startId);
+  const TrackPoint* trackPoint = tr->getPointWithMeasurement(startId);
   TrackPoint* prevTrackPoint(nullptr);
 
 
@@ -386,7 +386,7 @@ KalmanFitter::processTrackPoint(TrackPoint* tp,
   if (!tp->hasRawMeasurements())
     return;
 
-  bool newFi(!tp->hasFitterInfo(rep));
+  const bool newFi(!tp->hasFitterInfo(rep));
 
   KalmanFitterInfo* fi;
   if (newFi) {
@@ -423,7 +423,7 @@ KalmanFitter::processTrackPoint(TrackPoint* tp,
     debugOut << "extrapolated by " << extLen << std::endl;
   }
   fi->setPrediction(currentState_->clone(), direction);
-  MeasuredStateOnPlane *state = fi->getPrediction(direction);
+  const MeasuredStateOnPlane *state = fi->getPrediction(direction);
 
   // construct new MeasurementsOnPlane
   if (newFi) {
@@ -506,8 +506,8 @@ KalmanFitter::processTrackPoint(TrackPoint* tp,
         covSumInv += V;
         tools::invertMatrix(covSumInv);
 
-        TMatrixD CHt(H->MHt(cov));
-        TVectorD update(TMatrixD(CHt, TMatrixD::kMult, covSumInv) * res);
+        const TMatrixD& CHt(H->MHt(cov));
+        const TVectorD& update(TMatrixD(CHt, TMatrixD::kMult, covSumInv) * res);
         //TMatrixD(CHt, TMatrixD::kMult, covSumInv).Print();
 
         if (debugLvl_ > 1) {
