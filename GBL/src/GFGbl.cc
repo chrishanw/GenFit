@@ -367,8 +367,10 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
   #endif
   // List of prepared GBL points for GBL trajectory construction
   std::vector<GblPoint> listOfPoints;
+  listOfPoints.reserve(npoints_meas);
   
   std::vector<double> listOfLayers;
+  listOfLayers.reserve(npoints_meas);
   //TODO: Add internal/external seed (from CDC) option in the future
   // index of point with seed information (0 for none)
   unsigned int seedLabel = 0;
@@ -555,6 +557,7 @@ void GFGbl::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool /*resor
         
       // labels for global derivatives
       std::vector<int> labGlobal;
+      labGlobal.reserve(12);
 
       // sensor u direction in global coords
       const ROOT::Math::XYZVector& uDir = plane->getU();

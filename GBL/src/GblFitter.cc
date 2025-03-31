@@ -151,8 +151,7 @@ void GblFitter::processTrackWithRep(Track* trk, const AbsTrackRep* rep, bool res
   unsigned int nFailed = 0;
   // cppcheck-suppress unreadVariable
   int fitRes = 0;
-  std::vector<std::string> gblIterations;
-  gblIterations.push_back(m_gblInternalIterations);
+  const std::vector<std::string> gblIterations({m_gblInternalIterations});
 
   // Iterations and updates of fitter infos and fit status
   // ------------------------------------------------------------------- 

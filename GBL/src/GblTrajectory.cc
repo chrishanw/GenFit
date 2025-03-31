@@ -804,7 +804,9 @@ void GblTrajectory::prepare() {
 	scatDataIndex.resize(numAllPoints + 1);
 	unsigned int nData = 0;
 	std::vector<TMatrixD> innerTransDer;
+	innerTransDer.reserve(numTrajectories);
 	std::vector<std::vector<unsigned int> > innerTransLab;
+	innerTransLab.reserve(numTrajectories);
 	// composed trajectory ?
 	if (numInnerTrans > 0) {
 		//std::cout << "composed trajectory" << std::endl;
@@ -841,7 +843,7 @@ void GblTrajectory::prepare() {
 			unsigned int measDim = itPoint->hasMeasurement();
 			if (measDim) {
 				const TMatrixD localDer = itPoint->getLocalDerivatives();
-				const std::vector<int> globalLab = itPoint->getGlobalLabels();
+				const std::vector<int>& globalLab = itPoint->getGlobalLabels();
 				const TMatrixD globalDer = itPoint->getGlobalDerivatives();
 				TMatrixD transDer;
 				itPoint->getMeasurement(matP, aMeas, aPrec);
@@ -967,7 +969,7 @@ void GblTrajectory::prepare() {
 	if (externalPoint > 0) {
 		std::pair<std::vector<unsigned int>, TMatrixD> indexAndJacobian =
 				getJacobian(externalPoint);
-		std::vector<unsigned int> externalSeedIndex = indexAndJacobian.first;
+		const std::vector<unsigned int>& externalSeedIndex = indexAndJacobian.first;
 		std::vector<double> externalSeedDerivatives(externalSeedIndex.size());
 		const TMatrixDSymEigen externalSeedEigen(externalSeed);
 		const TVectorD& valEigen = externalSeedEigen.GetEigenValues();
