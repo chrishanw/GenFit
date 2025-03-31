@@ -1092,6 +1092,7 @@ void EventDisplay::makeLines(const StateOnPlane* prevState, const StateOnPlane* 
 
       const int nEdges = 24;
       std::vector<ROOT::Math::XYZVector> vertices;
+      vertices.reserve(2 * nEdges + 2);
 
       vertices.push_back(position);
 
