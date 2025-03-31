@@ -27,8 +27,6 @@
 #include "MeasurementOnPlane.h"
 #include "FitStatus.h"
 
-#include <TVectorD.h>
-
 
 namespace genfit {
 

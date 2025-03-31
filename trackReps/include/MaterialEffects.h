@@ -30,8 +30,6 @@
 #include <iostream>
 #include <vector>
 
-#include <Math/Vector3D.h>
-
 
 namespace genfit {
 

@@ -137,7 +137,7 @@ measurement_T* MeasurementFactory<measurement_T>::createOne(int detID, int index
 template <class measurement_T>
 typename std::vector<measurement_T*> MeasurementFactory<measurement_T>::createMany(const TrackCand& cand) const {
   typename std::vector<measurement_T*> hitVec;
-  unsigned int nHits=cand.getNHits();
+  const unsigned int nHits=cand.getNHits();
   for(unsigned int i=0;i<nHits;i++) {
     int detID, index;
     const TrackCandHit* hit = cand.getHit(i);
