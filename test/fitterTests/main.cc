@@ -203,6 +203,7 @@ int main() {
   const bool onlyDisplayFailed = false; // only load non-converged tracks into the display
 
   std::vector<genfit::eMeasurementType> measurementTypes;
+  measurementTypes.reserve(nMeasurements);
   for (unsigned int i = 0; i<nMeasurements; ++i) {
     measurementTypes.push_back(genfit::eMeasurementType(i%8));
   }
@@ -399,11 +400,14 @@ int main() {
 
       // create smeared measurements
       std::vector< std::vector<genfit::AbsMeasurement*> > measurements;
+      measurements.reserve(measurementTypes.size());
 
       std::vector<bool> outlierTrue;
+      outlierTrue.reserve(measurementTypes.size());
       bool outlier;
       // true values for left right. 0 for non wire measurements
       std::vector<int> leftRightTrue;
+      leftRightTrue.reserve(measurementTypes.size());
       int lr;
 
       double trueLen(-1);
@@ -651,7 +655,7 @@ int main() {
             continue;
 
           if (debug) {
-            std::vector<double> dafWeights = dynamic_cast<genfit::KalmanFitterInfo*>(fitTrack->getPointWithMeasurement(i)->getFitterInfo(rep))->getWeights();
+            const std::vector<double>& dafWeights = dynamic_cast<genfit::KalmanFitterInfo*>(fitTrack->getPointWithMeasurement(i)->getFitterInfo(rep))->getWeights();
             std::cout << "hit " << i;
             if (outlierTrue[i]) std::cout << " is an OUTLIER";
             std::cout << " weights: ";
@@ -664,7 +668,7 @@ int main() {
           int trueSide = leftRightTrue[i];
           if (trueSide == 0) continue; // not a wire measurement
           if (outlierTrue[i]) continue; // an outlier
-          std::vector<double> dafWeightLR = dynamic_cast<genfit::KalmanFitterInfo*>(fitTrack->getPointWithMeasurement(i)->getFitterInfo(rep))->getWeights();
+          const std::vector<double>& dafWeightLR = dynamic_cast<genfit::KalmanFitterInfo*>(fitTrack->getPointWithMeasurement(i)->getFitterInfo(rep))->getWeights();
           if(dafWeightLR.size() != 2)
             continue;
 
@@ -690,7 +694,7 @@ int main() {
           if (! fitTrack->getPointWithMeasurement(i)->hasFitterInfo(rep))
             continue;
 
-          std::vector<double> dafWeights = dynamic_cast<genfit::KalmanFitterInfo*>(fitTrack->getPointWithMeasurement(i)->getFitterInfo(rep))->getWeights();
+          const std::vector<double>& dafWeights = dynamic_cast<genfit::KalmanFitterInfo*>(fitTrack->getPointWithMeasurement(i)->getFitterInfo(rep))->getWeights();
 
           if (outlierTrue[i]) { // an outlier
             for (unsigned int j=0; j<dafWeights.size(); ++j){

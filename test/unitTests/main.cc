@@ -1103,7 +1103,8 @@ int main() {
 
   const unsigned int nTests(1000);
 
-  std::vector<TestCase> testCases;
+  std::vector<TestCase> testCases();
+  testCases.reserve(10);
   testCases.push_back(TestCase(std::string("checkSetGetPosMom()            "), &checkSetGetPosMom));
   testCases.push_back(TestCase(std::string("compareForthBackExtrapolation()"), &compareForthBackExtrapolation));
   testCases.push_back(TestCase(std::string("checkStopAtBoundary()          "), &checkStopAtBoundary));
