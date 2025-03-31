@@ -25,6 +25,7 @@
 #include <cmath>
 #include <TMath.h>
 #include <TClass.h>
+#include <TVector3.h>
 
 namespace genfit {
 
@@ -317,8 +318,15 @@ void DetPlane::straightLineToPlane(const double& posX, const double& posY, const
 
 void DetPlane::rotate(double angle) {
   const ROOT::Math::XYZVector& normal = getNormal();
-  u_.Rotate(angle, normal);
-  v_.Rotate(angle, normal);
+
+  // Hack my way around the limitations of the GenVector classes and use TVector3 instead :(
+  TVector3 tmpu(u_.X(), u_.Y(), u_.Z());
+  tmpu.Rotate(angle, TVector3(normal.X(), normal.Y(), normal.Z()));
+  u_ = ROOT::Math::XYZVector(tmpu);
+
+  TVector3 tmpv(v_.X(), v_.Y(), v_.Z());
+  tmpv.Rotate(angle, TVector3(normal.X(), normal.Y(), normal.Z()));
+  v_ = ROOT::Math::XYZVector(tmpv);
 
   sane();
 }

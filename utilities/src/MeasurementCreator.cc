@@ -30,6 +30,7 @@
 
 #include <TRandom.h>
 #include <TMath.h>
+#include <TVector3.h>
 
 #include <assert.h>
 #include <math.h>
@@ -86,9 +87,19 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     if (useSkew_ && (int)((double)wireCounter_/(double)nSuperLayer_)%2 == 1) {
       ROOT::Math::XYZVector perp(wireDir_.Cross(dir));
       if ((int)((double)wireCounter_/(double)nSuperLayer_)%4 == 1){
-        currentWireDir.Rotate(skewAngle_*TMath::Pi()/180, wireDir_.Cross(perp));
+        // Hack my way around the limitations of the GenVector classes and use TVector3 instead :(
+        TVector3 tmpWireDir(currentWireDir.X(), currentWireDir.Y(), currentWireDir.Z());
+        const auto tmp = wireDir_.Cross(perp);
+        tmpWireDir.Rotate(skewAngle_*TMath::Pi()/180, TVector3(tmp.X(), tmp.Y(), tmp.Z()));
+        currentWireDir = ROOT::Math::XYZVector(tmpWireDir);
       }
-      else currentWireDir.Rotate(-skewAngle_*TMath::Pi()/180, wireDir_.Cross(perp));
+      else {
+        // Hack my way around the limitations of the GenVector classes and use TVector3 instead :(
+        TVector3 tmpWireDir(currentWireDir.X(), currentWireDir.Y(), currentWireDir.Z());
+        const auto tmp = wireDir_.Cross(perp);
+        tmpWireDir.Rotate(-skewAngle_*TMath::Pi()/180, TVector3(tmp.X(), tmp.Y(), tmp.Z()));
+        currentWireDir = ROOT::Math::XYZVector(tmpWireDir);
+      }
     }
     currentWireDir *= 1. / currentWireDir.R();
 
