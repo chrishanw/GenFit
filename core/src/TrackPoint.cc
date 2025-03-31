@@ -157,6 +157,7 @@ std::vector< AbsFitterInfo* > TrackPoint::getFitterInfos() const {
   if (fitterInfos_.empty())
     return retVal;
 
+  retVal.reserve(fitterInfos_.size());
   for (std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = fitterInfos_.begin(); it != fitterInfos_.end();  ++it ) {
     retVal.push_back(it->second);
   }

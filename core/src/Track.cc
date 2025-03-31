@@ -74,7 +74,7 @@ void
 Track::createMeasurements(const TrackCand& trackCand, const MeasurementFactory<AbsMeasurement>& factory)
 {
   // create the measurements using the factory.
-  std::vector <AbsMeasurement*> factoryHits = factory.createMany(trackCand);
+  const std::vector <AbsMeasurement*>& factoryHits = factory.createMany(trackCand);
 
   if (factoryHits.size() != trackCand.getNHits()) {
     Exception exc("Track::Track ==> factoryHits.size() != trackCand->getNHits()",__LINE__,__FILE__);
@@ -530,6 +530,7 @@ void Track::mergeTrack(const Track* other, int id) {
 
   std::map<const AbsTrackRep*, AbsTrackRep*> otherRepThisRep;
   std::vector<const AbsTrackRep*> otherRepsToRemove;
+  otherRepsToRemove.reserve(other->trackReps_.size());
 
   for (std::vector<AbsTrackRep*>::const_iterator otherRep=other->trackReps_.begin(); otherRep!=other->trackReps_.end(); ++otherRep) {
     bool found(false);
@@ -647,7 +648,7 @@ bool Track::sort() {
 
   int nPoints(trackPoints_.size());
   // original order
-  std::vector<TrackPoint*> pointsBefore(trackPoints_);
+  const std::vector<TrackPoint*> pointsBefore(trackPoints_);
 
   // sort
   std::stable_sort(trackPoints_.begin(), trackPoints_.end(), TrackPointComparator());
@@ -765,7 +766,7 @@ void Track::deleteForwardInfo(int startId, int endId, const AbsTrackRep* rep) {
         (*pointIt)->getFitterInfo(rep)->deleteForwardInfo();
     }
     else {
-      const std::vector<AbsFitterInfo*> fitterInfos = (*pointIt)->getFitterInfos();
+      const std::vector<AbsFitterInfo*>& fitterInfos = (*pointIt)->getFitterInfos();
       for (std::vector<AbsFitterInfo*>::const_iterator fitterInfoIt = fitterInfos.begin(); fitterInfoIt != fitterInfos.end(); ++fitterInfoIt) {
         (*fitterInfoIt)->deleteForwardInfo();
       }
@@ -796,7 +797,7 @@ void Track::deleteBackwardInfo(int startId, int endId, const AbsTrackRep* rep) {
         (*pointIt)->getFitterInfo(rep)->deleteBackwardInfo();
     }
     else {
-      const std::vector<AbsFitterInfo*> fitterInfos = (*pointIt)->getFitterInfos();
+      const std::vector<AbsFitterInfo*>& fitterInfos = (*pointIt)->getFitterInfos();
       for (std::vector<AbsFitterInfo*>::const_iterator fitterInfoIt = fitterInfos.begin(); fitterInfoIt != fitterInfos.end(); ++fitterInfoIt) {
         (*fitterInfoIt)->deleteBackwardInfo();
       }
@@ -826,7 +827,7 @@ void Track::deleteReferenceInfo(int startId, int endId, const AbsTrackRep* rep) 
         (*pointIt)->getFitterInfo(rep)->deleteReferenceInfo();
     }
     else {
-      std::vector<AbsFitterInfo*> fitterInfos = (*pointIt)->getFitterInfos();
+      const std::vector<AbsFitterInfo*>& fitterInfos = (*pointIt)->getFitterInfos();
       for (std::vector<AbsFitterInfo*>::const_iterator fitterInfoIt = fitterInfos.begin(); fitterInfoIt != fitterInfos.end(); ++fitterInfoIt) {
         (*fitterInfoIt)->deleteReferenceInfo();
       }
@@ -856,7 +857,7 @@ void Track::deleteMeasurementInfo(int startId, int endId, const AbsTrackRep* rep
         (*pointIt)->getFitterInfo(rep)->deleteMeasurementInfo();
     }
     else {
-      std::vector<AbsFitterInfo*> fitterInfos = (*pointIt)->getFitterInfos();
+      const std::vector<AbsFitterInfo*>& fitterInfos = (*pointIt)->getFitterInfos();
       for (std::vector<AbsFitterInfo*>::const_iterator fitterInfoIt = fitterInfos.begin(); fitterInfoIt != fitterInfos.end(); ++fitterInfoIt) {
         (*fitterInfoIt)->deleteMeasurementInfo();
       }
@@ -1379,7 +1380,7 @@ void Track::checkConsistency() const {
     }
 
     // check fitterInfos
-    std::vector<AbsFitterInfo*> fitterInfos = (*tp)->getFitterInfos();
+    const std::vector<AbsFitterInfo*>& fitterInfos = (*tp)->getFitterInfos();
     for (std::vector<AbsFitterInfo*>::const_iterator fi = fitterInfos.begin(); fi != fitterInfos.end(); ++fi) {
       // check for nullptr
       if ((*fi) == nullptr) {
@@ -1434,6 +1435,7 @@ void Track::checkConsistency() const {
 
   // check trackPointsWithMeasurement_
   std::vector<TrackPoint*> trackPointsWithMeasurement;
+  trackPointsWithMeasurement.reserve(trackPoints_.size());
 
   for (std::vector<TrackPoint*>::const_iterator it = trackPoints_.begin(); it != trackPoints_.end(); ++it) {
     if ((*it)->hasRawMeasurements()) {

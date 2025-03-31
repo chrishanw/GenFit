@@ -128,6 +128,7 @@ void TrackCand::addHit(int detId, int hitId, int planeId, double sortingParamete
 
 std::vector<int> TrackCand::getHitIDs(int detId) const {
   std::vector<int> result;
+  result.reserve(hits_.size());
   for(unsigned int i=0; i<hits_.size(); ++i){
     if(detId==-2 || hits_[i]->getDetId() == detId) {
       result.push_back(hits_[i]->getHitId());
@@ -138,6 +139,7 @@ std::vector<int> TrackCand::getHitIDs(int detId) const {
 
 std::vector<int> TrackCand::getDetIDs() const {
   std::vector<int> result;
+  result.reserve(hits_.size());
   for(unsigned int i=0; i<hits_.size(); ++i){
     result.push_back(hits_[i]->getDetId());
   }
@@ -146,6 +148,7 @@ std::vector<int> TrackCand::getDetIDs() const {
 
 std::vector<double> TrackCand::getSortingParameters() const {
   std::vector<double> result;
+  result.reserve(hits_.size());
   for(unsigned int i=0; i<hits_.size(); ++i){
     result.push_back(hits_[i]->getSortingParameter());
   }
