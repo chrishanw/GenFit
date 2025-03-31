@@ -47,7 +47,7 @@ void MeasuredStateOnPlane::Print(Option_t*) const {
 
 void MeasuredStateOnPlane::blowUpCov(double blowUpFac, bool resetOffDiagonals, double maxVal) {
 
-  unsigned int dim = cov_.GetNcols();
+  const unsigned int dim = cov_.GetNcols();
 
   if (resetOffDiagonals) {
     for (unsigned int i=0; i<dim; ++i) {

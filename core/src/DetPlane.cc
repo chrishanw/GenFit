@@ -279,13 +279,13 @@ double DetPlane::distance(double x, double y, double z) const {
 
 
 ROOT::Math::XYVector DetPlane::straightLineToPlane (const ROOT::Math::XYZVector& point, const ROOT::Math::XYZVector& dir) const {
-  ROOT::Math::XYZVector dirNorm(dir.Unit());
-  ROOT::Math::XYZVector normal = getNormal();
-  double dirTimesN = dirNorm.Dot(normal);
+  const ROOT::Math::XYZVector& dirNorm(dir.Unit());
+  const ROOT::Math::XYZVector& normal = getNormal();
+  const double dirTimesN = dirNorm.Dot(normal);
   if(fabs(dirTimesN)<1.E-6){//straight line is parallel to plane, so return infinity
     return ROOT::Math::XYVector(1.E100,1.E100);
   }
-  double t = 1./dirTimesN * ((o_-point).Dot(normal));
+  const double t = 1./dirTimesN * ((o_-point).Dot(normal));
   return project(point - o_ + t * dirNorm);
 }
 
@@ -295,20 +295,20 @@ void DetPlane::straightLineToPlane(const double& posX, const double& posY, const
                                    const double& dirX, const double& dirY, const double& dirZ,
                                    double& u, double& v) const {
 
-  ROOT::Math::XYZVector W = getNormal();
-  double dirTimesN = dirX*W.X() + dirY*W.Y() + dirZ*W.Z();
+  const ROOT::Math::XYZVector& W = getNormal();
+  const double dirTimesN = dirX*W.X() + dirY*W.Y() + dirZ*W.Z();
   if(fabs(dirTimesN)<1.E-6){//straight line is parallel to plane, so return infinity
     u = 1.E100;
     v = 1.E100;
     return;
   }
-  double t = 1./dirTimesN * ((o_.X()-posX)*W.X() +
+  const double t = 1./dirTimesN * ((o_.X()-posX)*W.X() +
                              (o_.Y()-posY)*W.Y() +
                              (o_.Z()-posZ)*W.Z());
 
-  double posOnPlaneX = posX-o_.X() + t*dirX;
-  double posOnPlaneY = posY-o_.Y() + t*dirY;
-  double posOnPlaneZ = posZ-o_.Z() + t*dirZ;
+  const double posOnPlaneX = posX-o_.X() + t*dirX;
+  const double posOnPlaneY = posY-o_.Y() + t*dirY;
+  const double posOnPlaneZ = posZ-o_.Z() + t*dirZ;
 
   u = u_.X()*posOnPlaneX + u_.Y()*posOnPlaneY + u_.Z()*posOnPlaneZ;
   v = v_.X()*posOnPlaneX + v_.Y()*posOnPlaneY + v_.Z()*posOnPlaneZ;
@@ -316,7 +316,7 @@ void DetPlane::straightLineToPlane(const double& posX, const double& posY, const
 
 
 void DetPlane::rotate(double angle) {
-  ROOT::Math::XYZVector normal = getNormal();
+  const ROOT::Math::XYZVector& normal = getNormal();
   u_.Rotate(angle, normal);
   v_.Rotate(angle, normal);
 

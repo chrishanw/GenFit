@@ -1051,8 +1051,8 @@ void Track::prune(const Option_t* option) {
 
   // prune trackPoints
   if (f.hasFlags("F") || f.hasFlags("L")) {
-    TrackPoint* firstPoint = getPointWithFitterInfo(0);
-    TrackPoint* lastPoint = getPointWithFitterInfo(-1);
+    const TrackPoint* firstPoint = getPointWithFitterInfo(0);
+    const TrackPoint* lastPoint = getPointWithFitterInfo(-1);
     for (unsigned int i = 0; i<trackPoints_.size(); ++i) {
       if (trackPoints_[i] == firstPoint && f.hasFlags("F"))
         continue;
@@ -1411,8 +1411,8 @@ void Track::checkConsistency() const {
         if (prevFis[(*fi)->getRep()] != nullptr &&
             static_cast<KalmanFitterInfo*>(*fi)->hasReferenceState() &&
             prevFis[(*fi)->getRep()]->hasReferenceState() ) {
-          double len = static_cast<KalmanFitterInfo*>(*fi)->getReferenceState()->getForwardSegmentLength();
-          double prevLen = prevFis[(*fi)->getRep()]->getReferenceState()->getBackwardSegmentLength();
+          const double len = static_cast<KalmanFitterInfo*>(*fi)->getReferenceState()->getForwardSegmentLength();
+          const double prevLen = prevFis[(*fi)->getRep()]->getReferenceState()->getBackwardSegmentLength();
           if (fabs(prevLen + len) > 1E-10 ) {
             failures << "Track::checkConsistency(): segment lengths of reference states for rep " << (*fi)->getRep() << " (id " << getIdForRep((*fi)->getRep()) << ") at TrackPoint " << (*tp) << " don't match" << std::endl;
             failures << prevLen << " + " << len << " = " << prevLen + len << std::endl;

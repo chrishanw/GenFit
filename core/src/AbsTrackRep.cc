@@ -130,7 +130,7 @@ void AbsTrackRep::calcJacobianNumerically(const genfit::StateOnPlane& origState,
   for (size_t i = 0; i < getDim(); ++i) {
     {
       genfit::StateOnPlane stateCopy(origState);
-      double temp = stateCopy.getState()(i) + defaultStepX / 2;
+      const double temp = stateCopy.getState()(i) + defaultStepX / 2;
       // Find the actual size of the step, which will differ from
       // defaultStepX due to roundoff.  This is the step-size we will
       // use for this direction.  Idea taken from Numerical Recipes,
@@ -171,8 +171,8 @@ void AbsTrackRep::calcJacobianNumerically(const genfit::StateOnPlane& origState,
     // Calculate the derivatives for the individual components of
     // the track parameters.
     for (size_t j = 0; j < getDim(); ++j) {
-      double derivFull = (rightFull(j) - leftFull(j)) / 2 / stepX;
-      double derivShort = (rightShort(j) - leftShort(j)) / stepX;
+      const double derivFull = (rightFull(j) - leftFull(j)) / 2 / stepX;
+      const double derivShort = (rightShort(j) - leftShort(j)) / stepX;
 
       jacobian(j, i) = 1./3.*(4*derivShort - derivFull);
     }
@@ -181,7 +181,7 @@ void AbsTrackRep::calcJacobianNumerically(const genfit::StateOnPlane& origState,
 
 
 bool AbsTrackRep::switchPDGSign() {
-  TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(-pdgCode_);
+  const TParticlePDG* particle = TDatabasePDG::Instance()->GetParticle(-pdgCode_);
   if(particle != nullptr) {
     pdgCode_ *= -1;
     return true;
