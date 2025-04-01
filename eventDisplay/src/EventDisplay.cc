@@ -1048,12 +1048,12 @@ void EventDisplay::makeLines(const StateOnPlane* prevState, const StateOnPlane* 
 
 
       // get cov at first plane
-      TMatrixDSym cov;
+      SMatrixSym6 cov;
       ROOT::Math::XYZVector position, direction;
       rep->getPosMomCov(*measuredState, position, direction, cov);
 
       // get eigenvalues & -vectors
-      TMatrixDSymEigen eigen_values(cov.GetSub(0,2, 0,2));
+      TMatrixDSymEigen eigen_values(TMatrixDSym(2, 2, cov.Sub<SMatrixSym2>(0, 0).Array()));
       TVectorT<double> ev = eigen_values.GetEigenValues();
       TMatrixT<double> eVec = eigen_values.GetEigenVectors();
       ROOT::Math::XYZVector eVec1, eVec2;
@@ -1120,7 +1120,7 @@ void EventDisplay::makeLines(const StateOnPlane* prevState, const StateOnPlane* 
       rep->getPosMomCov(stateCopy, position, direction, cov);
 
       // get eigenvalues & -vectors
-      TMatrixDSymEigen eigen_values2(cov.GetSub(0,2, 0,2));
+      TMatrixDSymEigen eigen_values2(TMatrixDSym(2, 2, cov.Sub<SMatrixSym2>(0, 0).Array()));
       ev = eigen_values2.GetEigenValues();
       eVec = eigen_values2.GetEigenVectors();
       // limit
