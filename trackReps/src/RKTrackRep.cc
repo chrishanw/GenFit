@@ -848,16 +848,15 @@ void RKTrackRep::getPosMom(const StateOnPlane& state, ROOT::Math::XYZVector& pos
 }
 
 
-void RKTrackRep::getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, TMatrixDSym& cov) const {
+void RKTrackRep::getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, SMatrixSym6& cov) const {
   getPosMom(state, pos, mom);
-  cov.ResizeTo(6,6);
-  transformPM6(state, *((M6x6*) cov.GetMatrixArray()));
+  transformPM6(state, *((M6x6*) cov.Array()));
 }
 
 
-TMatrixDSym RKTrackRep::get6DCov(const MeasuredStateOnPlane& state) const {
-  TMatrixDSym cov(6);
-  transformPM6(state, *((M6x6*) cov.GetMatrixArray()));
+SMatrixSym6 RKTrackRep::get6DCov(const MeasuredStateOnPlane& state) const {
+  SMatrixSym6 cov;
+  transformPM6(state, *((M6x6*) cov.Array()));
 
   return cov;
 }
@@ -1155,11 +1154,7 @@ void RKTrackRep::setPosMom(StateOnPlane& state, const ROOT::Math::XYZVector& pos
 }
 
 
-void RKTrackRep::setPosMom(StateOnPlane& state, const TVectorD& state6) const {
-  if (state6.GetNrows()!=6){
-    Exception exc("RKTrackRep::setPosMom ==> state has to be 6d (x, y, z, px, py, pz)",__LINE__,__FILE__);
-    throw exc;
-  }
+void RKTrackRep::setPosMom(StateOnPlane& state, const SVector6& state6) const {
   setPosMom(state, ROOT::Math::XYZVector(state6(0), state6(1), state6(2)), ROOT::Math::XYZVector(state6(3), state6(4), state6(5)));
 }
 
@@ -1206,35 +1201,20 @@ void RKTrackRep::setPosMomErr(MeasuredStateOnPlane& state, const ROOT::Math::XYZ
 
 
 
-void RKTrackRep::setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const TMatrixDSym& cov6x6) const {
-
-  if (cov6x6.GetNcols()!=6 || cov6x6.GetNrows()!=6){
-    Exception exc("RKTrackRep::setPosMomCov ==> cov has to be 6x6 (x, y, z, px, py, pz)",__LINE__,__FILE__);
-    throw exc;
-  }
+void RKTrackRep::setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const SMatrixSym6& cov6x6) const {
 
   setPosMom(state, pos, mom); // charge does not change!
 
   M1x7 state7;
   getState7(state, state7);
 
-  const M6x6& cov6x6_( *((M6x6*) cov6x6.GetMatrixArray()) );
+  const M6x6& cov6x6_( *((M6x6*) cov6x6.Array()) );
 
   transformM6P(cov6x6_, state7, state);
 
 }
 
-void RKTrackRep::setPosMomCov(MeasuredStateOnPlane& state, const TVectorD& state6, const TMatrixDSym& cov6x6) const {
-
-  if (state6.GetNrows()!=6){
-    Exception exc("RKTrackRep::setPosMomCov ==> state has to be 6d (x, y, z, px, py, pz)",__LINE__,__FILE__);
-    throw exc;
-  }
-
-  if (cov6x6.GetNcols()!=6 || cov6x6.GetNrows()!=6){
-    Exception exc("RKTrackRep::setPosMomCov ==> cov has to be 6x6 (x, y, z, px, py, pz)",__LINE__,__FILE__);
-    throw exc;
-  }
+void RKTrackRep::setPosMomCov(MeasuredStateOnPlane& state, const SVector6& state6, const SMatrixSym6& cov6x6) const {
 
   const ROOT::Math::XYZVector pos(state6(0), state6(1), state6(2));
   const ROOT::Math::XYZVector mom(state6(3), state6(4), state6(5));
@@ -1243,7 +1223,7 @@ void RKTrackRep::setPosMomCov(MeasuredStateOnPlane& state, const TVectorD& state
   M1x7 state7;
   getState7(state, state7);
 
-  const M6x6& cov6x6_( *((M6x6*) cov6x6.GetMatrixArray()) );
+  const M6x6& cov6x6_( *((M6x6*) cov6x6.Array()) );
 
   transformM6P(cov6x6_, state7, state);
 

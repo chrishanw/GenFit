@@ -149,8 +149,8 @@ class RKTrackRep : public AbsTrackRep {
   virtual double getMomMag(const StateOnPlane& state) const override;
   virtual double getMomVar(const MeasuredStateOnPlane& state) const override;
 
-  virtual TMatrixDSym get6DCov(const MeasuredStateOnPlane& state) const override;
-  virtual void getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, TMatrixDSym& cov) const override;
+  virtual SMatrixSym6 get6DCov(const MeasuredStateOnPlane& state) const override;
+  virtual void getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, SMatrixSym6& cov) const override;
   virtual double getCharge(const StateOnPlane& state) const override;
   virtual double getQop(const StateOnPlane& state) const override {return state.getState()(0);}
   double getSpu(const StateOnPlane& state) const;
@@ -165,10 +165,10 @@ class RKTrackRep : public AbsTrackRep {
   virtual double getRadiationLenght() const override;
 
   virtual void setPosMom(StateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom) const override;
-  virtual void setPosMom(StateOnPlane& state, const TVectorD& state6) const override;
+  virtual void setPosMom(StateOnPlane& state, const SVector6& state6) const override;
   virtual void setPosMomErr(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const ROOT::Math::XYZVector& posErr, const ROOT::Math::XYZVector& momErr) const override;
-  virtual void setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const TMatrixDSym& cov6x6) const override;
-  virtual void setPosMomCov(MeasuredStateOnPlane& state, const TVectorD& state6, const TMatrixDSym& cov6x6) const override;
+  virtual void setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const SMatrixSym6& cov6x6) const override;
+  virtual void setPosMomCov(MeasuredStateOnPlane& state, const SVector6& state6, const SMatrixSym6& cov6x6) const override;
 
   virtual void setChargeSign(StateOnPlane& state, double charge) const override;
   virtual void setQop(StateOnPlane& state, double qop) const override {state.getState()(0) = qop;}
