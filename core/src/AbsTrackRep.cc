@@ -56,11 +56,11 @@ double AbsTrackRep::extrapolateToMeasurement(StateOnPlane& state,
 }
 
 
-TVectorD AbsTrackRep::get6DState(const StateOnPlane& state) const {
+SVector6 AbsTrackRep::get6DState(const StateOnPlane& state) const {
   ROOT::Math::XYZVector pos, mom;
   getPosMom(state, pos, mom);
 
-  TVectorD stateVec(6);
+  SVector6 stateVec;
 
   stateVec(0) = pos.X();
   stateVec(1) = pos.Y();

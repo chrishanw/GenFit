@@ -91,9 +91,9 @@ Track::createMeasurements(const TrackCand& trackCand, const MeasurementFactory<A
 }
 
 
-Track::Track(AbsTrackRep* trackRep, const TVectorD& stateSeed) :
+Track::Track(AbsTrackRep* trackRep, const SVector6& stateSeed) :
   cardinalRep_(0), fitStatuses_(), mcTrackId_(-1), timeSeed_(0), stateSeed_(stateSeed),
-  covSeed_(TMatrixDSym::kUnit, TMatrixDSym(6))
+  covSeed_(ROOT::Math::SMatrixIdentity())
 {
   addTrackRep(trackRep);
 }
@@ -101,14 +101,14 @@ Track::Track(AbsTrackRep* trackRep, const TVectorD& stateSeed) :
 
 Track::Track(AbsTrackRep* trackRep, const ROOT::Math::XYZVector& posSeed, const ROOT::Math::XYZVector& momSeed) :
   cardinalRep_(0), fitStatuses_(), mcTrackId_(-1), timeSeed_(0), stateSeed_(6),
-  covSeed_(TMatrixDSym::kUnit, TMatrixDSym(6))
+  covSeed_(ROOT::Math::SMatrixIdentity())
 {
   addTrackRep(trackRep);
   setStateSeed(posSeed, momSeed);
 }
 
 
-Track::Track(AbsTrackRep* trackRep, const TVectorD& stateSeed, const TMatrixDSym& covSeed) :
+Track::Track(AbsTrackRep* trackRep, const SVector6& stateSeed, const SMatrixSym6& covSeed) :
   cardinalRep_(0), fitStatuses_(), mcTrackId_(-1), timeSeed_(0), stateSeed_(stateSeed),
   covSeed_(covSeed)
 {
@@ -342,8 +342,6 @@ void Track::setFitStatus(FitStatus* fitStatus, const AbsTrackRep* rep) {
 
 
 void Track::setStateSeed(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom) {
-  stateSeed_.ResizeTo(6);
-
   stateSeed_(0) = pos.X();
   stateSeed_(1) = pos.Y();
   stateSeed_(2) = pos.Z();
@@ -1255,7 +1253,7 @@ void Track::Print(const Option_t* option) const {
 
   printOut << "=======================================================================================\n";
   printOut << "genfit::Track, containing " << trackPoints_.size() << " TrackPoints and " << trackReps_.size() << " TrackReps.\n";
-  printOut << " Seed state: "; stateSeed_.Print();
+  printOut << " Seed state: "; stateSeed_.Print(printOut);
 
   for (unsigned int i=0; i<trackReps_.size(); ++i) {
     printOut << " TrackRep Nr. " << i;
@@ -1290,20 +1288,7 @@ void Track::checkConsistency() const {
 
   std::map<const AbsTrackRep*, const KalmanFitterInfo*> prevFis;
 
-  // check if seed is 6D
-  if (stateSeed_.GetNrows() != 6) {
-    failures << "Track::checkConsistency(): stateSeed_ dimension != 6" << std::endl;
-    // cppcheck-suppress unreadVariable
-    consistent = false;
-  }
-
-  if (covSeed_.GetNrows() != 6) {
-    failures << "Track::checkConsistency(): covSeed_ dimension != 6" << std::endl;
-    // cppcheck-suppress unreadVariable
-    consistent = false;
-  }
-
-  if (covSeed_.Max() == 0.) {
+  if (*(std::max_element(covSeed_.begin(), covSeed_.end())) == 0.) {
     // Nota bene: The consistency is not set to false when this occurs, because it does not break the consistency of
     // the track. However, when something else fails we keep this as additional error information.
     failures << "Track::checkConsistency(): Warning: covSeed_ is zero" << std::endl;

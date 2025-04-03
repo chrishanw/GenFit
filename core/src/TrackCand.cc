@@ -32,8 +32,8 @@ TrackCand::TrackCand() :
   mcTrackId_(-1),
   pdg_(0),
   time_(0),
-  state6D_(6),
-  cov6D_(6),
+  state6D_({0, 0, 0, 0, 0, 0}),
+  cov6D_(SMatrixSym6()),
   q_(0)
 {
   ;
@@ -205,7 +205,7 @@ void TrackCand::Print(const Option_t* option) const {
   printOut << "======== TrackCand::print ========\n";
   printOut << "mcTrackId=" << mcTrackId_ << "\n";
   printOut << "seed values for 6D state: \n";
-  state6D_.Print(option);
+  state6D_.Print(printOut);
   printOut << "charge = " << q_ << "\n";
   printOut << "PDG code = " << pdg_ << "\n";
   for(unsigned int i=0; i<hits_.size(); ++i){
@@ -245,14 +245,14 @@ void TrackCand::sortHits(const std::vector<unsigned int>& indices){
 }
 
 
-void TrackCand::set6DSeed(const TVectorD& state6D, const double charge) {
+void TrackCand::set6DSeed(const SVector6& state6D, const double charge) {
   if (pdg_ != 0 && q_ != charge)
     pdg_ = -pdg_;
   q_ = charge;
   state6D_ = state6D;
 }
 
-void TrackCand::set6DSeedAndPdgCode(const TVectorD& state6D, const int pdgCode) {
+void TrackCand::set6DSeedAndPdgCode(const SVector6& state6D, const int pdgCode) {
   setPdgCode(pdgCode);
   state6D_ = state6D;
 }
@@ -272,13 +272,13 @@ void TrackCand::setPosMomSeedAndPdgCode(const ROOT::Math::XYZVector& pos, const 
 }
 
 
-void TrackCand::setTime6DSeed(double time, const TVectorD& state6D, const double charge)
+void TrackCand::setTime6DSeed(double time, const SVector6& state6D, const double charge)
 {
   time_ = time;
   set6DSeed(state6D, charge);
 }
 
-void TrackCand::setTime6DSeedAndPdgCode(double time, const TVectorD& state6D, const int pdgCode)
+void TrackCand::setTime6DSeedAndPdgCode(double time, const SVector6& state6D, const int pdgCode)
 {
   time_ = time;
   set6DSeedAndPdgCode(state6D, pdgCode);
