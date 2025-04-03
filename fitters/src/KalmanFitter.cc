@@ -133,7 +133,7 @@ void KalmanFitter::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool)
     if (debugLvl_ > 0)
       debugOut << "take smoothed state of cardinal rep fit as seed \n";
     ROOT::Math::XYZVector pos, mom;
-    TMatrixDSym cov;
+    SMatrixSym6 cov;
     const MeasuredStateOnPlane& fittedState = static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(tr->getCardinalRep()))->getFittedState(true);
     tr->getCardinalRep()->getPosMomCov(fittedState, pos, mom, cov);
     currentState_.reset(new MeasuredStateOnPlane(rep));
@@ -342,7 +342,7 @@ KalmanFitter::processTrackPartially(Track* tr, const AbsTrackRep* rep, int start
     if (debugLvl_ > 0)
       debugOut << "take smoothed state of cardinal rep fit as seed \n";
     ROOT::Math::XYZVector pos, mom;
-    TMatrixDSym cov;
+    SMatrixSym6 cov;
     const MeasuredStateOnPlane& fittedState = static_cast<KalmanFitterInfo*>(trackPoint->getFitterInfo(tr->getCardinalRep()))->getFittedState(true);
     tr->getCardinalRep()->getPosMomCov(fittedState, pos, mom, cov);
     currentState_.reset(new MeasuredStateOnPlane(rep));
