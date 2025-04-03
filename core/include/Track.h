@@ -162,11 +162,11 @@ class Track {
   double getTimeSeed() const {return timeSeed_;}
   void setTimeSeed(double time) {timeSeed_ = time;}
 
-  const TVectorD& getStateSeed() const {return stateSeed_;}
+  const SVector6& getStateSeed() const {return stateSeed_;}
   void setStateSeed(const TVectorD& s) {stateSeed_.ResizeTo(s); stateSeed_ = s;}
   void setStateSeed(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom);
 
-  const TMatrixDSym& getCovSeed() const {return covSeed_;}
+  const SMatrixSym6& getCovSeed() const {return covSeed_;}
   void setCovSeed(const TMatrixDSym& c) {covSeed_.ResizeTo(c); covSeed_ = c;}
 
   //! Set the MCT track id, for MC simulations
@@ -316,8 +316,8 @@ class Track {
 
   int mcTrackId_; /**< if MC simulation, store the mc track id here */
   double timeSeed_;
-  TVectorD stateSeed_; // 6D: position, momentum
-  TMatrixDSym covSeed_; // 6D
+  SVector6 stateSeed_; // 6D: position, momentum
+  SMatrixSym6 covSeed_; // 6D
 
 
  public:

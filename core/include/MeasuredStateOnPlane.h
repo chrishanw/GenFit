@@ -64,14 +64,14 @@ class MeasuredStateOnPlane : public StateOnPlane {
   void setCov(const TMatrixDSym& cov) {if(cov_.GetNrows() == 0) cov_.ResizeTo(cov); cov_ = cov;}
 
   // Shortcuts to TrackRep functions
-  TMatrixDSym get6DCov() const {return getRep()->get6DCov(*this);};
-  void getPosMomCov(ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, TMatrixDSym& cov) const {getRep()->getPosMomCov(*this, pos, mom, cov);}
-  void get6DStateCov(TVectorD& stateVec, TMatrixDSym& cov) const {getRep()->get6DStateCov(*this, stateVec, cov);}
+  SMatrixSym6 get6DCov() const {return getRep()->get6DCov(*this);};
+  void getPosMomCov(ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, SMatrixSym6& cov) const {getRep()->getPosMomCov(*this, pos, mom, cov);}
+  void get6DStateCov(SVector6& stateVec, SMatrixSym6& cov) const {getRep()->get6DStateCov(*this, stateVec, cov);}
   double getMomVar() const {return getRep()->getMomVar(*this);}
 
   void setPosMomErr(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const ROOT::Math::XYZVector& posErr, const ROOT::Math::XYZVector& momErr) {getRep()->setPosMomErr(*this, pos, mom, posErr, momErr);}
-  void setPosMomCov(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const TMatrixDSym& cov6x6) {getRep()->setPosMomCov(*this, pos, mom, cov6x6);}
-  void setPosMomCov(const TVectorD& state6, const TMatrixDSym& cov6x6) {getRep()->setPosMomCov(*this, state6, cov6x6);}
+  void setPosMomCov(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const SMatrixSym6& cov6x6) {getRep()->setPosMomCov(*this, pos, mom, cov6x6);}
+  void setPosMomCov(const SVector6& state6, const SMatrixSym6& cov6x6) {getRep()->setPosMomCov(*this, state6, cov6x6);}
 
 
   virtual void Print(Option_t* option = "") const override;

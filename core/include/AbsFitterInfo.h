@@ -27,6 +27,8 @@
 #include "MeasurementOnPlane.h"
 #include "FitStatus.h"
 
+#include <TVectorD.h>
+
 
 namespace genfit {
 
@@ -99,7 +101,8 @@ class AbsFitterInfo {
  public:
   ClassDef(AbsFitterInfo,2)
   // Version history:
-  // ver 2: no longer derives from TObject
+  // ver 2: no longer derives from TObject (the TObject parts were not 
+  //        streamed, so no compatibility issues arise.)
 
 };
 

@@ -23,15 +23,13 @@
 #define genfit_TrackCand_h
 
 #include "TrackCandHit.h"
+#include "TypeDefs.h"
 
 #include <vector>
 #include <set>
 #include <assert.h>
 
 #include <Math/Vector3D.h>
-#include <TVectorD.h>
-#include <TMatrixD.h>
-#include <TMatrixDSym.h>
 #include <TDatabasePDG.h>
 
 #include <cmath>
@@ -58,7 +56,7 @@ namespace genfit {
  * In addition TrackCand offers members to store starting values for the fit.
  * The starting values (seeds) for the fit are stored as a 6D state (x,y,z,px,py,pz) and its
  * corresponding 6x6 covariance matrix. All seed getter and setter manipulate these two members
- * but the user can chose using ROOT::Math::XYZVector or TMatrixD to get/set the seed state.
+ * but the user can chose using ROOT::Math::XYZVector or SMatrixSym6 to get/set the seed state.
  * However this information is not automatically used in genfit.
  * But a pointer to a TrackCand can be passed to the a RKTrackRep constructor
  * to make use of this information without manually extracting it from the TrackCand object.
@@ -127,10 +125,10 @@ class TrackCand {
   ROOT::Math::XYZVector getMomSeed() const {return ROOT::Math::XYZVector(state6D_(3), state6D_(4), state6D_(5));}
 
   /** @brief get the covariance matrix seed (6D).  */
-  const TMatrixDSym& getCovSeed() const {return cov6D_;}
+  const SMatrixSym6& getCovSeed() const {return cov6D_;}
 
   //! Returns the 6D seed state; should be in global coordinates.
-  const TVectorD& getStateSeed() const {return state6D_;}
+  const SVector6& getStateSeed() const {return state6D_;}
 
   double getChargeSeed() const {return q_;}
 
@@ -171,16 +169,16 @@ class TrackCand {
   void setTimeSeed(double time) { time_ = time; }
 
   /** @brief set the covariance matrix seed (6D).  */
-  void setCovSeed(const TMatrixDSym& cov6D) {cov6D_ = cov6D; /* always 6D, no need to resize */}
+  void setCovSeed(const SMatrixSym6& cov6D) {cov6D_ = cov6D; /* always 6D, no need to resize */}
 
-  /** @brief sets the state to seed the track fitting. State has to be a TVectorD(6). First 3 elements are the staring postion second 3 elements the starting momentum. Everything in global coordinates
+  /** @brief sets the state to seed the track fitting. State has to be a SVector6. First 3 elements are the staring postion second 3 elements the starting momentum. Everything in global coordinates
    * charge is the charge hypotheses of the particle charge
    */
-  void set6DSeed(const TVectorD& state6D, const double charge);
+  void set6DSeed(const SVector6& state6D, const double charge);
 
   /** @brief This function works the same as set6DSeed but instead of a charge hypothesis you can set a pdg code which will set the charge automatically
    */
-  void set6DSeedAndPdgCode(const TVectorD& state6D, const int pdgCode);
+  void set6DSeedAndPdgCode(const SVector6& state6D, const int pdgCode);
 
   /** @brief sets the state to seed the track fitting. State has to be a ROOT::Math::XYZVector for position and a ROOT::Math::XYZVector for momentum. Everything in global coordinates
    * charge is the charge hypotheses of the particle charge
@@ -192,18 +190,18 @@ class TrackCand {
   void setPosMomSeedAndPdgCode(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const int pdgCode);
 
   /** @brief sets the state to seed the track fitting and its
-     time. State has to be a TVectorD(6). First 3 elements are the
+     time. State has to be a SVector6(6). First 3 elements are the
      staring postion second 3 elements the starting
      momentum. Everything in global coordinates charge is the charge
      hypotheses of the particle charge.
    */
-  void setTime6DSeed(double time, const TVectorD& state6D, const double charge);
+  void setTime6DSeed(double time, const SVector6& state6D, const double charge);
 
   /** @brief This function works the same as set6DSeed but instead of
       a charge hypothesis you can set a pdg code which will set the
       charge automatically.
    */
-  void setTime6DSeedAndPdgCode(double time, const TVectorD& state6D, const int pdgCode);
+  void setTime6DSeedAndPdgCode(double time, const SVector6& state6D, const int pdgCode);
 
   /** @brief sets the state to seed the track fitting and its time. State has to be
      a ROOT::Math::XYZVector for position and a ROOT::Math::XYZVector for momentum. Everything
@@ -230,8 +228,8 @@ class TrackCand {
   int pdg_; /**< particle data groupe's id for a particle*/
 
   double time_; /**< Time at which the seed is given */
-  TVectorD state6D_; /**< global 6D position plus momentum state */
-  TMatrixDSym cov6D_; /**< global 6D position plus momentum state */
+  SVector6 state6D_; /**< global 6D position plus momentum state */
+  SMatrixSym6 cov6D_; /**< global 6D position plus momentum state */
   double q_; /**< the charge of the particle in units of elementary charge */
 
 

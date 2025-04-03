@@ -26,6 +26,7 @@
 
 #include "SharedPlanePtr.h"
 #include "AbsTrackRep.h"
+#include <TypeDefs.h>
 
 #include <TVectorD.h>
 
@@ -115,7 +116,7 @@ class StateOnPlane {
   ROOT::Math::XYZVector getDir() const {return rep_->getDir(*this);}
   void getPosMom(ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const {rep_->getPosMom(*this, pos, mom);}
   void getPosDir(ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {rep_->getPosDir(*this, pos, dir);}
-  TVectorD get6DState() const {return rep_->get6DState(*this);}
+  SVector6 get6DState() const {return rep_->get6DState(*this);}
   double getMomMag() const {return rep_->getMomMag(*this);}
   int getPDG() const {return rep_->getPDG();}
   double getCharge() const {return rep_->getCharge(*this);}
@@ -124,7 +125,7 @@ class StateOnPlane {
   double getTime() const {return rep_->getTime(*this);}
 
   void setPosMom(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom) {rep_->setPosMom(*this, pos, mom);}
-  void setPosMom(const TVectorD& state6) {rep_->setPosMom(*this, state6);}
+  void setPosMom(const SVector6& state6) {rep_->setPosMom(*this, state6);}
   void setChargeSign(double charge) {rep_->setChargeSign(*this, charge);}
   void setQop(double qop) {rep_->setQop(*this, qop);}
   void setTime(double time) {rep_->setTime(*this, time);}

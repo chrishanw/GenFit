@@ -26,6 +26,7 @@
 #include "SharedPlanePtr.h"
 //#include "MaterialInfo.h"
 #include "Material.h"
+#include <TypeDefs.h>
 
 #include <Math/Vector3D.h>
 #include <TVectorD.h>
@@ -251,16 +252,16 @@ class AbsTrackRep {
   void getPosDir(const StateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {getPosMom(state, pos, dir); dir *= 1. / dir.R();}
 
   //! Get the 6D state vector (x, y, z, p_x, p_y, p_z).
-  virtual TVectorD get6DState(const StateOnPlane& state) const;
+  virtual SVector6 get6DState(const StateOnPlane& state) const;
 
   //! Get the 6D covariance.
-  virtual TMatrixDSym get6DCov(const MeasuredStateOnPlane& state) const = 0;
+  virtual SMatrixSym6 get6DCov(const MeasuredStateOnPlane& state) const = 0;
 
   //! Translates MeasuredStateOnPlane into 3D position, momentum and 6x6 covariance.
-  virtual void getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, TMatrixDSym& cov) const = 0;
+  virtual void getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, SMatrixSym6& cov) const = 0;
 
   //! Translates MeasuredStateOnPlane into 6D state vector (x, y, z, p_x, p_y, p_z) and 6x6 covariance.
-  virtual void get6DStateCov(const MeasuredStateOnPlane& state, TVectorD& stateVec, TMatrixDSym& cov) const;
+  virtual void get6DStateCov(const MeasuredStateOnPlane& state, SVector6& stateVec, SMatrixSym6& cov) const;
 
   //! get the magnitude of the momentum in GeV.
   virtual double getMomMag(const StateOnPlane& state) const = 0;
@@ -316,13 +317,13 @@ class AbsTrackRep {
   //! Set position and momentum of state.
   virtual void setPosMom(StateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom) const = 0;
   //! Set position and momentum of state.
-  virtual void setPosMom(StateOnPlane& state, const TVectorD& state6) const = 0;
+  virtual void setPosMom(StateOnPlane& state, const SVector6& state6) const = 0;
   //! Set position and momentum and error of state.
   virtual void setPosMomErr(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const ROOT::Math::XYZVector& posErr, const ROOT::Math::XYZVector& momErr) const = 0;
   //! Set position, momentum and covariance of state.
-  virtual void setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const TMatrixDSym& cov6x6) const = 0;
+  virtual void setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const SMatrixSym6& cov6x6) const = 0;
   //! Set position, momentum and covariance of state.
-  virtual void setPosMomCov(MeasuredStateOnPlane& state, const TVectorD& state6, const TMatrixDSym& cov6x6) const = 0;
+  virtual void setPosMomCov(MeasuredStateOnPlane& state, const SVector6& state6, const SMatrixSym6& cov6x6) const = 0;
 
   //! Set the sign of the charge according to charge.
   virtual void setChargeSign(StateOnPlane& state, double charge) const = 0;
