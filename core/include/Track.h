@@ -36,8 +36,6 @@
 
 namespace genfit {
 
-class KalmanFitStatus;
-
 /**
  * @brief Helper class for TrackPoint sorting, used in Track::sort().
  */
@@ -152,10 +150,8 @@ class Track {
   //! Get FitStatus for a AbsTrackRep. Per default, return FitStatus for cardinalRep.
   FitStatus* getFitStatus(const AbsTrackRep* rep = nullptr) const {if (rep == nullptr) rep = getCardinalRep(); return fitStatuses_.at(rep);}
 
-  //! Check if track has a KalmanFitStatus for given AbsTrackRep. Per default, check for cardinal rep.
-  bool hasKalmanFitStatus(const AbsTrackRep* rep = nullptr) const;
-  //! If FitStatus is a KalmanFitStatus, return it. Otherwise return nullptr
-  KalmanFitStatus* getKalmanFitStatus(const AbsTrackRep* rep = nullptr) const;
+  //! Get full list of FitStatuses
+  const std::map< const AbsTrackRep*, FitStatus* >& getFitStatuses() {return fitStatuses_;}
 
   void setFitStatus(FitStatus* fitStatus, const AbsTrackRep* rep);
 
@@ -275,26 +271,6 @@ class Track {
    * You might want to call determineCardinalRep() and/or udpateSeed() before.
    */
   TrackCand* constructTrackCand() const;
-
-  //! Helper function: For all KalmanFitterInfos belonging to rep (if nullptr, for all reps),
-  //! call the fixWeights() function, so that e.g. the DAF will not alter weights anymore.
-  void fixWeights(AbsTrackRep* rep = nullptr, int startId = 0, int endId = -1);
-
-  /**
-   * @brief Delete unneeded information from the Track.
-   *
-   * Possible options: (see also PruneFlags defined in FitStatus.h)
-   * C:  prune all reps except cardinalRep
-   * F:  prune all points except first point (also prune referenceInfo from fitterInfos)
-   * L:  prune all points except last point (also prune referenceInfo from fitterInfos)
-   * FL: prune all points except first and last point (also prune referenceInfo from fitterInfos)
-   * W:  prune rawMeasurements from TrackPoints
-   * R:  prune referenceInfo from fitterInfos
-   * M:  prune measurementInfo from fitterInfos
-   * I:  if F, L, or FL is set, prune forward (backward) info of first (last) point
-   * U:  if fitterInfo is a KalmanFitterInfo, prune predictions and keep updates
-   */
-  void prune(const Option_t* = "CFLWRMIU");
 
   void Print(const Option_t* = "") const;
 

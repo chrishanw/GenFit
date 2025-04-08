@@ -21,8 +21,6 @@
 
 #include "Exception.h"
 #include "IO.h"
-#include "KalmanFitterInfo.h"
-#include "KalmanFitStatus.h"
 #include "PlanarMeasurement.h"
 #include "AbsMeasurement.h"
 
@@ -314,22 +312,6 @@ bool Track::hasFitStatus(const AbsTrackRep* rep) const {
     return false;
 
   return (fitStatuses_.at(rep) != nullptr);
-}
-
-
-bool Track::hasKalmanFitStatus(const AbsTrackRep* rep) const {
-  if (rep == nullptr)
-    rep = getCardinalRep();
-
-  if (fitStatuses_.find(rep) == fitStatuses_.end())
-    return false;
-
-  return (dynamic_cast<KalmanFitStatus*>(fitStatuses_.at(rep)) != nullptr);
-}
-
-
-KalmanFitStatus* Track::getKalmanFitStatus(const AbsTrackRep* rep) const {
-  return dynamic_cast<KalmanFitStatus*>(getFitStatus(rep));
 }
 
 
@@ -1005,115 +987,6 @@ double Track::getTOF(AbsTrackRep* rep, int startId, int endId) const {
   return tof;
 }
 
-
-void Track::fixWeights(AbsTrackRep* rep, int startId, int endId) {
-
-  if (startId < 0)
-    startId += trackPoints_.size();
-  if (endId < 0)
-    endId += trackPoints_.size();
-
-  assert(startId >= 0);
-  assert(startId <= endId);
-  assert(endId <= (int)trackPoints_.size());
-
-  std::vector< AbsFitterInfo* > fis;
-
-  for (std::vector<TrackPoint*>::iterator tp = trackPoints_.begin() + startId; tp != trackPoints_.begin() + endId; ++tp) {
-    fis.clear();
-    if (rep == nullptr) {
-      fis = (*tp)->getFitterInfos();
-    }
-    else if ((*tp)->hasFitterInfo(rep)) {
-      fis.push_back((*tp)->getFitterInfo(rep));
-    }
-
-    for (std::vector< AbsFitterInfo* >::iterator fi = fis.begin(); fi != fis.end(); ++fi) {
-      KalmanFitterInfo* kfi = dynamic_cast<KalmanFitterInfo*>(*fi);
-      if (kfi == nullptr)
-        continue;
-
-      kfi->fixWeights();
-    }
-  }
-}
-
-
-void Track::prune(const Option_t* option) {
-
-  PruneFlags f;
-  f.setFlags(option);
-
-  for (std::map< const AbsTrackRep*, FitStatus* >::const_iterator it=fitStatuses_.begin(); it!=fitStatuses_.end(); ++it) {
-    it->second->getPruneFlags().setFlags(option);
-  }
-
-  // prune trackPoints
-  if (f.hasFlags("F") || f.hasFlags("L")) {
-    const TrackPoint* firstPoint = getPointWithFitterInfo(0);
-    const TrackPoint* lastPoint = getPointWithFitterInfo(-1);
-    for (unsigned int i = 0; i<trackPoints_.size(); ++i) {
-      if (trackPoints_[i] == firstPoint && f.hasFlags("F"))
-        continue;
-
-      if (trackPoints_[i] == lastPoint && f.hasFlags("L"))
-        continue;
-
-      delete trackPoints_[i];
-      trackPoints_.erase(trackPoints_.begin()+i);
-      --i;
-    }
-  }
-
-  // prune TrackReps
-  if (f.hasFlags("C")) {
-    for (unsigned int i = 0; i < trackReps_.size(); ++i) {
-      if (i != cardinalRep_) {
-        deleteTrackRep(i);
-        --i;
-      }
-    }
-  }
-
-
-  // from remaining trackPoints: prune measurementsOnPlane, unneeded fitterInfoStuff
-  for (unsigned int i = 0; i<trackPoints_.size(); ++i) {
-    if (f.hasFlags("W"))
-      trackPoints_[i]->deleteRawMeasurements();
-
-    std::vector< AbsFitterInfo* > fis =  trackPoints_[i]->getFitterInfos();
-    for (unsigned int j = 0; j<fis.size(); ++j) {
-
-      if (i == 0 && f.hasFlags("FLI"))
-        fis[j]->deleteForwardInfo();
-      else if (i == trackPoints_.size()-1 && f.hasFlags("FLI"))
-        fis[j]->deleteBackwardInfo();
-      else if (f.hasFlags("FI"))
-        fis[j]->deleteForwardInfo();
-      else if (f.hasFlags("LI"))
-        fis[j]->deleteBackwardInfo();
-
-      if (f.hasFlags("U") && dynamic_cast<KalmanFitterInfo*>(fis[j]) != nullptr) {
-        static_cast<KalmanFitterInfo*>(fis[j])->deletePredictions();
-      }
-
-      // also delete reference info if points have been removed since it is invalid then!
-      if (f.hasFlags("R") or f.hasFlags("F") or f.hasFlags("L"))
-        fis[j]->deleteReferenceInfo();
-      if (f.hasFlags("M"))
-        fis[j]->deleteMeasurementInfo();
-    }
-  }
-
-  fillPointsWithMeasurement();
-
-  #ifdef DEBUG
-  debugOut << "pruned Track: "; Print();
-  #endif
-
-}
-
-
 void Track::Print(const Option_t* option) const {
   TString opt = option;
   opt.ToUpper();
@@ -1286,8 +1159,6 @@ void Track::checkConsistency() const {
   bool consistent = true;
   std::stringstream failures;
 
-  std::map<const AbsTrackRep*, const KalmanFitterInfo*> prevFis;
-
   if (*(std::max_element(covSeed_.begin(), covSeed_.end())) == 0.) {
     // Nota bene: The consistency is not set to false when this occurs, because it does not break the consistency of
     // the track. However, when something else fails we keep this as additional error information.
@@ -1392,26 +1263,6 @@ void Track::checkConsistency() const {
 	// cppcheck-suppress unreadVariable
         consistent = false;
       }
-
-      if (dynamic_cast<KalmanFitterInfo*>(*fi) != nullptr) {
-        if (prevFis[(*fi)->getRep()] != nullptr &&
-            static_cast<KalmanFitterInfo*>(*fi)->hasReferenceState() &&
-            prevFis[(*fi)->getRep()]->hasReferenceState() ) {
-          const double len = static_cast<KalmanFitterInfo*>(*fi)->getReferenceState()->getForwardSegmentLength();
-          const double prevLen = prevFis[(*fi)->getRep()]->getReferenceState()->getBackwardSegmentLength();
-          if (fabs(prevLen + len) > 1E-10 ) {
-            failures << "Track::checkConsistency(): segment lengths of reference states for rep " << (*fi)->getRep() << " (id " << getIdForRep((*fi)->getRep()) << ") at TrackPoint " << (*tp) << " don't match" << std::endl;
-            failures << prevLen << " + " << len << " = " << prevLen + len << std::endl;
-            failures << "TrackPoint " << *tp << ", FitterInfo " << *fi << ", rep " << getIdForRep((*fi)->getRep()) << std::endl;
-	    // cppcheck-suppress unreadVariable
-            consistent = false;
-          }
-        }
-
-        prevFis[(*fi)->getRep()] = static_cast<KalmanFitterInfo*>(*fi);
-      }
-      else
-        prevFis[(*fi)->getRep()] = nullptr;
 
     } // end loop over FitterInfos
 
