@@ -1,6 +1,7 @@
  
 #include <KalmanHelpers.h>
 #include <Track.h>
+#include <TrackPoint.h>
 #include <AbsTrackRep.h>
 #include <KalmanFitterInfo.h>
 
@@ -132,6 +133,10 @@ namespace genfit {
     debugOut << "pruned Track: "; Print();
     #endif
   
+  }
+
+  static KalmanFitterInfo* getTrackPointKalmanFitterInfo(const TrackPoint* tp, const AbsTrackRep* rep) {
+    return dynamic_cast<KalmanFitterInfo*>(tp->getFitterInfo(rep));
   }
 
 }

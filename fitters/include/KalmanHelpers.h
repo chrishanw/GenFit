@@ -2,8 +2,9 @@
 #include <Rtypes.h>
 
 namespace genfit {
-  class Track;
   class AbsTrackRep;
+  class Track;
+  class TrackPoint;
   class KalmanFitStatus;
 
   //! Check if track has a KalmanFitStatus for given AbsTrackRep. Per default, check for cardinal rep.
@@ -26,5 +27,8 @@ namespace genfit {
    * U:  if fitterInfo is a KalmanFitterInfo, prune predictions and keep updates
    */
   static void pruneTrack(const Track* track, const Option_t* option = "U");
+
+  //! Helper to avoid casting
+  static KalmanFitterInfo* getTrackPointKalmanFitterInfo(const TrackPoint* tp, const AbsTrackRep* rep = nullptr);
 
 }
