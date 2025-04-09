@@ -35,7 +35,6 @@
 namespace genfit {
 
 class Track;
-class KalmanFitterInfo;
 
 /**
  * @brief Object containing AbsMeasurement and AbsFitterInfo objects.
@@ -92,8 +91,6 @@ class TrackPoint {
   std::vector< genfit::AbsFitterInfo* > getFitterInfos() const;
   //! Get fitterInfo for rep. Per default, use cardinal rep
   AbsFitterInfo* getFitterInfo(const AbsTrackRep* rep = nullptr) const;
-  //! Helper to avoid casting
-  KalmanFitterInfo* getKalmanFitterInfo(const AbsTrackRep* rep = nullptr) const;
   bool hasFitterInfo(const AbsTrackRep* rep) const {
     return (fitterInfos_.find(rep) != fitterInfos_.end());
   }

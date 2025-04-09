@@ -23,16 +23,8 @@ namespace genfit {
    * @brief Delete unneeded information from the Track.
    *
    * Possible options: (see also PruneFlags defined in FitStatus.h)
-   * C:  prune all reps except cardinalRep
-   * F:  prune all points except first point (also prune referenceInfo from fitterInfos)
-   * L:  prune all points except last point (also prune referenceInfo from fitterInfos)
-   * FL: prune all points except first and last point (also prune referenceInfo from fitterInfos)
-   * W:  prune rawMeasurements from TrackPoints
-   * R:  prune referenceInfo from fitterInfos
-   * M:  prune measurementInfo from fitterInfos
-   * I:  if F, L, or FL is set, prune forward (backward) info of first (last) point
    * U:  if fitterInfo is a KalmanFitterInfo, prune predictions and keep updates
    */
-  static void pruneTrack(const Track* track, const Option_t* option = "CFLWRMIU");
+  static void pruneTrack(const Track* track, const Option_t* option = "U");
 
 }

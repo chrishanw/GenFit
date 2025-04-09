@@ -108,42 +108,9 @@ namespace genfit {
   static void pruneTrack(const Track* track, const Option_t* option) {
   
     const auto& trackPoints = track->getPoints();
-    const auto& trackReps = track->getTrackReps();
 
     PruneFlags f;
     f.setFlags(option);
-  
-    for (std::map< const AbsTrackRep*, FitStatus* >::const_iterator it=fitStatuses_.begin(); it!=fitStatuses_.end(); ++it) {
-      it->second->getPruneFlags().setFlags(option);
-    }
-  
-    // prune trackPoints
-    if (f.hasFlags("F") || f.hasFlags("L")) {
-      const TrackPoint* firstPoint = getPointWithFitterInfo(0);
-      const TrackPoint* lastPoint = getPointWithFitterInfo(-1);
-      for (unsigned int i = 0; i<trackPoints.size(); ++i) {
-        if (trackPoints[i] == firstPoint && f.hasFlags("F"))
-          continue;
-  
-        if (trackPoints[i] == lastPoint && f.hasFlags("L"))
-          continue;
-  
-        delete trackPoints[i];
-        trackPoints.erase(trackPoints.begin()+i);
-        --i;
-      }
-    }
-  
-    // prune TrackReps
-    if (f.hasFlags("C")) {
-      for (unsigned int i = 0; i < trackReps.size(); ++i) {
-        if (i != track->getCardinalRepId()) {
-          deleteTrackRep(i);
-          --i;
-        }
-      }
-    }
-  
   
     // from remaining trackPoints: prune measurementsOnPlane, unneeded fitterInfoStuff
     for (unsigned int i = 0; i<trackPoints.size(); ++i) {
@@ -153,24 +120,9 @@ namespace genfit {
       std::vector< AbsFitterInfo* > fis =  trackPoints[i]->getFitterInfos();
       for (unsigned int j = 0; j<fis.size(); ++j) {
   
-        if (i == 0 && f.hasFlags("FLI"))
-          fis[j]->deleteForwardInfo();
-        else if (i == trackPoints.size()-1 && f.hasFlags("FLI"))
-          fis[j]->deleteBackwardInfo();
-        else if (f.hasFlags("FI"))
-          fis[j]->deleteForwardInfo();
-        else if (f.hasFlags("LI"))
-          fis[j]->deleteBackwardInfo();
-  
         if (f.hasFlags("U") && dynamic_cast<KalmanFitterInfo*>(fis[j]) != nullptr) {
           static_cast<KalmanFitterInfo*>(fis[j])->deletePredictions();
         }
-  
-        // also delete reference info if points have been removed since it is invalid then!
-        if (f.hasFlags("R") or f.hasFlags("F") or f.hasFlags("L"))
-          fis[j]->deleteReferenceInfo();
-        if (f.hasFlags("M"))
-          fis[j]->deleteMeasurementInfo();
       }
     }
   
