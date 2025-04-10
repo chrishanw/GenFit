@@ -6,6 +6,8 @@
  *      Author: C. Wessel
  */
 
+#pragma once
+
 #include <Math/SMatrix.h>
 #include <Math/SVector.h>
 typedef ROOT::Math::SMatrix<double, 2> SMatrix22;
@@ -20,11 +22,13 @@ typedef ROOT::Math::SMatrix<double, 3, 2> SMatrix32;
 typedef ROOT::Math::SMatrix<double, 3, 3> SMatrix33;
 typedef ROOT::Math::SMatrix<double, 3, 6> SMatrix36;
 typedef ROOT::Math::SMatrix<double, 5, 1> SMatrix51;
+typedef ROOT::Math::SMatrix<double, 7, 7> SMatrix77;
 
 typedef ROOT::Math::SMatrix<double, 2, 2, ROOT::Math::MatRepSym<double, 2> >    SMatrixSym2;
 typedef ROOT::Math::SMatrix<double, 3, 3, ROOT::Math::MatRepSym<double, 3> >    SMatrixSym3;
 typedef ROOT::Math::SMatrix<double, 5, 5, ROOT::Math::MatRepSym<double, 5> >    SMatrixSym5;
 typedef ROOT::Math::SMatrix<double, 6, 6, ROOT::Math::MatRepSym<double, 6> >    SMatrixSym6;
+typedef ROOT::Math::SMatrix<double, 7, 7, ROOT::Math::MatRepSym<double, 7> >    SMatrixSym7;
 
 typedef ROOT::Math::SVector<double, 1> SVector1;
 typedef ROOT::Math::SVector<double, 2> SVector2;
