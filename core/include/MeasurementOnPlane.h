@@ -43,29 +43,40 @@ namespace genfit {
  * project the track parameters with the original dimensionality down
  * to the measured dimensionality.
  */
-class MeasurementOnPlane : public MeasuredStateOnPlane {
+template<unsigned int dim, unsigned int dimAux = 0>
+class MeasurementOnPlane : public MeasuredStateOnPlane<dim, dimAux> {
+
+  using Super = MeasuredStateOnPlane<dim, dimAux>;
+  using SVectorState = ROOT::Math::SVector<double, dim>;
+  using SMatrixCov = ROOT::Math::SMatrix<double, dim, dim, ROOT::Math::MatRepSym<double, dim> >;
 
  public:
 
   MeasurementOnPlane(const AbsTrackRep* rep = nullptr) :
-    MeasuredStateOnPlane(rep), hMatrix_(nullptr), weight_(0) {}
-  MeasurementOnPlane(const TVectorD& state, const TMatrixDSym& cov, SharedPlanePtr plane, const AbsTrackRep* rep, const AbsHMatrix* hMatrix, double weight = 1.) :
-    MeasuredStateOnPlane(state, cov, plane, rep), hMatrix_(hMatrix), weight_(weight) {}
+    Super(rep), hMatrix_(nullptr), weight_(0) {}
+
+  MeasurementOnPlane(const SVectorState& state,
+                     const SMatrixCov& cov,
+                     SharedPlanePtr plane,
+                     const AbsTrackRep* rep,
+                     const AbsHMatrix<dim>* hMatrix,
+                     double weight = 1.) :
+                     Super(state, cov, plane, rep), hMatrix_(hMatrix), weight_(weight) {}
 
   //! copy constructor
-  MeasurementOnPlane(const MeasurementOnPlane& other);
+  MeasurementOnPlane(const MeasurementOnPlane<dim, dimAux>& other);
   //! assignment operator
-  MeasurementOnPlane& operator=(MeasurementOnPlane other);
-  void swap(MeasurementOnPlane& other);
+  MeasurementOnPlane<dim, dimAux>& operator=(MeasurementOnPlane<dim, dimAux> other);
+  void swap(MeasurementOnPlane<dim, dimAux>& other);
 
   virtual ~MeasurementOnPlane() {}
 
-  const AbsHMatrix* getHMatrix() const {return hMatrix_.get();}
+  const AbsHMatrix<dim>* getHMatrix() const {return hMatrix_.get();}
   double getWeight() const {return weight_;}
 
-  TMatrixDSym getWeightedCov() {return weight_*cov_;}
+  SMatrixCov getWeightedCov() {return weight_*Super::cov_;}
 
-  void setHMatrix(const AbsHMatrix* hMatrix) {hMatrix_.reset(hMatrix);}
+  void setHMatrix(const AbsHMatrix<dim>* hMatrix) {hMatrix_.reset(hMatrix);}
   void setWeight(double weight) {weight_ = fmax(weight, 1.E-10);}
 
   void Print(Option_t* option = "") const override ;
@@ -76,7 +87,7 @@ class MeasurementOnPlane : public MeasuredStateOnPlane {
   ROOT::Math::XYZVector getDir() const;
   void getPosMom(ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const;
   void getPosDir(ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const;
-  TVectorD get6DState() const;
+  SVector6 get6DState() const;
   double getMomMag() const;
   int getPDG() const;
   double getCharge() const;
@@ -85,7 +96,7 @@ class MeasurementOnPlane : public MeasuredStateOnPlane {
   double getTime() const;
 
   void setPosMom(const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom);
-  void setPosMom(const TVectorD& state6);
+  void setPosMom(const SVector6& state6);
   void setChargeSign(double charge);
   void setQop(double qop);
   void setTime(double time);
@@ -93,7 +104,7 @@ class MeasurementOnPlane : public MeasuredStateOnPlane {
 
  protected:
 
-  std::unique_ptr<const AbsHMatrix> hMatrix_; // Ownership
+  std::unique_ptr<const AbsHMatrix<dim>> hMatrix_; // Ownership
   double weight_;
 
  public:

@@ -23,6 +23,9 @@
 #ifndef genfit_AbsHMatrix_h
 #define genfit_AbsHMatrix_h
 
+#include <SMatrixTypeDefs.h>
+#include <Math/MatrixFunctions.h>
+
 #include <TMatrixDSym.h>
 #include <TVectorD.h>
 
@@ -33,7 +36,13 @@ namespace genfit {
  * @brief HMatrix for projecting from AbsTrackRep parameters to measured parameters in a DetPlane.
  *
  */
+template<unsigned int nRows>
 class AbsHMatrix {
+
+  using SMatrixX5 = ROOT::Math::SMatrix<double, nRows, 5>;
+  using SMatrix5X = ROOT::Math::SMatrix<double, 5, nRows>;
+  using SVectorX = ROOT::Math::SVector<double, nRows>;
+  using SMatrixSymXD = ROOT::Math::SMatrix<double, nRows, nRows, ROOT::Math::MatRepSym<double, nRows> >;
 
  public:
 
@@ -42,19 +51,28 @@ class AbsHMatrix {
   virtual ~AbsHMatrix() {;}
 
   //! Get the actual matrix representation
-  virtual const TMatrixD& getMatrix() const = 0;
+  virtual const SMatrixX5& getMatrix() const = 0;
 
   //! H*v
-  virtual TVectorD Hv(const TVectorD& v) const {return getMatrix()*v;}
+  virtual SVectorX Hv(const SVector5& v) const {return getMatrix()*v;}
 
   //! M*H^t
-  virtual TMatrixD MHt(const TMatrixDSym& M) const {return TMatrixD(M, TMatrixD::kMultTranspose, getMatrix());}
-  virtual TMatrixD MHt(const TMatrixD& M) const {return TMatrixD(M, TMatrixD::kMultTranspose, getMatrix());}
+  virtual SMatrix5X MHt(const SMatrixSym5& M) const {
+    // return TMatrixD(M, TMatrixD::kMultTranspose, getMatrix());
+    return M * ROOT::Math::Transpose(getMatrix());
+  }
+
+  template<unsigned int mRows>
+  ROOT::Math::SMatrix<double, mRows, nRows> MHt(const ROOT::Math::SMatrix<double, mRows, 5>& M) const
+  {
+    // return TMatrixD(M, TMatrixD::kMultTranspose, getMatrix());
+    return M * ROOT::Math::Transpose(getMatrix());
+  }
 
   //! similarity: H*M*H^t
-  virtual void HMHt(TMatrixDSym& M) const {M.Similarity(getMatrix());}
+  virtual SMatrixSymXD HMHt(SMatrixSym5& M) const {return ROOT::Math::Similarity(M, getMatrix());}
 
-  virtual AbsHMatrix* clone() const = 0;
+  virtual AbsHMatrix<nRows>* clone() const = 0;
 
   bool operator==(const AbsHMatrix& other) const {return this->isEqual(other);}
   bool operator!=(const AbsHMatrix& other) const {return !(this->isEqual(other));}

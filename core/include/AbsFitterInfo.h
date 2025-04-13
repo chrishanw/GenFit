@@ -26,6 +26,7 @@
 
 #include "MeasurementOnPlane.h"
 #include "FitStatus.h"
+#include "TrackPoint.fwd.h"
 
 #include <TVectorD.h>
 
@@ -33,27 +34,27 @@
 namespace genfit {
 
 class AbsTrackRep;
-class TrackPoint;
 
 /**
  *  @brief This class collects all information needed and produced by a specific  AbsFitter and is specific to one AbsTrackRep of the Track.
  */
+template<unsigned int dimMeas>
 class AbsFitterInfo {
 
  public:
 
   AbsFitterInfo();
-  AbsFitterInfo(const TrackPoint* trackPoint, const AbsTrackRep* rep);
+  AbsFitterInfo(const TrackPoint<dimMeas>* trackPoint, const AbsTrackRep* rep);
 
   virtual ~AbsFitterInfo() {};
 
   //! Deep copy ctor for polymorphic class.
   virtual AbsFitterInfo* clone() const = 0;
 
-  const TrackPoint* getTrackPoint() const {return trackPoint_;}
+  const TrackPoint<dimMeas>* getTrackPoint() const {return trackPoint_;}
   const AbsTrackRep* getRep() const {return rep_;}
 
-  void setTrackPoint(const TrackPoint *tp) {trackPoint_ = tp;}
+  void setTrackPoint(const TrackPoint<dimMeas> *tp) {trackPoint_ = tp;}
   virtual void setRep(const AbsTrackRep* rep) {rep_ = rep;}
 
   virtual bool hasMeasurements() const = 0;
@@ -71,8 +72,10 @@ class AbsFitterInfo {
   virtual void deleteMeasurementInfo() = 0;
 
   const SharedPlanePtr& getPlane() const {return sharedPlane_;}
-  virtual const MeasuredStateOnPlane& getFittedState(bool biased = true) const = 0;
-  virtual MeasurementOnPlane getResidual(unsigned int iMeasurement = 0, bool biased = true, bool onlyMeasurementErrors = false) const = 0;
+  template<unsigned int dim, unsigned int dimAux>
+  const MeasuredStateOnPlane<dim, dimAux>& getFittedState(bool biased = true) const;
+  template<unsigned int dim, unsigned int dimAux>
+  MeasurementOnPlane<dim, dimAux> getResidual(unsigned int iMeasurement = 0, bool biased = true, bool onlyMeasurementErrors = false) const;
 
   void setPlane(const SharedPlanePtr& plane) {sharedPlane_ = plane;}
 
@@ -84,7 +87,7 @@ class AbsFitterInfo {
 
   /** Pointer to TrackPoint where the FitterInfo belongs to
    */
-  const TrackPoint* trackPoint_; //! No ownership
+  const TrackPoint<dimMeas>* trackPoint_; //! No ownership
 
   /** Pointer to AbsTrackRep with respect to which the FitterInfo is defined
    */
@@ -107,7 +110,8 @@ class AbsFitterInfo {
 };
 
 //! Needed for boost cloneability:
-inline AbsFitterInfo* new_clone( const AbsFitterInfo & a)
+template<unsigned int dimMeas>
+inline AbsFitterInfo<dimMeas>* new_clone( const AbsFitterInfo<dimMeas> & a)
 {
   return a.clone();
 }

@@ -26,7 +26,7 @@
 
 #include "SharedPlanePtr.h"
 #include "AbsTrackRep.h"
-#include <TypeDefs.h>
+#include <SMatrixTypeDefs.h>
 
 #include <TVectorD.h>
 
@@ -44,16 +44,20 @@ namespace genfit {
  * It will provide functionality to extrapolate it and translate the state it into cartesian coordinates.
  * Shortcuts to all functions of the AbsTrackRep which use this StateOnPlane are also provided here.
  */
+template<unsigned int dim, unsigned int dimAux = 0>
 class StateOnPlane {
+
+  using SVectorState = ROOT::Math::SVector<double, dim>;
+  using SVectorAux = ROOT::Math::SVector<double, dimAux>;
 
  public:
 
-  StateOnPlane(const genfit::StateOnPlane&) = default;
+  StateOnPlane(const genfit::StateOnPlane<dim, dimAux>&) = default;
 
-  StateOnPlane(const AbsTrackRep* rep = nullptr);
+  StateOnPlane(const genfit::AbsTrackRep* rep = nullptr);
   //! state is defined by the TrackReps parameterization
-  StateOnPlane(const TVectorD& state, const SharedPlanePtr& plane, const AbsTrackRep* rep);
-  StateOnPlane(const TVectorD& state, const SharedPlanePtr& plane, const AbsTrackRep* rep, const TVectorD& auxInfo);
+  StateOnPlane(const SVectorState& state, const SharedPlanePtr& plane, const AbsTrackRep* rep);
+  StateOnPlane(const SVectorState& state, const SharedPlanePtr& plane, const AbsTrackRep* rep, const SVectorAux& auxInfo);
 
   StateOnPlane& operator=(StateOnPlane other);
   void swap(StateOnPlane& other); // nothrow
@@ -61,17 +65,17 @@ class StateOnPlane {
   virtual ~StateOnPlane() {}
   virtual StateOnPlane* clone() const {return new StateOnPlane(*this);}
 
-  const TVectorD& getState() const {return state_;}
-  TVectorD& getState() {return state_;}
-  const TVectorD& getAuxInfo() const {return auxInfo_;}
-  TVectorD& getAuxInfo() {return auxInfo_;}
+  const SVectorState& getState() const {return state_;}
+  SVectorState& getState() {return state_;}
+  const SVectorAux& getAuxInfo() const {return auxInfo_;}
+  SVectorAux& getAuxInfo() {return auxInfo_;}
   const SharedPlanePtr& getPlane() const {return sharedPlane_;}
   const AbsTrackRep* getRep() const {return rep_;}
 
-  void setState(const TVectorD& state) {if(state_.GetNrows() == 0) state_.ResizeTo(state); state_ = state;}
+  void setState(const SVectorState& state) {state_ = state;}
   void setPlane(const SharedPlanePtr& plane) {sharedPlane_ = plane;}
-  void setStatePlane(const TVectorD& state, const SharedPlanePtr& plane) {state_ = state; sharedPlane_ = plane;}
-  void setAuxInfo(const TVectorD& auxInfo) {if(auxInfo_.GetNrows() == 0) auxInfo_.ResizeTo(auxInfo); auxInfo_ = auxInfo;}
+  void setStatePlane(const SVectorState& state, const SharedPlanePtr& plane) {state_ = state; sharedPlane_ = plane;}
+  void setAuxInfo(const SVectorAux& auxInfo) {auxInfo_ = auxInfo;}
   void setRep(const AbsTrackRep* rep) {rep_ = rep;}
 
   // Shortcuts to TrackRep functions
@@ -106,7 +110,8 @@ class StateOnPlane {
   double extrapolateBy(double step,
         bool stopAtBoundary = false,
         bool calcJacobianNoise = false) {return rep_->extrapolateBy(*this, step, stopAtBoundary, calcJacobianNoise);}
-  double extrapolateToMeasurement(const AbsMeasurement* measurement,
+  template<unsigned int dimMeas>
+  double extrapolateToMeasurement(const AbsMeasurement<dimMeas>* measurement,
         bool stopAtBoundary = false,
         bool calcJacobianNoise = false) {return rep_->extrapolateToMeasurement(*this, measurement, stopAtBoundary, calcJacobianNoise);}
 
@@ -135,8 +140,8 @@ class StateOnPlane {
 
  protected:
 
-  TVectorD state_; // state vector
-  TVectorD auxInfo_; // auxiliary information (e.g. charge, flight direction etc.)
+  SVectorState state_; // state vector
+  SVectorAux auxInfo_; // auxiliary information (e.g. charge, flight direction etc.)
   SharedPlanePtr sharedPlane_; //! Shared ownership.  '!' in order to silence ROOT, custom streamer writes and reads this.
 
  private:
@@ -153,7 +158,8 @@ class StateOnPlane {
 };
 
 
-inline StateOnPlane::StateOnPlane(const AbsTrackRep* rep) :
+template<unsigned int dim, unsigned int dimAux>
+inline StateOnPlane<dim, dimAux>::StateOnPlane(const AbsTrackRep* rep) :
   state_(0), auxInfo_(0), sharedPlane_(), rep_(rep)
 {
   if (rep != nullptr) {
@@ -161,26 +167,35 @@ inline StateOnPlane::StateOnPlane(const AbsTrackRep* rep) :
   }
 }
 
-inline StateOnPlane::StateOnPlane(const TVectorD& state, const SharedPlanePtr& plane, const AbsTrackRep* rep) :
+template<unsigned int dim, unsigned int dimAux>
+inline StateOnPlane<dim, dimAux>::StateOnPlane(const SVectorState& state,
+                                               const SharedPlanePtr& plane,
+                                               const AbsTrackRep* rep) :
   state_(state), auxInfo_(0), sharedPlane_(plane), rep_(rep)
 {
   assert(rep != nullptr);
   assert(sharedPlane_.get() != nullptr);
 }
 
-inline StateOnPlane::StateOnPlane(const TVectorD& state, const SharedPlanePtr& plane, const AbsTrackRep* rep, const TVectorD& auxInfo) :
+template<unsigned int dim, unsigned int dimAux>
+inline StateOnPlane<dim, dimAux>::StateOnPlane(const SVectorState& state,
+                                               const SharedPlanePtr& plane,
+                                               const AbsTrackRep* rep, 
+                                               const SVectorAux& auxInfo) :
   state_(state), auxInfo_(auxInfo), sharedPlane_(plane), rep_(rep)
 {
   assert(rep != nullptr);
   assert(sharedPlane_.get() != nullptr);
 }
 
-inline StateOnPlane& StateOnPlane::operator=(StateOnPlane other) {
+template<unsigned int dim, unsigned int dimAux>
+inline StateOnPlane<dim, dimAux>& StateOnPlane<dim, dimAux>::operator=(StateOnPlane other) {
   swap(other);
   return *this;
 }
 
-inline void StateOnPlane::swap(StateOnPlane& other) {
+template<unsigned int dim, unsigned int dimAux>
+inline void StateOnPlane<dim, dimAux>::swap(StateOnPlane& other) {
   this->state_.ResizeTo(other.state_);
   std::swap(this->state_, other.state_);
   this->auxInfo_.ResizeTo(other.auxInfo_);
