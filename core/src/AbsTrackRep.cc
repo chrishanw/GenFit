@@ -47,8 +47,9 @@ AbsTrackRep::AbsTrackRep(const AbsTrackRep& rep) :
 }
 
 
-double AbsTrackRep::extrapolateToMeasurement(StateOnPlane& state,
-    const AbsMeasurement* measurement,
+template<unsigned int dim, unsigned int dimAux, unsigned int dimMeas>
+double AbsTrackRep::extrapolateToMeasurement(StateOnPlane<dim, dimAux>& state,
+    const AbsMeasurement<dimMeas>* measurement,
     bool stopAtBoundary,
     bool calcJacobianNoise) const {
 
@@ -56,7 +57,8 @@ double AbsTrackRep::extrapolateToMeasurement(StateOnPlane& state,
 }
 
 
-SVector6 AbsTrackRep::get6DState(const StateOnPlane& state) const {
+template<unsigned int dim, unsigned int dimAux>
+SVector6 AbsTrackRep::get6DState(const StateOnPlane<dim, dimAux>& state) const {
   ROOT::Math::XYZVector pos, mom;
   getPosMom(state, pos, mom);
 
@@ -74,11 +76,10 @@ SVector6 AbsTrackRep::get6DState(const StateOnPlane& state) const {
 }
 
 
-void AbsTrackRep::get6DStateCov(const MeasuredStateOnPlane& state, TVectorD& stateVec, TMatrixDSym& cov) const {
+template<unsigned int dim, unsigned int dimAux>
+void AbsTrackRep::get6DStateCov(const MeasuredStateOnPlane<dim, dimAux>& state, SVector6& stateVec, SMatrixSym6& cov) const {
   ROOT::Math::XYZVector pos, mom;
   getPosMomCov(state, pos, mom, cov);
-
-  stateVec.ResizeTo(6);
 
   stateVec(0) = pos.X();
   stateVec(1) = pos.Y();
@@ -97,12 +98,14 @@ double AbsTrackRep::getPDGCharge() const {
 }
 
 
-double AbsTrackRep::getMass(const StateOnPlane& /*state*/) const {
+template<unsigned int dim, unsigned int dimAux>
+double AbsTrackRep::getMass(const StateOnPlane<dim, dimAux>& /*state*/) const {
   return TDatabasePDG::Instance()->GetParticle(pdgCode_)->Mass();
 }
 
 
-void AbsTrackRep::calcJacobianNumerically(const genfit::StateOnPlane& origState,
+template<unsigned int dim, unsigned int dimAux>
+void AbsTrackRep::calcJacobianNumerically(const genfit::StateOnPlane<dim, dimAux>& origState,
                                                const genfit::SharedPlanePtr destPlane,
                                                TMatrixD& jacobian) const {
 

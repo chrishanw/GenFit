@@ -25,14 +25,14 @@
 
 namespace genfit {
 
-AbsMeasurement::AbsMeasurement(const TVectorD& rawHitCoords, const TMatrixDSym& rawHitCov, int detId, int hitId, TrackPoint* trackPoint)
+template<unsigned int dimMeas>
+AbsMeasurement<dimMeas>::AbsMeasurement(const SVectorCoord& rawHitCoords, const SMatrixSymCoord& rawHitCov, int detId, int hitId, TrackPoint* trackPoint)
   : rawHitCoords_(rawHitCoords), rawHitCov_(rawHitCov), detId_(detId), hitId_(hitId), trackPoint_(trackPoint)
-{
-  assert(rawHitCov_.GetNrows() == rawHitCoords_.GetNrows());
-}
+{}
 
 
-AbsMeasurement::AbsMeasurement(const AbsMeasurement& o)
+template<unsigned int dimMeas>
+AbsMeasurement<dimMeas>::AbsMeasurement(const AbsMeasurement<dimMeas>& o)
   : rawHitCoords_(o.rawHitCoords_),
     rawHitCov_(o.rawHitCov_),
     detId_(o.detId_),
@@ -43,20 +43,16 @@ AbsMeasurement::AbsMeasurement(const AbsMeasurement& o)
 }
 
 
-AbsMeasurement::~AbsMeasurement()
-{
-  ;
-}
-
-
-AbsMeasurement& AbsMeasurement::operator=(const AbsMeasurement&) {
+template<unsigned int dimMeas>
+AbsMeasurement<dimMeas>& AbsMeasurement<dimMeas>::operator=(const AbsMeasurement<dimMeas>&) {
   fputs ("must not call AbsMeasurement::operator=\n",stderr);
   abort();
   return *this;
 }
 
 
-void AbsMeasurement::Print(const Option_t*) const {
+template<unsigned int dimMeas>
+void AbsMeasurement<dimMeas>::Print(const Option_t*) const {
   printOut << "genfit::AbsMeasurement, detId = " << detId_ << ". hitId = " << hitId_ << "\n";
   printOut << "Raw hit coordinates: "; rawHitCoords_.Print();
   printOut << "Raw hit covariance: "; rawHitCov_.Print();

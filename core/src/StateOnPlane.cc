@@ -26,8 +26,8 @@
 
 namespace genfit {
 
-
-void StateOnPlane::Print(Option_t*) const {
+template<unsigned int dim, unsigned int dimAux>
+void StateOnPlane<dim, dimAux>::Print(Option_t*) const {
   printOut << "genfit::StateOnPlane ";
   printOut << " state vector: "; state_.Print();
   if (sharedPlane_ != nullptr) {

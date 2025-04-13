@@ -22,14 +22,16 @@
 #include <TClass.h>
 namespace genfit {
 
-AbsFitterInfo::AbsFitterInfo() :
+  template<unsigned int dimMeas>
+AbsFitterInfo<dimMeas>::AbsFitterInfo() :
   trackPoint_(nullptr),
   rep_(nullptr)
 {
   ;
 }
 
-AbsFitterInfo::AbsFitterInfo(const TrackPoint* trackPoint, const AbsTrackRep* rep) :
+template<unsigned int dimMeas>
+AbsFitterInfo<dimMeas>::AbsFitterInfo(const TrackPoint<dimMeas>* trackPoint, const AbsTrackRep* rep) :
   trackPoint_(trackPoint),
   rep_(rep)
 {

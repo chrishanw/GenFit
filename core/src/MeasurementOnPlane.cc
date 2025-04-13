@@ -25,35 +25,39 @@
 
 namespace genfit {
 
-MeasurementOnPlane::MeasurementOnPlane(const MeasurementOnPlane& other) :
-    MeasuredStateOnPlane(other),
+template<unsigned int dim, unsigned int dimAux>
+MeasurementOnPlane<dim, dimAux>::MeasurementOnPlane(const MeasurementOnPlane<dim, dimAux>& other) :
+    MeasuredStateOnPlane<dim, dimAux>(other),
     weight_(other.weight_)
 {
   hMatrix_.reset(other.hMatrix_->clone());
 }
 
 
-MeasurementOnPlane& MeasurementOnPlane::operator=(MeasurementOnPlane other) {
+template<unsigned int dim, unsigned int dimAux>
+MeasurementOnPlane<dim, dimAux>& MeasurementOnPlane<dim, dimAux>::operator=(MeasurementOnPlane<dim, dimAux> other) {
   swap(other);
   return *this;
 }
 
 
-void MeasurementOnPlane::swap(MeasurementOnPlane& other) {
-  MeasuredStateOnPlane::swap(other);
+template<unsigned int dim, unsigned int dimAux>
+void MeasurementOnPlane<dim, dimAux>::swap(MeasurementOnPlane<dim, dimAux>& other) {
+  MeasuredStateOnPlane<dim, dimAux>::swap(other);
   this->hMatrix_.swap(other.hMatrix_);
   std::swap(this->weight_, other.weight_);
 }
 
 
-void MeasurementOnPlane::Print(Option_t*) const
+template<unsigned int dim, unsigned int dimAux>
+void MeasurementOnPlane<dim, dimAux>::Print(Option_t*) const
 {
   printOut << "genfit::MeasurementOnPlane, weight = " << weight_ << "\n";
-  printOut << " state vector: "; state_.Print();
-  printOut << " covariance matrix: "; cov_.Print();
-  if (sharedPlane_ != nullptr) {
+  printOut << " state vector: "; Super::state_.Print();
+  printOut << " covariance matrix: "; Super::cov_.Print();
+  if (Super::sharedPlane_ != nullptr) {
       printOut << " defined in plane ";
-      sharedPlane_->Print();
+      Super::sharedPlane_->Print();
   }
   printOut << " hMatrix: "; hMatrix_->Print();
 

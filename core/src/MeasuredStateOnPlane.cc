@@ -29,25 +29,25 @@
 
 namespace genfit {
 
-void MeasuredStateOnPlane::Print(Option_t*) const {
+  template<unsigned int dim, unsigned int dimAux>
+void MeasuredStateOnPlane<dim, dimAux>::Print(Option_t*) const {
   printOut << "genfit::MeasuredStateOnPlane ";
-  printOut << "my address " << this << " my plane's address " << this->sharedPlane_.get() << "; use count: " << sharedPlane_.use_count() << std::endl;
-  printOut << " state vector: "; state_.Print();
+  printOut << "my address " << this << " my plane's address " << this->sharedPlane_.get() << "; use count: " << Super::sharedPlane_.use_count() << std::endl;
+  printOut << " state vector: "; Super::state_.Print();
   printOut << " covariance matrix: "; cov_.Print();
-  if (sharedPlane_ != nullptr) {
-    printOut << " defined in plane "; sharedPlane_->Print();
+  if (Super::sharedPlane_ != nullptr) {
+    printOut << " defined in plane "; Super::sharedPlane_->Print();
     ROOT::Math::XYZVector pos, mom;
-    TMatrixDSym cov(6,6);
-    getRep()->getPosMomCov(*this, pos, mom, cov);
+    SMatrixSym6 cov;
+    Super::getRep()->getPosMomCov(*this, pos, mom, cov);
     printOut << " 3D position: "; genfit::tools::printVector3D(pos);
     printOut << " 3D momentum: "; genfit::tools::printVector3D(mom);
     //printOut << " 6D covariance: "; cov.Print();
   }
 }
 
-void MeasuredStateOnPlane::blowUpCov(double blowUpFac, bool resetOffDiagonals, double maxVal) {
-
-  unsigned int dim = cov_.GetNcols();
+template<unsigned int dim, unsigned int dimAux>
+void MeasuredStateOnPlane<dim, dimAux>::blowUpCov(double blowUpFac, bool resetOffDiagonals, double maxVal) {
 
   if (resetOffDiagonals) {
     for (unsigned int i=0; i<dim; ++i) {
@@ -73,7 +73,8 @@ void MeasuredStateOnPlane::blowUpCov(double blowUpFac, bool resetOffDiagonals, d
 }
 
 
-MeasuredStateOnPlane calcAverageState(const MeasuredStateOnPlane& forwardState, const MeasuredStateOnPlane& backwardState) {
+template<unsigned int dim, unsigned int dimAux>
+MeasuredStateOnPlane<dim, dimAux> calcAverageState(const MeasuredStateOnPlane<dim, dimAux>& forwardState, const MeasuredStateOnPlane<dim, dimAux>& backwardState) {
   // check if both states are defined in the same plane
   if (forwardState.getPlane() != backwardState.getPlane()) {
     Exception e("KalmanFitterInfo::calcAverageState: forwardState and backwardState are not defined in the same plane.", __LINE__,__FILE__);
