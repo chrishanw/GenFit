@@ -10,6 +10,7 @@
 
 #include <Math/SMatrix.h>
 #include <Math/SVector.h>
+typedef ROOT::Math::SMatrix<double, 1> SMatrix11;
 typedef ROOT::Math::SMatrix<double, 2> SMatrix22;
 typedef ROOT::Math::SMatrix<double, 3> SMatrix33;
 typedef ROOT::Math::SMatrix<double, 5> SMatrix55;
@@ -22,8 +23,10 @@ typedef ROOT::Math::SMatrix<double, 3, 2> SMatrix32;
 typedef ROOT::Math::SMatrix<double, 3, 3> SMatrix33;
 typedef ROOT::Math::SMatrix<double, 3, 6> SMatrix36;
 typedef ROOT::Math::SMatrix<double, 5, 1> SMatrix51;
+typedef ROOT::Math::SMatrix<double, 5, 2> SMatrix52;
 typedef ROOT::Math::SMatrix<double, 7, 7> SMatrix77;
 
+typedef ROOT::Math::SMatrix<double, 1, 1, ROOT::Math::MatRepSym<double, 1> >    SMatrixSym1;
 typedef ROOT::Math::SMatrix<double, 2, 2, ROOT::Math::MatRepSym<double, 2> >    SMatrixSym2;
 typedef ROOT::Math::SMatrix<double, 3, 3, ROOT::Math::MatRepSym<double, 3> >    SMatrixSym3;
 typedef ROOT::Math::SMatrix<double, 5, 5, ROOT::Math::MatRepSym<double, 5> >    SMatrixSym5;
