@@ -27,14 +27,13 @@
 
 #include "MeasurementProducer.h"
 #include "TrackCand.h"
+#include "AbsMeasurement.fwd.h"
 
 #include <vector>
 #include <map>
 
 
 namespace genfit {
-
-class AbsMeasurement;
 
 /** @brief Factory object to create AbsMeasurement objects from digitized and clustered data
  *

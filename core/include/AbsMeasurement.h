@@ -25,38 +25,43 @@
 
 #include "MeasurementOnPlane.h"
 #include "AbsHMatrix.h"
+#include "TrackPoint.fwd.h"
 
+#include <Math/SVector.h>
 
 namespace genfit {
 
 class AbsTrackRep;
-class TrackPoint;
 
 /**
  *  @brief Contains the measurement and covariance in raw detector coordinates.
  *
  *  Detector and hit ids can be used to point back to the original detector hits (clusters etc.).
  */
+template<unsigned int dimMeas>
 class AbsMeasurement {
+
+  using SVectorCoord = ROOT::Math::SVector<double, dimMeas>;
+  using SMatrixSymCoord = ROOT::Math::SMatrix<double, dimMeas, dimMeas, ROOT::Math::MatRepSym<double, dimMeas> >;
 
  public:
 
   AbsMeasurement() : rawHitCoords_(), rawHitCov_(), detId_(-1), hitId_(-1), trackPoint_(nullptr) {;}
   AbsMeasurement(int nDims) : rawHitCoords_(nDims), rawHitCov_(nDims), detId_(-1), hitId_(-1), trackPoint_(nullptr) {;}
-  AbsMeasurement(const TVectorD& rawHitCoords, const TMatrixDSym& rawHitCov, int detId, int hitId, TrackPoint* trackPoint);
+  AbsMeasurement(const SVectorCoord& rawHitCoords, const SMatrixSymCoord& rawHitCov, int detId, int hitId, TrackPoint<dimMeas>* trackPoint);
 
-  virtual ~AbsMeasurement();
+  virtual ~AbsMeasurement() = default;
 
   //! Deep copy ctor for polymorphic class.
   virtual AbsMeasurement* clone() const = 0;
 
-  TrackPoint* getTrackPoint() const {return trackPoint_;}
-  void setTrackPoint(TrackPoint* tp) {trackPoint_ = tp;}
+  TrackPoint<dimMeas>* getTrackPoint() const {return trackPoint_;}
+  void setTrackPoint(TrackPoint<dimMeas>* tp) {trackPoint_ = tp;}
 
-  const TVectorD& getRawHitCoords() const {return rawHitCoords_;}
-  const TMatrixDSym& getRawHitCov() const {return rawHitCov_;}
-  TVectorD& getRawHitCoords() {return rawHitCoords_;}
-  TMatrixDSym& getRawHitCov() {return rawHitCov_;}
+  const SVectorCoord& getRawHitCoords() const {return rawHitCoords_;}
+  const SMatrixSymCoord& getRawHitCov() const {return rawHitCov_;}
+  SVectorCoord& getRawHitCoords() {return rawHitCoords_;}
+  SMatrixSymCoord& getRawHitCov() {return rawHitCov_;}
   int getDetId() const {return detId_;}
   int getHitId() const {return hitId_;}
 
@@ -66,8 +71,8 @@ class AbsMeasurement {
 
   unsigned int getDim() const {return rawHitCoords_.GetNrows();}
 
-  void setRawHitCoords(const TVectorD& coords) {rawHitCoords_ = coords;}
-  void setRawHitCov(const TMatrixDSym& cov) {rawHitCov_ = cov;}
+  void setRawHitCoords(const SVectorCoord& coords) {rawHitCoords_ = coords;}
+  void setRawHitCov(const SMatrixSymCoord& cov) {rawHitCov_ = cov;}
   void setDetId(int detId) {detId_ = detId;}
   void setHitId(int hitId) {hitId_ = hitId;}
 
@@ -79,7 +84,8 @@ class AbsMeasurement {
    * For virtual planes, the state will be extrapolated to the POCA to point (SpacepointMeasurement)
    * or line (WireMeasurement), and from this info the plane will be constructed.
    */
-  virtual SharedPlanePtr constructPlane(const StateOnPlane& state) const = 0;
+  template<unsigned int dim, unsigned int dimAux>
+  SharedPlanePtr constructPlane(const StateOnPlane<dim, dimAux>& state) const;
 
   /**
    * Construct MeasurementOnPlane on plane of the state
@@ -90,12 +96,13 @@ class AbsMeasurement {
    * It's possible to make corrections to the coordinates here (e.g. by using the state coordinates).
    * Usually the vector will contain only one element. But in the case of e.g. a WireMeasurement, it will be 2 (left and right).
    */
-  virtual std::vector<genfit::MeasurementOnPlane*> constructMeasurementsOnPlane(const StateOnPlane& state) const = 0;
+  template<unsigned int dim, unsigned int dimAux>
+  std::vector<genfit::MeasurementOnPlane<dim, dimAux>*> constructMeasurementsOnPlane(const StateOnPlane<dim, dimAux>& state) const;
 
   /**
    * Returns a new AbsHMatrix object. Caller must take ownership.
    */
-  virtual const AbsHMatrix* constructHMatrix(const AbsTrackRep*) const = 0;
+  virtual const AbsHMatrix<dimMeas>* constructHMatrix(const AbsTrackRep*) const = 0;
 
   virtual void Print(const Option_t* = "") const;
 
@@ -108,13 +115,13 @@ class AbsMeasurement {
   //! protect from calling copy c'tor from outside the class. Use #clone() if you want a copy!
   AbsMeasurement(const AbsMeasurement&);
 
-  TVectorD rawHitCoords_;
-  TMatrixDSym rawHitCov_;
+  SVectorCoord rawHitCoords_;
+  SMatrixSymCoord rawHitCov_;
   int detId_; // detId id is -1 per default
   int hitId_; // hitId id is -1 per default
 
   //! Pointer to TrackPoint where the measurement belongs to
-  TrackPoint* trackPoint_; //! No ownership
+  TrackPoint<dimMeas>* trackPoint_; //! No ownership
 
  public:
   ClassDef(AbsMeasurement, 4)
