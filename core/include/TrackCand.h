@@ -23,7 +23,7 @@
 #define genfit_TrackCand_h
 
 #include "TrackCandHit.h"
-#include "SMatrixTypeDefs.h"
+#include "TypeDefs.h"
 
 #include <vector>
 #include <set>

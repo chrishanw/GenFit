@@ -26,10 +26,7 @@
 #include "SharedPlanePtr.h"
 //#include "MaterialInfo.h"
 #include "Material.h"
-#include <StateOnPlane.fwd.h>
-#include <MeasuredStateOnPlane.fwd.h>
-#include <SMatrixTypeDefs.h>
-#include <AbsMeasurement.fwd.h>
+#include <TypeDefs.h>
 
 #include <Math/Vector3D.h>
 #include <TVectorD.h>
@@ -52,9 +49,9 @@ struct MatStep {
 
 };
 
-// class StateOnPlane;
-// class MeasuredStateOnPlane;
-// class AbsMeasurement;
+class StateOnPlane;
+class MeasuredStateOnPlane;
+class AbsMeasurement;
 
 /**
  * @brief Abstract base class for a track representation
@@ -87,12 +84,11 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToPlane(
-      StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToPlane(
+      StateOnPlane& state,
       const genfit::SharedPlanePtr& plane,
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Extrapolates the state to the POCA to a line, and returns the extrapolation length
@@ -103,12 +99,11 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToLine(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToLine(StateOnPlane& state,
       const ROOT::Math::XYZVector& linePoint,
       const ROOT::Math::XYZVector& lineDirection,
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Resembles the interface of GFAbsTrackRep in old versions of genfit
@@ -122,8 +117,7 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToLine(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToLine(StateOnPlane& state,
       const ROOT::Math::XYZVector& point1,
       const ROOT::Math::XYZVector& point2,
       ROOT::Math::XYZVector& poca,
@@ -152,11 +146,10 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToPoint(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToPoint(StateOnPlane& state,
       const ROOT::Math::XYZVector& point,
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Extrapolates the state to the POCA to a point in the metric of G, and returns the extrapolation length
@@ -167,12 +160,11 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToPoint(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToPoint(StateOnPlane& state,
       const ROOT::Math::XYZVector& point,
       const TMatrixDSym& G, // weight matrix (metric)
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Extrapolates the state to the cylinder surface, and returns the extrapolation length
@@ -183,13 +175,12 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToCylinder(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToCylinder(StateOnPlane& state,
       double radius,
       const ROOT::Math::XYZVector& linePoint = ROOT::Math::XYZVector(0.,0.,0.),
       const ROOT::Math::XYZVector& lineDirection = ROOT::Math::XYZVector(0.,0.,1.),
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Extrapolates the state to the cone surface, and returns the extrapolation length
@@ -200,13 +191,12 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToCone(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToCone(StateOnPlane& state,
       double radius,
       const ROOT::Math::XYZVector& linePoint = ROOT::Math::XYZVector(0.,0.,0.),
       const ROOT::Math::XYZVector& lineDirection = ROOT::Math::XYZVector(0.,0.,1.),
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Extrapolates the state to the sphere surface, and returns the extrapolation length
@@ -217,12 +207,11 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateToSphere(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateToSphere(StateOnPlane& state,
       double radius,
       const ROOT::Math::XYZVector& point = ROOT::Math::XYZVector(0.,0.,0.),
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   /**
    * @brief Extrapolates the state by step (cm) and returns the extrapolation length
@@ -233,16 +222,14 @@ class AbsTrackRep {
    * If state has a covariance, jacobian and noise matrices will be calculated and the covariance will be propagated.
    * If state has no covariance, jacobian and noise will only be calculated if calcJacobianNoise == true.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double extrapolateBy(StateOnPlane<dim, dimAux>& state,
+  virtual double extrapolateBy(StateOnPlane& state,
       double step,
       bool stopAtBoundary = false,
-      bool calcJacobianNoise = false) const;
+      bool calcJacobianNoise = false) const = 0;
 
   //! extrapolate to an AbsMeasurement
-  template<unsigned int dim, unsigned int dimAux, unsigned int dimMeas>
-  double extrapolateToMeasurement(StateOnPlane<dim, dimAux>& state,
-      const AbsMeasurement<dimMeas>* measurement,
+  double extrapolateToMeasurement(StateOnPlane& state,
+      const AbsMeasurement* measurement,
       bool stopAtBoundary = false,
       bool calcJacobianNoise = false) const;
 
@@ -250,47 +237,36 @@ class AbsTrackRep {
   virtual unsigned int getDim() const = 0;
 
   //! Get the cartesian position of a state.
-  template<unsigned int dim, unsigned int dimAux>
-  ROOT::Math::XYZVector getPos(const StateOnPlane<dim, dimAux>& state) const;
+  virtual ROOT::Math::XYZVector getPos(const StateOnPlane& state) const = 0;
 
   //! Get the cartesian momentum vector of a state.
-  template<unsigned int dim, unsigned int dimAux>
-  ROOT::Math::XYZVector getMom(const StateOnPlane<dim, dimAux>& state) const;
+  virtual ROOT::Math::XYZVector getMom(const StateOnPlane& state) const = 0;
 
   //! Get the direction vector of a state.
-  template<unsigned int dim, unsigned int dimAux>
-  ROOT::Math::XYZVector getDir(const StateOnPlane<dim, dimAux>& state) const {return getMom(state).Unit();}
+  ROOT::Math::XYZVector getDir(const StateOnPlane& state) const {return getMom(state).Unit();}
 
   //! Get cartesian position and momentum vector of a state.
-  template<unsigned int dim, unsigned int dimAux>
-  void getPosMom(const StateOnPlane<dim, dimAux>& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const;
+  virtual void getPosMom(const StateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom) const = 0;
 
   //! Get cartesian position and direction vector of a state.
-  template<unsigned int dim, unsigned int dimAux>
-  void getPosDir(const StateOnPlane<dim, dimAux>& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {getPosMom(state, pos, dir); dir *= 1. / dir.R();}
+  void getPosDir(const StateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& dir) const {getPosMom(state, pos, dir); dir *= 1. / dir.R();}
 
   //! Get the 6D state vector (x, y, z, p_x, p_y, p_z).
-  template<unsigned int dim, unsigned int dimAux>
-  SVector6 get6DState(const StateOnPlane<dim, dimAux>& state) const;
+  virtual SVector6 get6DState(const StateOnPlane& state) const;
 
   //! Get the 6D covariance.
-  template<unsigned int dim, unsigned int dimAux>
-  SMatrixSym6 get6DCov(const MeasuredStateOnPlane<dim, dimAux>& state) const;
+  virtual SMatrixSym6 get6DCov(const MeasuredStateOnPlane& state) const = 0;
 
   //! Translates MeasuredStateOnPlane into 3D position, momentum and 6x6 covariance.
-  template<unsigned int dim, unsigned int dimAux>
-  void getPosMomCov(const MeasuredStateOnPlane<dim, dimAux>& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, SMatrixSym6& cov) const;
+  virtual void getPosMomCov(const MeasuredStateOnPlane& state, ROOT::Math::XYZVector& pos, ROOT::Math::XYZVector& mom, SMatrixSym6& cov) const = 0;
 
   //! Translates MeasuredStateOnPlane into 6D state vector (x, y, z, p_x, p_y, p_z) and 6x6 covariance.
-  template<unsigned int dim, unsigned int dimAux>
-  void get6DStateCov(const MeasuredStateOnPlane<dim, dimAux>& state, SVector6& stateVec, SMatrixSym6& cov) const;
+  virtual void get6DStateCov(const MeasuredStateOnPlane& state, SVector6& stateVec, SMatrixSym6& cov) const;
 
   //! get the magnitude of the momentum in GeV.
-  template<unsigned int dim, unsigned int dimAux>
-  double getMomMag(const StateOnPlane<dim, dimAux>& state) const;
+  virtual double getMomMag(const StateOnPlane& state) const = 0;
   //! get the variance of the absolute value of the momentum .
-  template<unsigned int dim, unsigned int dimAux>
-  double getMomVar(const MeasuredStateOnPlane<dim, dimAux>& state) const;
+  virtual double getMomVar(const MeasuredStateOnPlane& state) const = 0;
 
   //! Get the pdg code.
   int getPDG() const {return pdgCode_;}
@@ -302,14 +278,11 @@ class AbsTrackRep {
    * @brief Get the (fitted) charge of a state.
    * This is not always equal the pdg charge (e.g. if the charge sign was flipped during the fit).
    */
-  template<unsigned int dim, unsigned int dimAux>
-  double getCharge(const StateOnPlane<dim, dimAux>& state) const;
+  virtual double getCharge(const StateOnPlane& state) const = 0;
   //! Get charge over momentum.
-  template<unsigned int dim, unsigned int dimAux>
-  double getQop(const StateOnPlane<dim, dimAux>& state) const;
+  virtual double getQop(const StateOnPlane& state) const = 0;
   //! Get tha particle mass in GeV/c^2
-  template<unsigned int dim, unsigned int dimAux>
-  double getMass(const StateOnPlane<dim, dimAux>& state) const;
+  double getMass(const StateOnPlane& state) const;
 
   //! Get propagation direction. (-1, 0, 1) -> (backward, auto, forward).
   char getPropDir() const {return propDir_;}
@@ -328,15 +301,13 @@ class AbsTrackRep {
 
   //! Get the time corresponding to the StateOnPlane.  Extrapolation
   // should keep this up to date with the time of flight.
-  template<unsigned int dim, unsigned int dimAux>
-  double getTime(const StateOnPlane<dim, dimAux>&) const;
+  virtual double getTime(const StateOnPlane&) const = 0;
 
   /**
    * @brief Calculate Jacobian of transportation numerically.
    * Slow but accurate. Can be used to validate (semi)analytic calculations.
    */
-  template<unsigned int dim, unsigned int dimAux>
-  void calcJacobianNumerically(const genfit::StateOnPlane<dim, dimAux>& origState,
+  void calcJacobianNumerically(const genfit::StateOnPlane& origState,
                                    const genfit::SharedPlanePtr destPlane,
                                    TMatrixD& jacobian) const;
 
@@ -344,30 +315,22 @@ class AbsTrackRep {
   bool switchPDGSign();
 
   //! Set position and momentum of state.
-  template<unsigned int dim, unsigned int dimAux>
-  void setPosMom(StateOnPlane<dim, dimAux>& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom) const;
+  virtual void setPosMom(StateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom) const = 0;
   //! Set position and momentum of state.
-  template<unsigned int dim, unsigned int dimAux>
-  void setPosMom(StateOnPlane<dim, dimAux>& state, const SVector6& state6) const;
+  virtual void setPosMom(StateOnPlane& state, const SVector6& state6) const = 0;
   //! Set position and momentum and error of state.
-  template<unsigned int dim, unsigned int dimAux>
-  void setPosMomErr(MeasuredStateOnPlane<dim, dimAux>& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const ROOT::Math::XYZVector& posErr, const ROOT::Math::XYZVector& momErr) const;
+  virtual void setPosMomErr(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const ROOT::Math::XYZVector& posErr, const ROOT::Math::XYZVector& momErr) const = 0;
   //! Set position, momentum and covariance of state.
-  template<unsigned int dim, unsigned int dimAux>
-  void setPosMomCov(MeasuredStateOnPlane<dim, dimAux>& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const SMatrixSym6& cov6x6) const;
+  virtual void setPosMomCov(MeasuredStateOnPlane& state, const ROOT::Math::XYZVector& pos, const ROOT::Math::XYZVector& mom, const SMatrixSym6& cov6x6) const = 0;
   //! Set position, momentum and covariance of state.
-  template<unsigned int dim, unsigned int dimAux>
-  void setPosMomCov(MeasuredStateOnPlane<dim, dimAux>& state, const SVector6& state6, const SMatrixSym6& cov6x6) const;
+  virtual void setPosMomCov(MeasuredStateOnPlane& state, const SVector6& state6, const SMatrixSym6& cov6x6) const = 0;
 
   //! Set the sign of the charge according to charge.
-  template<unsigned int dim, unsigned int dimAux>
-  void setChargeSign(StateOnPlane<dim, dimAux>& state, double charge) const;
+  virtual void setChargeSign(StateOnPlane& state, double charge) const = 0;
   //! Set charge/momentum.
-  template<unsigned int dim, unsigned int dimAux>
-  void setQop(StateOnPlane<dim, dimAux>& state, double qop) const;
+  virtual void setQop(StateOnPlane& state, double qop) const = 0;
   //! Set time at which the state was defined
-  template<unsigned int dim, unsigned int dimAux>
-  void setTime(StateOnPlane<dim, dimAux>& state, double time) const;
+  virtual void setTime(StateOnPlane& state, double time) const = 0;
 
   //! Set propagation direction. (-1, 0, 1) -> (backward, auto, forward).
   void setPropDir(int dir) {

@@ -26,13 +26,14 @@
 
 #include "Exception.h"
 #include "TrackCand.h"
-#include "AbsMeasurement.fwd.h"
 
 #include <assert.h>
 #include <TClonesArray.h>
 
 
 namespace genfit {
+
+class AbsMeasurement;
 
 /** @brief Abstract interface class for MeasurementProducer
  *
@@ -71,8 +72,8 @@ public:
  * @param hit_t template parameter specifying hit/cluster class
  * @param measurement_T template parameter specifying Measurement
  */
-template <class hit_T, class measurement_T, unsigned int dimMeas>
-class MeasurementProducer : public AbsMeasurementProducer<genfit::AbsMeasurement<dimMeas>> {
+template <class hit_T, class measurement_T>
+class MeasurementProducer : public AbsMeasurementProducer<genfit::AbsMeasurement> {
  private:
   /** @brief pointer to array with cluster data */
   TClonesArray* hitArrayTClones_;
@@ -85,23 +86,23 @@ class MeasurementProducer : public AbsMeasurementProducer<genfit::AbsMeasurement
   /** @brief Create a Measurement from the cluster at position index
    * in TClonesArray
    */
-  virtual AbsMeasurement<dimMeas>* produce(int index, const TrackCandHit* hit);
+  virtual AbsMeasurement* produce(int index, const TrackCandHit* hit);
 };
 
 
-template <class hit_T, class measurement_T, unsigned int dimMeas>
-  MeasurementProducer<hit_T, measurement_T, dimMeas>::MeasurementProducer(TClonesArray* theArr) {
+template <class hit_T, class measurement_T>
+  MeasurementProducer<hit_T, measurement_T>::MeasurementProducer(TClonesArray* theArr) {
   hitArrayTClones_ = theArr;
   //std::cout << "hit array with " << hitArrayTClones_->GetEntries() << " entries." << std::endl;
 }
 
-template <class hit_T, class measurement_T, unsigned int dimMeas>
-MeasurementProducer<hit_T, measurement_T, dimMeas>::~MeasurementProducer() {
+template <class hit_T, class measurement_T>
+MeasurementProducer<hit_T, measurement_T>::~MeasurementProducer() {
   // we don't assume ownership over the hit arrays
 }
 
-template <class hit_T, class measurement_T, unsigned int dimMeas>
-AbsMeasurement<dimMeas>* MeasurementProducer<hit_T, measurement_T, dimMeas>::produce(int index, const TrackCandHit* hit) {
+template <class hit_T, class measurement_T>
+AbsMeasurement* MeasurementProducer<hit_T, measurement_T>::produce(int index, const TrackCandHit* hit) {
   assert(hitArrayTClones_ != nullptr);
   //std::cout << "hit array with " << hitArrayTClones_->GetEntries() << " entries, looking for entry " << index << "." << std::endl;
   if(hitArrayTClones_->At(index) == 0) {

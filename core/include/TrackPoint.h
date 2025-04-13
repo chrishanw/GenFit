@@ -23,10 +23,9 @@
 #ifndef genfit_TrackPoint_h
 #define genfit_TrackPoint_h
 
-#include "AbsMeasurement.fwd.h"
+#include "AbsMeasurement.h"
 #include "AbsFitterInfo.h"
 #include "ThinScatterer.h"
-#include <Track.fwd.h>
 
 #include <map>
 #include <vector>
@@ -35,17 +34,18 @@
 
 namespace genfit {
 
+class Track;
+
 /**
  * @brief Object containing AbsMeasurement and AbsFitterInfo objects.
  *
  */
-template<unsigned int dimMeas>
 class TrackPoint {
 
  public:
 
   TrackPoint();
-  explicit TrackPoint(Track<dimMeas>* track);
+  explicit TrackPoint(Track* track);
 
   /**
    * @brief Contructor taking list of measurements.
@@ -53,7 +53,7 @@ class TrackPoint {
    * AbsMeasurement::setTrackPoint() of each measurement will be called.
    * TrackPoint takes ownership over rawMeasurements.
    */
-  TrackPoint(const std::vector< genfit::AbsMeasurement<dimMeas>* >& rawMeasurements, Track<dimMeas>* track);
+  TrackPoint(const std::vector< genfit::AbsMeasurement* >& rawMeasurements, Track* track);
 
   /**
    * @brief Contructor taking one measurement.
@@ -61,17 +61,17 @@ class TrackPoint {
    * AbsMeasurement::setTrackPoint() of the measurement will be called.
    * TrackPoint takes ownership over the rawMeasurement.
    */
-  TrackPoint(genfit::AbsMeasurement<dimMeas>* rawMeasurement, Track<dimMeas>* track);
+  TrackPoint(genfit::AbsMeasurement* rawMeasurement, Track* track);
 
-  TrackPoint(const TrackPoint<dimMeas>&); // copy constructor
-  TrackPoint<dimMeas>& operator=(TrackPoint<dimMeas>); // assignment operator
-  void swap(TrackPoint<dimMeas>& other);
+  TrackPoint(const TrackPoint&); // copy constructor
+  TrackPoint& operator=(TrackPoint); // assignment operator
+  void swap(TrackPoint& other);
 
   /**
    * custom copy constructor where all TrackRep pointers are exchanged according to the map.
    * FitterInfos with a rep in repsToIgnore will NOT be copied.
    */
-  TrackPoint(const TrackPoint<dimMeas>& rhs,
+  TrackPoint(const TrackPoint& rhs,
       const std::map<const genfit::AbsTrackRep*, genfit::AbsTrackRep*>& map,
       const std::vector<const genfit::AbsTrackRep*> * repsToIgnore = nullptr);
 
@@ -80,17 +80,17 @@ class TrackPoint {
 
   double getSortingParameter() const {return sortingParameter_;}
 
-  Track<dimMeas>* getTrack() const {return track_;}
-  void setTrack(Track<dimMeas>* track) {track_ = track;}
+  Track* getTrack() const {return track_;}
+  void setTrack(Track* track) {track_ = track;}
 
-  const std::vector< genfit::AbsMeasurement<dimMeas>* >& getRawMeasurements() const {return rawMeasurements_;}
-  AbsMeasurement<dimMeas>* getRawMeasurement(int i = 0) const;
+  const std::vector< genfit::AbsMeasurement* >& getRawMeasurements() const {return rawMeasurements_;}
+  AbsMeasurement* getRawMeasurement(int i = 0) const;
   unsigned int getNumRawMeasurements() const {return rawMeasurements_.size();}
   bool hasRawMeasurements() const {return (rawMeasurements_.size() != 0);}
   //! Get list of all fitterInfos
-  std::vector< genfit::AbsFitterInfo<dimMeas>* > getFitterInfos() const;
+  std::vector< genfit::AbsFitterInfo* > getFitterInfos() const;
   //! Get fitterInfo for rep. Per default, use cardinal rep
-  AbsFitterInfo<dimMeas>* getFitterInfo(const AbsTrackRep* rep = nullptr) const;
+  AbsFitterInfo* getFitterInfo(const AbsTrackRep* rep = nullptr) const;
   bool hasFitterInfo(const AbsTrackRep* rep) const {
     return (fitterInfos_.find(rep) != fitterInfos_.end());
   }
@@ -101,10 +101,10 @@ class TrackPoint {
 
   void setSortingParameter(double sortingParameter) {sortingParameter_ = sortingParameter;}
   //! Takes ownership and sets this as measurement's trackPoint
-  void addRawMeasurement(genfit::AbsMeasurement<dimMeas>* rawMeasurement) {assert(rawMeasurement!=nullptr); rawMeasurement->setTrackPoint(this); rawMeasurements_.push_back(rawMeasurement);}
+  void addRawMeasurement(genfit::AbsMeasurement* rawMeasurement) {assert(rawMeasurement!=nullptr); rawMeasurement->setTrackPoint(this); rawMeasurements_.push_back(rawMeasurement);}
   void deleteRawMeasurements();
   //! Takes Ownership
-  void setFitterInfo(genfit::AbsFitterInfo<dimMeas>* fitterInfo);
+  void setFitterInfo(genfit::AbsFitterInfo* fitterInfo);
   void deleteFitterInfo(const AbsTrackRep* rep) {delete fitterInfos_[rep]; fitterInfos_.erase(rep);}
 
   void setScatterer(ThinScatterer* scatterer) {thinScatterer_.reset(scatterer);}
@@ -124,12 +124,12 @@ class TrackPoint {
   double sortingParameter_;
 
   //! Pointer to Track where TrackPoint belongs to
-  Track<dimMeas>* track_; //! No ownership
+  Track* track_; //! No ownership
 
   //! Can be more than one, e.g. multiple measurements in the same Si detector, left and right measurements of a wire detector etc.
-  std::vector<AbsMeasurement<dimMeas>*> rawMeasurements_; // Ownership
+  std::vector<AbsMeasurement*> rawMeasurements_; // Ownership
 
-  std::map< const AbsTrackRep*, AbsFitterInfo<dimMeas>* > fitterInfos_; //! Ownership over FitterInfos
+  std::map< const AbsTrackRep*, AbsFitterInfo* > fitterInfos_; //! Ownership over FitterInfos
 
   /**
    * The following map is read while streaming.  After reading the
@@ -137,7 +137,7 @@ class TrackPoint {
    * and this map will be translated into the map fitterInfos. The
    * map is indexed by the ids of the corresponding TrackReps.
    */
-  std::map<unsigned int, AbsFitterInfo<dimMeas>*> vFitterInfos_; //!
+  std::map<unsigned int, AbsFitterInfo*> vFitterInfos_; //!
 
   std::unique_ptr<ThinScatterer> thinScatterer_; // Ownership
 
