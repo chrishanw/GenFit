@@ -26,7 +26,7 @@
 namespace genfit {
 
 template<unsigned int dimMeas>
-AbsMeasurement<dimMeas>::AbsMeasurement(const SVectorCoord& rawHitCoords, const SMatrixSymCoord& rawHitCov, int detId, int hitId, TrackPoint* trackPoint)
+AbsMeasurement<dimMeas>::AbsMeasurement(const SVectorCoord& rawHitCoords, const SMatrixSymCoord& rawHitCov, int detId, int hitId, AbsTrackPoint* trackPoint)
   : rawHitCoords_(rawHitCoords), rawHitCov_(rawHitCov), detId_(detId), hitId_(hitId), trackPoint_(trackPoint)
 {}
 

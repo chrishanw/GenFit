@@ -30,29 +30,25 @@ namespace genfit {
 
 // 0, 0, 0, 1, 0
 
-const TMatrixD& HMatrixU::getMatrix() const {
+const SMatrix15& HMatrixU::getMatrix() const {
   static const double HMatrixContent[5] = {0, 0, 0, 1, 0};
 
-  static const TMatrixD HMatrix(1,5, HMatrixContent);
+  static const SMatrix15 HMatrix(HMatrixContent);
 
   return HMatrix;
 }
 
 
-TVectorD HMatrixU::Hv(const TVectorD& v) const {
-  assert (v.GetNrows() == 5);
-
+SVector1 HMatrixU::Hv(const SVector5& v) const {
   double* retValArray =(double *)alloca(sizeof(double) * 1);
 
   retValArray[0] = v(3); // u
 
-  return TVectorD(1, retValArray);
+  return SVector1(retValArray);
 }
 
 
-TMatrixD HMatrixU::MHt(const TMatrixDSym& M) const {
-  assert (M.GetNcols() == 5);
-
+SMatrix51 HMatrixU::MHt(const SMatrixSym5& M) const {
   double* retValArray =(double *)alloca(sizeof(double) * 5);
   const double* MatArray = M.GetMatrixArray();
 
@@ -60,13 +56,12 @@ TMatrixD HMatrixU::MHt(const TMatrixDSym& M) const {
     retValArray[i] = MatArray[i*5 + 3];
   }
 
-  return TMatrixD(5,1, retValArray);
+  return SMatrix51(retValArray);
 }
 
 
-TMatrixD HMatrixU::MHt(const TMatrixD& M) const {
-  assert (M.GetNcols() == 5);
-
+template<unsigned int nRows>
+ROOT::Math::SMatrix<double, nRows, 1> HMatrixU::MHt(const ROOT::Math::SMatrix<double, nRows, 5>& M) const {
   double* retValArray =(double *)alloca(sizeof(double) * M.GetNrows());
   const double* MatArray = M.GetMatrixArray();
 
@@ -74,16 +69,11 @@ TMatrixD HMatrixU::MHt(const TMatrixD& M) const {
     retValArray[i] = MatArray[i*5 + 3];
   }
 
-  return TMatrixD(M.GetNrows(),1, retValArray);
+  return ROOT::Math::SMatrix<double, nRows, 1>(retValArray);
 }
 
-
-void HMatrixU::HMHt(TMatrixDSym& M) const {
-  assert (M.GetNrows() == 5);
-
-  M(0,0) = M(3,3);
-
-  M.ResizeTo(1,1);
+SMatrixSym1 HMatrixU::HMHt(SMatrixSym5& M) const {
+  return SMatrixSym1(M(3,3)):
 }
 
 

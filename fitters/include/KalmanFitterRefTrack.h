@@ -24,11 +24,11 @@
 #define genfit_KalmanFitterRefTrack_h
 
 #include "AbsKalmanFitter.h"
+#include "KalmanFitterInfo.fwd.h"
 
 
 namespace genfit {
 
-class KalmanFitterInfo;
 class TrackPoint;
 
 /**
@@ -71,8 +71,10 @@ class KalmanFitterRefTrack : public AbsKalmanFitter {
   void setDeltaChi2Ref(double dChi2) {deltaChi2Ref_ = dChi2;}
 
  private:
-  void processTrackPoint(KalmanFitterInfo* fi, const KalmanFitterInfo* prevFi, const TrackPoint* tp, double& chi2, double& ndf, int direction);
-  void processTrackPointSqrt(KalmanFitterInfo* fi, const KalmanFitterInfo* prevFi, const TrackPoint* tp, double& chi2, double& ndf, int direction);
+  template<unsigned int dim, unsigned int dimAux>
+  void processTrackPoint(KalmanFitterInfo<dim, dimAux>* fi, const KalmanFitterInfo<dim, dimAux>* prevFi, const TrackPoint* tp, double& chi2, double& ndf, int direction);
+  template<unsigned int dim, unsigned int dimAux>
+  void processTrackPointSqrt(KalmanFitterInfo<dim, dimAux>* fi, const KalmanFitterInfo<dim, dimAux>* prevFi, const TrackPoint* tp, double& chi2, double& ndf, int direction);
 
   /**
    * @brief Remove referenceStates if they are too far from smoothed states.

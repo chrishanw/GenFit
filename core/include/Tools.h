@@ -24,6 +24,8 @@
 #ifndef genfit_Tools_h
 #define genfit_Tools_h
 
+#include <AbsHMatrix.fwd.h>
+
 #include <TVectorD.h>
 #include <TMatrixD.h>
 #include <TMatrixDSym.h>
@@ -33,9 +35,6 @@
  * @brief Matrix inversion tools.
  */
 namespace genfit {
-
-class AbsHMatrix;
-
 namespace tools {
 
 /** @brief Invert a matrix, throwing an Exception when inversion fails.
@@ -90,9 +89,10 @@ kalmanPredictionCovSqrt(const TMatrixD& S,
  *  x, S : state prediction, covariance square root
  *  res, R, H : residual, measurement covariance square root, H matrix of the measurement
  */
+template<unsigned int dimMeas>
 void
 kalmanUpdateSqrt(const TMatrixD& S,
-		 const TVectorD& res, const TMatrixD& R, const AbsHMatrix* H,
+		 const TVectorD& res, const TMatrixD& R, const AbsHMatrix<dimMeas> H,
 		 TVectorD& update, TMatrixD& SNew);
 
 /** @brief Calculate an arbitrary orthogonal vector to a 3D vector in 3D space.

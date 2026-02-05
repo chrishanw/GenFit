@@ -24,6 +24,7 @@
 #define genfit_HMatrixUnit_h
 
 #include "AbsHMatrix.h"
+#include <SMatrixTypeDefs.h>
 
 
 namespace genfit {
@@ -37,20 +38,22 @@ namespace genfit {
  *     (0, 0, 0, 1, 0)
  *     (0, 0, 0, 0, 1)
  */
-class HMatrixUnit : public AbsHMatrix {
+class HMatrixUnit : public AbsHMatrix<5> {
 
  public:
 
   HMatrixUnit() {;}
 
-  const TMatrixD& getMatrix() const;
+  const SMatrix55& getMatrix() const;
 
-  TVectorD Hv(const TVectorD& v) const {return v;}
+  SVector5 Hv(const SVector5& v) const {return v;}
 
-  TMatrixD MHt(const TMatrixDSym& M) const {return TMatrixD(M);}
-  TMatrixD MHt(const TMatrixD& M) const {return M;}
+  SMatrix55 MHt(const SMatrixSym5& M) const {return SMatrix55(M);}
 
-  void HMHt(TMatrixDSym&) const {return;}
+  template<unsigned int nRows>
+  ROOT::Math::SMatrix<double, nRows, 5> MHt(const ROOT::Math::SMatrix<double, nRows, 5>& M) const {return M;}
+
+  SMatrixSym5 HMHt(SMatrixSym5& M) const {return M;}
 
   virtual HMatrixUnit* clone() const {return new HMatrixUnit(*this);}
 

@@ -35,7 +35,7 @@
 #include<math.h>
 #include <stdexcept>
 
-#include <TypeDefs.h>
+#include <SMatrixTypeDefs.h>
 
 #include "TVectorD.h"
 #include "TMatrixD.h"

@@ -30,32 +30,28 @@ namespace genfit {
 // 0, 0, 0, 1, 0
 // 0, 0, 0, 0, 1
 
-const TMatrixD& HMatrixUV::getMatrix() const {
+const SMatrix25& HMatrixUV::getMatrix() const {
   static const double HMatrixContent[2*5] = {0, 0, 0, 1, 0,
                                              0, 0, 0, 0, 1};
 
-  static const TMatrixD HMatrix(2,5, HMatrixContent);
+  static const SMatrix25 HMatrix(HMatrixContent);
 
   return HMatrix;
 }
 
 
-TVectorD HMatrixUV::Hv(const TVectorD& v) const {
-  assert (v.GetNrows() == 5);
-
+SVector2 HMatrixUV::Hv(const SVector5& v) const {
   double* retValArray =(double *)alloca(sizeof(double) * 2);
   const double* VecArray = v.GetMatrixArray();
 
   retValArray[0] = VecArray[3]; // u
   retValArray[1] = VecArray[4]; // v
 
-  return TVectorD(2, retValArray);
+  return SVector2(retValArray);
 }
 
 
-TMatrixD HMatrixUV::MHt(const TMatrixDSym& M) const {
-  assert (M.GetNcols() == 5);
-
+SMatrix52 HMatrixUV::MHt(const SMatrixSym5& M) const {
   double* retValArray =(double *)alloca(sizeof(double) * 5*2);
   const double* MatArray = M.GetMatrixArray();
 
@@ -64,27 +60,26 @@ TMatrixD HMatrixUV::MHt(const TMatrixDSym& M) const {
     retValArray[i*2 + 1] = MatArray[i*5 + 4];
   }
 
-  return TMatrixD(5,2, retValArray);
+  return SMatrix52(retValArray);
 }
 
 
-TMatrixD HMatrixUV::MHt(const TMatrixD& M) const {
-  assert (M.GetNcols() == 5);
+template<unsigned int nRows>
+ROOT::Math::SMatrix<double, nRows, 2> HMatrixV::MHt(const ROOT::Math::SMatrix<double, nRows, 5>& M) const {
 
-  double* retValArray =(double *)alloca(sizeof(double) * M.GetNrows()*2);
+  double* retValArray =(double *)alloca(sizeof(double) * nRows * 2);
   const double* MatArray = M.GetMatrixArray();
 
-  for (int i = 0; i < M.GetNrows(); ++i) {
+  for (int i = 0; i < nRows; ++i) {
     retValArray[i*2] = MatArray[i*5 + 3];
     retValArray[i*2 + 1] = MatArray[i*5 + 4];
   }
 
-  return TMatrixD(M.GetNrows(),2, retValArray);
+  return ROOT::Math::SMatrix<double, nRows, 2>(retValArray);
 }
 
 
-void HMatrixUV::HMHt(TMatrixDSym& M) const {
-  assert (M.GetNrows() == 5);
+SMatrixSym2 HMatrixUV::HMHt(SMatrixSym5& M) const {
   double* MatArray = M.GetMatrixArray();
 
   //
@@ -95,10 +90,8 @@ void HMatrixUV::HMHt(TMatrixDSym& M) const {
   double uv = MatArray[3*5 + 4];
   double vv = MatArray[4*5 + 4];
 
-  M.ResizeTo(2,2);
-  MatArray = M.GetMatrixArray();
-  MatArray[0] = uu; MatArray[1] = uv;
-  MatArray[2] = uv; MatArray[3] = vv;
+  SMatrixSym2 retMat({uu, uv, uv, vv});
+  return retMat;
 }
 
 

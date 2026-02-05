@@ -24,26 +24,26 @@
 #define genfit_KalmanFitter_h
 
 #include "AbsKalmanFitter.h"
+#include "MeasuredStateOnPlane.fwd.h"
 
 #include <memory>
 
 
 namespace genfit {
 
-class KalmanFitterInfo;
-class MeasuredStateOnPlane;
 class TrackPoint;
 
 /**
  * @brief Simple Kalman filter implementation.
  */
+template<unsigned int dim, unsigned int dimAux>
 class KalmanFitter : public AbsKalmanFitter {
 
  private:
 
   // These private functions are needed, otherwise strange things happen, no idea why!
-  KalmanFitter(const KalmanFitter&);
-  KalmanFitter& operator=(KalmanFitter const&);
+  KalmanFitter(const KalmanFitter<dim, dimAux>&);
+  KalmanFitter<dim, dimAux>& operator=(KalmanFitter<dim, dimAux> const&);
 
  public:
 
@@ -68,7 +68,9 @@ class KalmanFitter : public AbsKalmanFitter {
   void processTrackPoint(TrackPoint* tp,
       const AbsTrackRep* rep, double& chi2, double& ndf, int direction);
 
-  std::unique_ptr<MeasuredStateOnPlane> currentState_;
+  // template<unsigned int dim, unsigned int dimAux>
+  // std::unique_ptr<MeasuredStateOnPlane<dim, dimAux>> currentState_;
+  std::unique_ptr<MeasuredStateOnPlane<dim, dimAux>> currentState_;
 
   bool squareRootFormalism_;
 

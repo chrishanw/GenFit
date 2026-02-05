@@ -39,29 +39,25 @@ HMatrixPhi::HMatrixPhi(double phi) :
   ;
 }
 
-const TMatrixD& HMatrixPhi::getMatrix() const {
+const SMatrix15& HMatrixPhi::getMatrix() const {
   static const double HMatrixContent[5] = {0, 0, 0, cosPhi_, sinPhi_};
 
-  static const TMatrixD HMatrix(1,5, HMatrixContent);
+  static const SMatrix15 HMatrix(HMatrixContent);
 
   return HMatrix;
 }
 
 
-TVectorD HMatrixPhi::Hv(const TVectorD& v) const {
-  assert (v.GetNrows() == 5);
-
+SVector1 HMatrixPhi::Hv(const SVector5& v) const {
   double* retValArray =(double *)alloca(sizeof(double) * 1);
 
   retValArray[0] = cosPhi_*v(3) + sinPhi_*v(4);
 
-  return TVectorD(1, retValArray);
+  return SVector1(retValArray);
 }
 
 
-TMatrixD HMatrixPhi::MHt(const TMatrixDSym& M) const {
-  assert (M.GetNcols() == 5);
-
+SMatrix51 HMatrixPhi::MHt(const SMatrixSym5& M) const {
   double* retValArray =(double *)alloca(sizeof(double) * 5);
   const double* MatArray = M.GetMatrixArray();
 
@@ -69,31 +65,29 @@ TMatrixD HMatrixPhi::MHt(const TMatrixDSym& M) const {
     retValArray[i] = cosPhi_*MatArray[i*5 + 3] + sinPhi_*MatArray[i*5 + 4];
   }
 
-  return TMatrixD(5,1, retValArray);
+  return SMatrix51(retValArray);
 }
 
 
-TMatrixD HMatrixPhi::MHt(const TMatrixD& M) const {
-  assert (M.GetNcols() == 5);
+template<unsigned int nRows>
+ROOT::Math::SMatrix<double, nRows, 1> HMatrixPhi::MHt(const ROOT::Math::SMatrix<double, nRows, 5>& M) const {
 
-  double* retValArray =(double *)alloca(sizeof(double) * M.GetNrows());
+  double* retValArray =(double *)alloca(sizeof(double) * nRows);
   const double* MatArray = M.GetMatrixArray();
 
-  for (int i = 0; i < M.GetNrows(); ++i) {
+  for (int i = 0; i < nRows; ++i) {
     retValArray[i] = cosPhi_*MatArray[i*5 + 3] + sinPhi_*MatArray[i*5 + 4];
   }
 
-  return TMatrixD(M.GetNrows(),1, retValArray);
+  return  ROOT::Math::SMatrix<double, nRows, 1>(retValArray);
 }
 
 
-void HMatrixPhi::HMHt(TMatrixDSym& M) const {
-  assert (M.GetNrows() == 5);
+SMatrixSym1 HMatrixPhi::HMHt(SMatrixSym5& M) const {
+  const double retVal =   cosPhi_ * (cosPhi_*M(3,3) + sinPhi_*M(3,4))
+                        + sinPhi_ * (cosPhi_*M(4,3) + sinPhi_*M(4,4));
 
-  M(0,0) =   cosPhi_ * (cosPhi_*M(3,3) + sinPhi_*M(3,4))
-           + sinPhi_ * (cosPhi_*M(4,3) + sinPhi_*M(4,4));
-
-  M.ResizeTo(1,1);
+  return SMatrixSym1(retVal);
 }
 
 

@@ -398,10 +398,11 @@ tools::kalmanPredictionCovSqrt(const TMatrixD& S,
 // res, R, H : residual, measurement covariance square root, H matrix of the measurement
 // gives the update (new state = x + update) and the updated covariance square root.
 // S and Snew are allowed to refer to the same object.
+template<unsigned int dimMeas>
 void
 tools::kalmanUpdateSqrt(const TMatrixD& S,
 			const TVectorD& res, const TMatrixD& R,
-			const AbsHMatrix* H,
+			const AbsHMatrix<dimMeas>* H,
 			TVectorD& update, TMatrixD& SNew)
 {
   TMatrixD pre(S.GetNrows() + R.GetNrows(),

@@ -25,6 +25,7 @@
 #define genfit_Track_h
 
 #include "AbsTrackRep.h"
+#include "AbsTrackPoint.h"
 #include "FitStatus.h"
 #include "MeasurementFactory.h"
 #include "TrackCand.h"
@@ -66,7 +67,6 @@ class TrackPointComparator {
  *  in every TrackPoint, as well as one FitStatus for every AbsTrackRep.
  *
  */
-template<unsigned int dimMeas>
 class Track {
 
  public:
@@ -89,31 +89,35 @@ class Track {
    * big enough not to bias the fit too much, but not too big in order to avoid
    * numerical problems).
    */
+  template<unsigned int dimMeas>
   Track(const TrackCand& trackCand, const MeasurementFactory<genfit::AbsMeasurement<dimMeas>>& factory, AbsTrackRep* rep = nullptr);
 
   Track(AbsTrackRep* trackRep, const SVector6& stateSeed);
   Track(AbsTrackRep* trackRep, const ROOT::Math::XYZVector& posSeed, const ROOT::Math::XYZVector& momSeed);
   Track(AbsTrackRep* trackRep, const SVector6& stateSeed, const SMatrixSym6& covSeed);
-
-  Track(const Track<dimMeas>&); // copy constructor
-  Track<dimMeas>& operator=(Track<dimMeas>); // assignment operator
-  void swap(Track<dimMeas>& other); // nothrow
+  
+  template<unsigned int dimMeas>
+  Track(const Track&); // copy constructor
+  template<unsigned int dimMeas>
+  Track& operator=(Track); // assignment operator
+  void swap(Track& other); // nothrow
 
   virtual ~Track();
   virtual void Clear(Option_t* = "");
 
+  template<unsigned int dimMeas>
   void createMeasurements(const TrackCand& trackCand, const MeasurementFactory<genfit::AbsMeasurement<dimMeas>>& factory);
 
-  TrackPoint<dimMeas>* getPoint(int id) const;
-  const std::vector< genfit::TrackPoint<dimMeas>* > & getPoints() const {return trackPoints_;}
+  AbsTrackPoint* getPoint(int id) const;
+  const std::vector< genfit::AbsTrackPoint* > & getPoints() const {return trackPoints_;}
   unsigned int getNumPoints() const {return trackPoints_.size();}
 
-  TrackPoint<dimMeas>* getPointWithMeasurement(int id) const;
-  const std::vector< genfit::TrackPoint<dimMeas>* > & getPointsWithMeasurement() const  {return trackPointsWithMeasurement_;}
+  AbsTrackPoint* getPointWithMeasurement(int id) const;
+  const std::vector< genfit::AbsTrackPoint* > & getPointsWithMeasurement() const  {return trackPointsWithMeasurement_;}
   unsigned int getNumPointsWithMeasurement() const {return trackPointsWithMeasurement_.size();}
 
-  TrackPoint<dimMeas>* getPointWithMeasurementAndFitterInfo(int id, const AbsTrackRep* rep = nullptr) const;
-  TrackPoint<dimMeas>* getPointWithFitterInfo(int id, const AbsTrackRep* rep = nullptr) const;
+  AbsTrackPoint* getPointWithMeasurementAndFitterInfo(int id, const AbsTrackRep* rep = nullptr) const;
+  AbsTrackPoint* getPointWithFitterInfo(int id, const AbsTrackRep* rep = nullptr) const;
 
   /**
    * @brief Shortcut to get FittedStates.
@@ -178,7 +182,7 @@ class Track {
    * Also deletes backwardInfos before new point and forwardInfos after new point.
    * Also sets Track backpointer of point accordingly.
    */
-  void insertPoint(TrackPoint<dimMeas>* point, int id = -1);
+  void insertPoint(AbsTrackPoint* point, int id = -1);
 
   /**
    * @brief Insert TrackPoints BEFORE TrackPoint with position id, if id >= 0.
@@ -187,11 +191,12 @@ class Track {
    * Also deletes backwardInfos before and for new points and forwardInfos after and for new points.
    * Also sets Track backpointers of points accordingly.
    */
-  void insertPoints(std::vector<genfit::TrackPoint<dimMeas>*> points, int id = -1);
+  void insertPoints(std::vector<genfit::AbsTrackPoint*> points, int id = -1);
 
   void deletePoint(int id);
 
   //! Creates a new TrackPoint containing the measurement, and adds it to the track
+  template<unsigned int dimMeas>
   void insertMeasurement(AbsMeasurement<dimMeas>* measurement, int id = -1);
 
   //! Delete all measurement information and the track points of the track. Does not delete track representations.
@@ -204,7 +209,7 @@ class Track {
    * The other Track will not be altered, the TrackPoint objects will be (deep) copied.
    * Only copies the TrackPoint objects, NOT the AbsTrackRep, FitStatus, seed state and other objects of the other track.
    */
-  void mergeTrack(const Track<dimMeas>* other, int id = -1);
+  void mergeTrack(const Track* other, int id = -1);
 
   void addTrackRep(AbsTrackRep* trackRep);
 
@@ -224,6 +229,7 @@ class Track {
 
   //! Try to set the fitted state as seed. Return if it was successfull.
   //! Adapt the sign of all TrackReps' pdg to the actual fitted charge.
+  template<unsigned int dimMeas, unsigned int dimAux>
   bool udpateSeed(int id = 0, AbsTrackRep* rep = nullptr, bool biased = true);
 
   //! Flip the ordering of the TrackPoints
@@ -273,6 +279,7 @@ class Track {
    * represents the Track correctly.
    * You might want to call determineCardinalRep() and/or udpateSeed() before.
    */
+  template<unsigned int dimMeas>
   TrackCand* constructTrackCand() const;
 
   /**
@@ -292,6 +299,7 @@ class Track {
 
   void Print(const Option_t* = "") const;
 
+  template<unsigned int dimMeas>
   void checkConsistency() const;
 
  private:
@@ -303,8 +311,8 @@ class Track {
   std::vector<AbsTrackRep*> trackReps_; // Ownership
   unsigned int cardinalRep_; // THE selected rep, default = 0;
 
-  std::vector<TrackPoint<dimMeas>*> trackPoints_; // Ownership
-  std::vector<TrackPoint<dimMeas>*> trackPointsWithMeasurement_; //! helper
+  std::vector<AbsTrackPoint*> trackPoints_; // Ownership
+  std::vector<AbsTrackPoint*> trackPointsWithMeasurement_; //! helper
 
   std::map< const AbsTrackRep*, FitStatus* > fitStatuses_; // Ownership over FitStatus*
 

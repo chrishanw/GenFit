@@ -26,35 +26,35 @@
 
 #include "MeasurementOnPlane.h"
 #include "FitStatus.h"
-#include "TrackPoint.fwd.h"
+// #include "AbsTrackPoint.h"
 
 #include <TVectorD.h>
 
 
 namespace genfit {
 
+class AbsTrackPoint;
 class AbsTrackRep;
 
 /**
  *  @brief This class collects all information needed and produced by a specific  AbsFitter and is specific to one AbsTrackRep of the Track.
  */
-template<unsigned int dimMeas>
 class AbsFitterInfo {
 
  public:
 
   AbsFitterInfo();
-  AbsFitterInfo(const TrackPoint<dimMeas>* trackPoint, const AbsTrackRep* rep);
+  AbsFitterInfo(const AbsTrackPoint* trackPoint, const AbsTrackRep* rep);
 
   virtual ~AbsFitterInfo() {};
 
   //! Deep copy ctor for polymorphic class.
   virtual AbsFitterInfo* clone() const = 0;
 
-  const TrackPoint<dimMeas>* getTrackPoint() const {return trackPoint_;}
+  const AbsTrackPoint* getTrackPoint() const {return trackPoint_;}
   const AbsTrackRep* getRep() const {return rep_;}
 
-  void setTrackPoint(const TrackPoint<dimMeas> *tp) {trackPoint_ = tp;}
+  void setTrackPoint(const AbsTrackPoint *tp) {trackPoint_ = tp;}
   virtual void setRep(const AbsTrackRep* rep) {rep_ = rep;}
 
   virtual bool hasMeasurements() const = 0;
@@ -87,7 +87,7 @@ class AbsFitterInfo {
 
   /** Pointer to TrackPoint where the FitterInfo belongs to
    */
-  const TrackPoint<dimMeas>* trackPoint_; //! No ownership
+  const AbsTrackPoint* trackPoint_; //! No ownership
 
   /** Pointer to AbsTrackRep with respect to which the FitterInfo is defined
    */
@@ -110,8 +110,7 @@ class AbsFitterInfo {
 };
 
 //! Needed for boost cloneability:
-template<unsigned int dimMeas>
-inline AbsFitterInfo<dimMeas>* new_clone( const AbsFitterInfo<dimMeas> & a)
+inline AbsFitterInfo* new_clone( const AbsFitterInfo & a)
 {
   return a.clone();
 }

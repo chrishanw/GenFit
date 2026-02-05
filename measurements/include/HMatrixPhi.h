@@ -24,6 +24,7 @@
 #define genfit_HMatrixPhi_h
 
 #include "AbsHMatrix.h"
+#include <SMatrixTypeDefs.h>
 
 
 namespace genfit {
@@ -34,20 +35,22 @@ namespace genfit {
  * For one dimensional measurements which are rotated by phi against U of the DetPlane
  * H = (0, 0, 0, cos(phi), sin(phi))
  */
-class HMatrixPhi : public AbsHMatrix {
+class HMatrixPhi : public AbsHMatrix<1> {
 
  public:
 
   HMatrixPhi(double phi = 0);
 
-  const TMatrixD& getMatrix() const;
+  const SMatrix15& getMatrix() const;
 
-  TVectorD Hv(const TVectorD& v) const;
+  SVector1 Hv(const SVector5& v) const;
 
-  TMatrixD MHt(const TMatrixDSym& M) const;
-  TMatrixD MHt(const TMatrixD& M) const;
+  SMatrix51 MHt(const SMatrixSym5& M) const;
+  
+  template<unsigned int nRows>
+  ROOT::Math::SMatrix<double, nRows, 1>  MHt(const ROOT::Math::SMatrix<double, nRows, 5>& M) const;
 
-  void HMHt(TMatrixDSym& M) const;
+  SMatrixSym1 HMHt(SMatrixSym5& M) const;
 
   virtual HMatrixPhi* clone() const {return new HMatrixPhi(*this);}
 

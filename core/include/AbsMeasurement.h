@@ -25,7 +25,8 @@
 
 #include "MeasurementOnPlane.h"
 #include "AbsHMatrix.h"
-#include "TrackPoint.fwd.h"
+// #include "TrackPoint.fwd.h"
+#include "AbsTrackPoint.h"
 
 #include <Math/SVector.h>
 
@@ -48,15 +49,15 @@ class AbsMeasurement {
 
   AbsMeasurement() : rawHitCoords_(), rawHitCov_(), detId_(-1), hitId_(-1), trackPoint_(nullptr) {;}
   AbsMeasurement(int nDims) : rawHitCoords_(nDims), rawHitCov_(nDims), detId_(-1), hitId_(-1), trackPoint_(nullptr) {;}
-  AbsMeasurement(const SVectorCoord& rawHitCoords, const SMatrixSymCoord& rawHitCov, int detId, int hitId, TrackPoint<dimMeas>* trackPoint);
+  AbsMeasurement(const SVectorCoord& rawHitCoords, const SMatrixSymCoord& rawHitCov, int detId, int hitId, AbsTrackPoint* trackPoint);
 
   virtual ~AbsMeasurement() = default;
 
   //! Deep copy ctor for polymorphic class.
   virtual AbsMeasurement* clone() const = 0;
 
-  TrackPoint<dimMeas>* getTrackPoint() const {return trackPoint_;}
-  void setTrackPoint(TrackPoint<dimMeas>* tp) {trackPoint_ = tp;}
+  AbsTrackPoint* getTrackPoint() const {return trackPoint_;}
+  void setTrackPoint(AbsTrackPoint* tp) {trackPoint_ = tp;}
 
   const SVectorCoord& getRawHitCoords() const {return rawHitCoords_;}
   const SMatrixSymCoord& getRawHitCov() const {return rawHitCov_;}
@@ -121,7 +122,7 @@ class AbsMeasurement {
   int hitId_; // hitId id is -1 per default
 
   //! Pointer to TrackPoint where the measurement belongs to
-  TrackPoint<dimMeas>* trackPoint_; //! No ownership
+  AbsTrackPoint* trackPoint_; //! No ownership
 
  public:
   ClassDef(AbsMeasurement, 4)

@@ -24,6 +24,7 @@
 #define genfit_HMatrixUV_h
 
 #include "AbsHMatrix.h"
+#include <SMatrixTypeDefs.h>
 
 
 namespace genfit {
@@ -36,21 +37,23 @@ namespace genfit {
  *     (0, 0, 0, 0, 1)
  *
  */
-class HMatrixUV : public AbsHMatrix {
+class HMatrixUV : public AbsHMatrix<2> {
 
 
  public:
 
   HMatrixUV() {;}
 
-  const TMatrixD& getMatrix() const override;
+  const SMatrix25& getMatrix() const override;
 
-  TVectorD Hv(const TVectorD& v) const override;
+  SVector2 Hv(const SVector5& v) const override;
 
-  TMatrixD MHt(const TMatrixDSym& M) const override;
-  TMatrixD MHt(const TMatrixD& M) const override;
+  SMatrix52 MHt(const SMatrixSym5& M) const override;
 
-  void HMHt(TMatrixDSym& M) const override;
+  template<unsigned int nRows>
+  ROOT::Math::SMatrix<double, nRows, 2> MHt(const ROOT::Math::SMatrix<double, nRows, 5>& M) const;
+
+  SMatrixSym2 HMHt(SMatrixSym5& M) const override;
 
   virtual HMatrixUV* clone() const override {return new HMatrixUV(*this);}
 

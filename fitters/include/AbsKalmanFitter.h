@@ -26,11 +26,10 @@
 #include "AbsFitter.h"
 #include "MeasurementOnPlane.h"
 #include "TrackPoint.h"
+#include "KalmanFitterInfo.fwd.h"
 
 
 namespace genfit {
-
-class KalmanFitterInfo;
 
 enum eMultipleMeasurementHandling {
   weightedAverage, /**<  weighted average between measurements; used by DAF */
@@ -132,7 +131,8 @@ class AbsKalmanFitter : public AbsFitter {
  protected:
 
   //! get the measurementsOnPlane taking the multipleMeasurementHandling_ into account
-  const std::vector<MeasurementOnPlane *> getMeasurements(const KalmanFitterInfo* fi, const TrackPoint* tp, int direction) const;
+  template<unsigned int dim, unsigned int dimAux>
+  const std::vector<MeasurementOnPlane<dim, dimAux> *> getMeasurements(const KalmanFitterInfo<dim, dimAux>* fi, const TrackPoint* tp, int direction) const;
 
   //! Minimum number of iterations to attempt.  Forward and backward are counted as one iteration.
   unsigned int minIterations_;

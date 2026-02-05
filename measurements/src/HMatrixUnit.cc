@@ -33,14 +33,14 @@ namespace genfit {
 // 0, 0, 0, 1, 0,
 // 0, 0, 0, 0, 1
 
-const TMatrixD& HMatrixUnit::getMatrix() const {
+const SMatrix55& HMatrixUnit::getMatrix() const {
   static const double HMatrixContent[5*5] = {1, 0, 0, 0, 0,
                                                0, 1, 0, 0, 0,
                                                0, 0, 1, 0, 0,
                                                0, 0, 0, 1, 0,
                                                0, 0, 0, 0, 1};
 
-  static const TMatrixD HMatrix(5,5, HMatrixContent);
+  static const SMatrix55 HMatrix(HMatrixContent);
 
   return HMatrix;
 }

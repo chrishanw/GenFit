@@ -40,23 +40,29 @@ namespace genfit {
  * C = F * C_old * F^T + N
  *
  */
-class ReferenceStateOnPlane : public StateOnPlane {
+template<unsigned int dim, unsigned int dimAux = 0>
+class ReferenceStateOnPlane : public StateOnPlane<dim, dimAux> {
+
+using Super = StateOnPlane<dim, dimAux>;
+using SVectorState = ROOT::Math::SVector<double, dim>;
+using SMatrixCov = ROOT::Math::SMatrix<double, dim, dim, ROOT::Math::MatRepSym<double, dim> >;
+using SVectorAux = ROOT::Math::SVector<double, dimAux>;
 
  public:
 
   ReferenceStateOnPlane();
-  ReferenceStateOnPlane(const TVectorD& state,
+  ReferenceStateOnPlane(const SVectorState& state,
       const SharedPlanePtr& plane,
       const AbsTrackRep* rep);
-  ReferenceStateOnPlane(const TVectorD& state,
+  ReferenceStateOnPlane(const SVectorState& state,
       const SharedPlanePtr& plane,
       const AbsTrackRep* rep,
-      const TVectorD& auxInfo);
-  ReferenceStateOnPlane(const StateOnPlane& state);
-  ReferenceStateOnPlane(const ReferenceStateOnPlane&) = default;
+      const SVectorAux& auxInfo);
+  ReferenceStateOnPlane(const Super& state);
+  ReferenceStateOnPlane(const ReferenceStateOnPlane<dim, dimAux>&) = default;
 
-  StateOnPlane& operator=(ReferenceStateOnPlane other);
-  void swap(ReferenceStateOnPlane& other); // nothrow
+  Super& operator=(ReferenceStateOnPlane<dim, dimAux> other);
+  void swap(ReferenceStateOnPlane<dim, dimAux>& other); // nothrow
 
   virtual ~ReferenceStateOnPlane() {}
 

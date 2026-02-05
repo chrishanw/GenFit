@@ -19,6 +19,7 @@
 
 #include "Track.h"
 
+#include "AbsMeasurement.h"
 #include "TrackPoint.h"
 #include "Exception.h"
 #include "IO.h"
@@ -27,98 +28,85 @@
 
 namespace genfit {
 
-  template<unsigned int dimMeas>
-TrackPoint<dimMeas>::TrackPoint() :
-  sortingParameter_(0), track_(nullptr), thinScatterer_(nullptr)
+template<unsigned int dimMeas>
+TrackPoint<dimMeas>::TrackPoint() : AbsTrackPoint(dimMeas)
 {
   ;
 }
 
 template<unsigned int dimMeas>
 TrackPoint<dimMeas>::TrackPoint(Track* track) :
-  sortingParameter_(0), track_(track), thinScatterer_(nullptr)
+  AbsTrackPoint(dimMeas, track)
 {
   ;
 }
 
 template<unsigned int dimMeas>
 TrackPoint<dimMeas>::TrackPoint(const std::vector< genfit::AbsMeasurement<dimMeas>* >& rawMeasurements, Track* track) :
-  sortingParameter_(0), track_(track), thinScatterer_(nullptr)
+  AbsTrackPoint(dimMeas, track)
 {
   rawMeasurements_.reserve(rawMeasurements.size());
 
-  for (std::vector<AbsMeasurement<dimMeas>*>::const_iterator m = rawMeasurements.begin(); m != rawMeasurements.end(); ++m) {
+  for (typename std::vector<AbsMeasurement<dimMeas>*>::const_iterator m = rawMeasurements.begin(); m != rawMeasurements.end(); ++m) {
     addRawMeasurement(*m);
   }
 }
 
 template<unsigned int dimMeas>
 TrackPoint<dimMeas>::TrackPoint(AbsMeasurement<dimMeas>* rawMeasurement, Track* track) :
-  sortingParameter_(0), track_(track), thinScatterer_(nullptr)
+  AbsTrackPoint(dimMeas, track)
 {
   addRawMeasurement(rawMeasurement);
 }
 
 
 template<unsigned int dimMeas>
-TrackPoint<dimMeas>::TrackPoint(const TrackPoint<dimMeas>& rhs) :
-  sortingParameter_(rhs.sortingParameter_), track_(rhs.track_), thinScatterer_(nullptr)
+TrackPoint<dimMeas>::TrackPoint(const TrackPoint<dimMeas>& rhs) : 
+  AbsTrackPoint(dimMeas, rhs.track_, rhs.sortingParameter_)
 {
   // clone rawMeasurements
-  for (std::vector<AbsMeasurement<dimMeas>*>::const_iterator it = rhs.rawMeasurements_.begin(); it != rhs.rawMeasurements_.end(); ++it) {
+  for (typename std::vector<AbsMeasurement<dimMeas>*>::const_iterator it = rhs.rawMeasurements_.begin(); it != rhs.rawMeasurements_.end(); ++it) {
     AbsMeasurement<dimMeas>* tp = (*it)->clone();
     addRawMeasurement(tp);
   }
 
   // copy fitterInfos
-  for (std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = rhs.fitterInfos_.begin(); it != rhs.fitterInfos_.end();  ++it ) {
+  for (typename std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = rhs.fitterInfos_.begin(); it != rhs.fitterInfos_.end();  ++it ) {
     AbsFitterInfo* fi = it->second->clone();
     fi->setTrackPoint(this);
     setFitterInfo(fi);
   }
 
   if (rhs.thinScatterer_ != nullptr)
-    thinScatterer_.reset(new ThinScatterer(*(rhs.thinScatterer_)));
+    Super::thinScatterer_.reset(new ThinScatterer(*(rhs.thinScatterer_)));
 }
 
 template<unsigned int dimMeas>
 TrackPoint<dimMeas>::TrackPoint(const TrackPoint<dimMeas>& rhs,
     const std::map<const AbsTrackRep*, AbsTrackRep*>& map,
-    const std::vector<const genfit::AbsTrackRep*> * repsToIgnore) :
-  sortingParameter_(rhs.sortingParameter_), track_(rhs.track_), thinScatterer_(nullptr)
+    const std::vector<const genfit::AbsTrackRep*> * repsToIgnore) : AbsTrackPoint(dimMeas, rhs.track_, rhs.sortingParameter_)
 {
   // clone rawMeasurements
-  for (std::vector<AbsMeasurement<dimMeas>*>::const_iterator it = rhs.rawMeasurements_.begin(); it!=rhs.rawMeasurements_.end(); ++it) {
+  for (typename std::vector<AbsMeasurement<dimMeas>*>::const_iterator it = rhs.rawMeasurements_.begin(); it!=rhs.rawMeasurements_.end(); ++it) {
     AbsMeasurement<dimMeas>* m = (*it)->clone();
     addRawMeasurement(m);
   }
 
-  // copy fitterInfos
-  for (std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = rhs.fitterInfos_.begin(); it != rhs.fitterInfos_.end();  ++it ) {
-    if (repsToIgnore != nullptr) {
-      if (std::find(repsToIgnore->begin(), repsToIgnore->end(), it->first) != repsToIgnore->end())
-        continue;
-    }
-    AbsFitterInfo* fi = it->second->clone();
-    fi->setRep(map.at(it->first));
-    fi->setTrackPoint(this);
-    setFitterInfo(fi);
-  }
-
   if (rhs.thinScatterer_ != nullptr)
-    thinScatterer_.reset(new ThinScatterer(*(rhs.thinScatterer_)));
+    Super::thinScatterer_.reset(new ThinScatterer(*(rhs.thinScatterer_)));
 }
 
 
 template<unsigned int dimMeas>
 TrackPoint<dimMeas>& TrackPoint<dimMeas>::operator=(TrackPoint<dimMeas> rhs) {
   swap(rhs);
+  // TODO: have to swap Super, currently I'm not sure how
 
-  for (std::vector<AbsMeasurement<dimMeas>*>::const_iterator it = rawMeasurements_.begin(); it!=rawMeasurements_.end(); ++it) {
+  for (typename std::vector<AbsMeasurement<dimMeas>*>::const_iterator it = rawMeasurements_.begin(); it!=rawMeasurements_.end(); ++it) {
     (*it)->setTrackPoint(this);
   }
 
-  for (std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = fitterInfos_.begin(); it != fitterInfos_.end();  ++it ) {
+  for (typename std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = fitterInfos_.begin(); it != fitterInfos_.end();  ++it ) {
     it->second->setTrackPoint(this);
   }
 
@@ -128,11 +116,7 @@ TrackPoint<dimMeas>& TrackPoint<dimMeas>::operator=(TrackPoint<dimMeas> rhs) {
 
 template<unsigned int dimMeas>
 void TrackPoint<dimMeas>::swap(TrackPoint<dimMeas>& other) {
-  std::swap(this->sortingParameter_, other.sortingParameter_);
-  std::swap(this->track_, other.track_);
   std::swap(this->rawMeasurements_, other.rawMeasurements_);
-  std::swap(this->fitterInfos_, other.fitterInfos_);
-  this->thinScatterer_.swap(other.thinScatterer_);
 }
 
 
@@ -145,8 +129,8 @@ TrackPoint<dimMeas>::~TrackPoint() {
   for (size_t i = 0; i < rawMeasurements_.size(); ++i)
     delete rawMeasurements_[i];
 
-  std::map< const AbsTrackRep*, AbsFitterInfo* >::iterator it;
-  for (it = fitterInfos_.begin(); it != fitterInfos_.end(); ++it)
+  typename std::map< const AbsTrackRep*, AbsFitterInfo* >::iterator it;
+  for (it = Super::fitterInfos_.begin(); it != Super::fitterInfos_.end(); ++it)
     delete it->second;
 }
 
@@ -160,31 +144,22 @@ AbsMeasurement<dimMeas>* TrackPoint<dimMeas>::getRawMeasurement(int i) const {
 }
 
 
-template<unsigned int dimMeas>
-std::vector< AbsFitterInfo* > TrackPoint<dimMeas>::getFitterInfos() const {
-  std::vector< AbsFitterInfo* > retVal;
-
-  if (fitterInfos_.empty())
-    return retVal;
-
-  retVal.reserve(fitterInfos_.size());
-  for (std::map<const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = fitterInfos_.begin(); it != fitterInfos_.end();  ++it ) {
-    retVal.push_back(it->second);
-  }
-
-  return retVal;
-}
+// template<unsigned int dimMeas>
+// std::vector< AbsFitterInfo* > TrackPoint<dimMeas>::getFitterInfos() const {
+//   return Super::getFitterInfos();
+// }
 
 
-template<unsigned int dimMeas>
-AbsFitterInfo* TrackPoint<dimMeas>::getFitterInfo(const AbsTrackRep* rep) const {
-  if (!rep)
-    rep = track_->getCardinalRep();
-  std::map<const AbsTrackRep*, AbsFitterInfo*>::const_iterator it = fitterInfos_.find(rep);
-  if (it == fitterInfos_.end())
-    return nullptr;
-  return fitterInfos_.at(rep);
-}
+// template<unsigned int dimMeas>
+// AbsFitterInfo* TrackPoint<dimMeas>::getFitterInfo(const AbsTrackRep* rep) const {
+//   // if (!rep)
+//   //   rep = track_->getCardinalRep();
+//   // typename std::map<const AbsTrackRep*, AbsFitterInfo*>::const_iterator it = fitterInfos_.find(rep);
+//   // if (it == fitterInfos_.end())
+//   //   return nullptr;
+//   // return fitterInfos_.at(rep);
+//   return Super::getFitterInfo(rep);
+// }
 
 
 
@@ -197,14 +172,16 @@ void TrackPoint<dimMeas>::deleteRawMeasurements() {
 }
 
 
-template<unsigned int dimMeas>
-void TrackPoint<dimMeas>::setFitterInfo(genfit::AbsFitterInfo* fitterInfo) {
-  assert (fitterInfo != nullptr);
-  if (hasFitterInfo(fitterInfo->getRep()))
-    delete fitterInfos_[fitterInfo->getRep()];
+// template<unsigned int dimMeas>
+// void TrackPoint<dimMeas>::setFitterInfo(genfit::AbsFitterInfo* fitterInfo) {
+//   assert (fitterInfo != nullptr);
+//   // if (hasFitterInfo(fitterInfo->getRep()))
+//   //   delete fitterInfos_[fitterInfo->getRep()];
 
-  fitterInfos_[fitterInfo->getRep()] = fitterInfo;
-}
+//   // fitterInfos_[fitterInfo->getRep()] = fitterInfo;
+
+//   Super::setFitterInfo(fitterInfo);
+// }
 
 
 template<unsigned int dimMeas>
@@ -218,7 +195,7 @@ void TrackPoint<dimMeas>::Print(const Option_t*) const {
     printOut << "............\n";
   }
 
-  for (std::map< const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = fitterInfos_.begin(); it != fitterInfos_.end();  ++it ) {
+  for (typename std::map< const AbsTrackRep*, AbsFitterInfo* >::const_iterator it = fitterInfos_.begin(); it != fitterInfos_.end();  ++it ) {
     printOut << "FitterInfo for TrackRep " << it->first << "\n";
     it->second->Print();
     printOut << "............\n";
@@ -229,23 +206,5 @@ void TrackPoint<dimMeas>::Print(const Option_t*) const {
 
 }
 
-template<unsigned int dimMeas>
-void TrackPoint<dimMeas>::fixupRepsForReading()
-{
-  for (auto& trackRepIDWithFitterInfo : vFitterInfos_) {
-    // The map is filled such that i corresponds to the id of the TrackRep.
-    const unsigned int id = trackRepIDWithFitterInfo.first;
-    AbsFitterInfo* fitterInfo = trackRepIDWithFitterInfo.second;
-
-    // May not have FitterInfos for all reps.
-    if (!fitterInfo)
-      continue;
-    AbsTrackRep* trackRep = track_->getTrackRep(id);
-
-    fitterInfos_[trackRep] = fitterInfo;
-    fitterInfos_[trackRep]->setRep(trackRep);
-  }
-  vFitterInfos_.clear();
-}
 
 } /* End of namespace genfit */

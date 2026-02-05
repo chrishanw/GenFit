@@ -135,8 +135,9 @@ namespace genfit {
   
   }
 
-  static KalmanFitterInfo* getTrackPointKalmanFitterInfo(const TrackPoint* tp, const AbsTrackRep* rep) {
-    return dynamic_cast<KalmanFitterInfo*>(tp->getFitterInfo(rep));
+  template<unsigned int dim, unsigned int dimAux>
+  static KalmanFitterInfo<dim, dimAux>* getTrackPointKalmanFitterInfo(const TrackPoint* tp, const AbsTrackRep* rep) {
+    return dynamic_cast<KalmanFitterInfo<dim, dimAux>*>(tp->getFitterInfo(rep));
   }
 
 }

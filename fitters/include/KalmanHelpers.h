@@ -29,6 +29,7 @@ namespace genfit {
   static void pruneTrack(const Track* track, const Option_t* option = "U");
 
   //! Helper to avoid casting
-  static KalmanFitterInfo* getTrackPointKalmanFitterInfo(const TrackPoint* tp, const AbsTrackRep* rep = nullptr);
+  template<unsigned int dim, unsigned int dimAux>
+  static KalmanFitterInfo<dim, dimAux>* getTrackPointKalmanFitterInfo(const TrackPoint* tp, const AbsTrackRep* rep = nullptr);
 
 }
