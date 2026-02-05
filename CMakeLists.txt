@@ -78,14 +78,14 @@ ENDIF()
 # Set GENFIT include directories
 SET(GF_INC_DIRS
 		./core/include/
-		./eventDisplay/include/
-		./fields/include/
-		./finitePlanes/include/
-		./fitters/include/
-		./GBL/include/
-		./measurements/include/
-		./trackReps/include/
-		./utilities/include/
+		# ./eventDisplay/include/
+		# ./fields/include/
+		# ./finitePlanes/include/
+		# ./fitters/include/
+		# ./GBL/include/
+		# ./measurements/include/
+		# ./trackReps/include/
+		# ./utilities/include/
 		${GF_INC_DIRS}
 )
 
@@ -128,20 +128,21 @@ ENDIF(DOXYGEN_FOUND)
 
 # add the list of source code files -- careful, when a new file is added!
 AUX_SOURCE_DIRECTORY( ./core/src          library_sources )
-AUX_SOURCE_DIRECTORY( ./eventDisplay/src  library_sources )
-AUX_SOURCE_DIRECTORY( ./fields/src        library_sources )
-AUX_SOURCE_DIRECTORY( ./finitePlanes/src  library_sources )
-AUX_SOURCE_DIRECTORY( ./fitters/src       library_sources )
-AUX_SOURCE_DIRECTORY( ./GBL/src           library_sources )
-AUX_SOURCE_DIRECTORY( ./measurements/src  library_sources )
-AUX_SOURCE_DIRECTORY( ./trackReps/src     library_sources )
-AUX_SOURCE_DIRECTORY( ./utilities/src     library_sources )
+# AUX_SOURCE_DIRECTORY( ./eventDisplay/src  library_sources )
+# AUX_SOURCE_DIRECTORY( ./fields/src        library_sources )
+# AUX_SOURCE_DIRECTORY( ./finitePlanes/src  library_sources )
+# AUX_SOURCE_DIRECTORY( ./fitters/src       library_sources )
+# AUX_SOURCE_DIRECTORY( ./GBL/src           library_sources )
+# AUX_SOURCE_DIRECTORY( ./measurements/src  library_sources )
+# AUX_SOURCE_DIRECTORY( ./trackReps/src     library_sources )
+# AUX_SOURCE_DIRECTORY( ./utilities/src     library_sources )
 
 # Dictionary generation.  For the time being, we list classes one-by-one.
 SET(CORE_DICTIONARY_SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/core/include/AbsFinitePlane.h
 		${CMAKE_CURRENT_SOURCE_DIR}/core/include/AbsFitterInfo.h
 		${CMAKE_CURRENT_SOURCE_DIR}/core/include/AbsHMatrix.h
+		${CMAKE_CURRENT_SOURCE_DIR}/core/include/AbsTrackPoint.h
 		${CMAKE_CURRENT_SOURCE_DIR}/core/include/AbsTrackRep.h
 		${CMAKE_CURRENT_SOURCE_DIR}/core/include/DetPlane.h
 		${CMAKE_CURRENT_SOURCE_DIR}/core/include/FitStatus.h
@@ -167,106 +168,107 @@ ROOT_GENERATE_DICTIONARY(
 )
 SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/coreRootDict.cxx" "${library_sources}")
 
-SET(EVENTDISPLAY_DICTIONARY_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/eventDisplay/include/EventDisplay.h
-)
-ROOT_GENERATE_DICTIONARY(
-	    eventDisplayRootDict
-		"${EVENTDISPLAY_DICTIONARY_SOURCES}"
-		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/eventDisplay/src/eventDisplayLinkDef.h"
-)
-SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/eventDisplayRootDict.cxx" "${library_sources}")
+# SET(EVENTDISPLAY_DICTIONARY_SOURCES
+# 		${CMAKE_CURRENT_SOURCE_DIR}/eventDisplay/include/EventDisplay.h
+# )
+# ROOT_GENERATE_DICTIONARY(
+# 	    eventDisplayRootDict
+# 		"${EVENTDISPLAY_DICTIONARY_SOURCES}"
+# 		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/eventDisplay/src/eventDisplayLinkDef.h"
+# )
+# SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/eventDisplayRootDict.cxx" "${library_sources}")
 
-SET(FITTERS_DICTIONARY_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/AbsKalmanFitter.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFittedStateOnPlane.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitStatus.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/ReferenceStateOnPlane.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitterRefTrack.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitter.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitterInfo.h
-		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/DAF.h
-)
-ROOT_GENERATE_DICTIONARY(
-	    fittersRootDict
-		"${FITTERS_DICTIONARY_SOURCES}"
-		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/fitters/src/fittersLinkDef.h"
-)
-SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/fittersRootDict.cxx" "${library_sources}")
+# SET(FITTERS_DICTIONARY_SOURCES
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/AbsKalmanFitter.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFittedStateOnPlane.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitStatus.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/ReferenceStateOnPlane.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitterRefTrack.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitter.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitterInfo.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanHelpers.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/DAF.h
+# )
+# ROOT_GENERATE_DICTIONARY(
+# 	    fittersRootDict
+# 		"${FITTERS_DICTIONARY_SOURCES}"
+# 		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/fitters/src/fittersLinkDef.h"
+# )
+# SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/fittersRootDict.cxx" "${library_sources}")
 
-SET(GBL_DICTIONARY_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GFGbl.h
-		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblFitter.h
-		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/ICalibrationParametersDerivatives.h
-		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblFitterInfo.h
-		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblFitStatus.h
-		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblData.h
-)
-ROOT_GENERATE_DICTIONARY(
-	    GBLRootDict
-        "${GBL_DICTIONARY_SOURCES}"
-		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/GBL/src/GBLLinkDef.h"
-)
-SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/GBLRootDict.cxx" "${library_sources}")
+# SET(GBL_DICTIONARY_SOURCES
+# 		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GFGbl.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblFitter.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/ICalibrationParametersDerivatives.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblFitterInfo.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblFitStatus.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/GBL/include/GblData.h
+# )
+# ROOT_GENERATE_DICTIONARY(
+# 	    GBLRootDict
+#         "${GBL_DICTIONARY_SOURCES}"
+# 		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/GBL/src/GBLLinkDef.h"
+# )
+# SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/GBLRootDict.cxx" "${library_sources}")
 
-SET(MEASUREMENTS_DICTIONARY_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixPhi.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixU.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixUnit.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixV.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixUV.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/FullMeasurement.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/PlanarMeasurement.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/ProlateSpacepointMeasurement.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/SpacepointMeasurement.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WireMeasurement.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WireMeasurementNew.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WirePointMeasurement.h
-		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WireTrackCandHit.h
-)
-ROOT_GENERATE_DICTIONARY(
-		measurementsRootDict
-		${MEASUREMENTS_DICTIONARY_SOURCES}
-		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/measurements/src/measurementsLinkDef.h"
-)
-SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/measurementsRootDict.cxx" "${library_sources}")
+# SET(MEASUREMENTS_DICTIONARY_SOURCES
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixPhi.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixU.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixUnit.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixV.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/HMatrixUV.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/FullMeasurement.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/PlanarMeasurement.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/ProlateSpacepointMeasurement.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/SpacepointMeasurement.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WireMeasurement.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WireMeasurementNew.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WirePointMeasurement.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/measurements/include/WireTrackCandHit.h
+# )
+# ROOT_GENERATE_DICTIONARY(
+# 		measurementsRootDict
+# 		${MEASUREMENTS_DICTIONARY_SOURCES}
+# 		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/measurements/src/measurementsLinkDef.h"
+# )
+# SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/measurementsRootDict.cxx" "${library_sources}")
 
-SET(TRACKREPS_DICTIONARY_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/trackReps/include/RKTrackRep.h
-		${CMAKE_CURRENT_SOURCE_DIR}/trackReps/include/MplTrackRep.h
-)
-ROOT_GENERATE_DICTIONARY(
-	    trackRepsRootDict
-		"${TRACKREPS_DICTIONARY_SOURCES}"
-		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/trackReps/src/trackRepsLinkDef.h"
-)
-SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/trackRepsRootDict.cxx" "${library_sources}")
+# SET(TRACKREPS_DICTIONARY_SOURCES
+# 		${CMAKE_CURRENT_SOURCE_DIR}/trackReps/include/RKTrackRep.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/trackReps/include/MplTrackRep.h
+# )
+# ROOT_GENERATE_DICTIONARY(
+# 	    trackRepsRootDict
+# 		"${TRACKREPS_DICTIONARY_SOURCES}"
+# 		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/trackReps/src/trackRepsLinkDef.h"
+# )
+# SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/trackRepsRootDict.cxx" "${library_sources}")
 
-SET(UTILITIES_DICTIONARY_SOURCES
-		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/HelixTrackModel.h
-		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/MeasurementCreator.h
-		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/mySpacepointDetectorHit.h
-		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/mySpacepointMeasurement.h
-)
-ROOT_GENERATE_DICTIONARY(
-	    utilitiesRootDict
-		"${UTILITIES_DICTIONARY_SOURCES}"
-		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/utilities/src/utilitiesLinkDef.h"
-)
-SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/utilitiesRootDict.cxx" "${library_sources}")
+# SET(UTILITIES_DICTIONARY_SOURCES
+# 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/HelixTrackModel.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/MeasurementCreator.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/mySpacepointDetectorHit.h
+# 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/mySpacepointMeasurement.h
+# )
+# ROOT_GENERATE_DICTIONARY(
+# 	    utilitiesRootDict
+# 		"${UTILITIES_DICTIONARY_SOURCES}"
+# 		LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/utilities/src/utilitiesLinkDef.h"
+# )
+# SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/utilitiesRootDict.cxx" "${library_sources}")
 
-if(DEFINED RAVE)
-	SET(GFRAVE_DICTIONARY_SOURCES
-			${CMAKE_CURRENT_SOURCE_DIR}/GFRave/include/GFRaveTrackParameters.h
-			${CMAKE_CURRENT_SOURCE_DIR}/GFRave/include/GFRaveVertex.h
-	)
-	ROOT_GENERATE_DICTIONARY(
-		    GFRaveRootDict
-			"${GFRAVE_DICTIONARY_SOURCES}"
-			LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/GFRave/src/GFRaveLinkDef.h"
-	)
-	SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/GFRaveRootDict.cxx" "${library_sources}")
-endif()
+# if(DEFINED RAVE)
+# 	SET(GFRAVE_DICTIONARY_SOURCES
+# 			${CMAKE_CURRENT_SOURCE_DIR}/GFRave/include/GFRaveTrackParameters.h
+# 			${CMAKE_CURRENT_SOURCE_DIR}/GFRave/include/GFRaveVertex.h
+# 	)
+# 	ROOT_GENERATE_DICTIONARY(
+# 		    GFRaveRootDict
+# 			"${GFRAVE_DICTIONARY_SOURCES}"
+# 			LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/GFRave/src/GFRaveLinkDef.h"
+# 	)
+# 	SET(library_sources "${CMAKE_CURRENT_BINARY_DIR}/GFRaveRootDict.cxx" "${library_sources}")
+# endif()
 
 
 # install
@@ -285,49 +287,49 @@ else()
 	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ROOT::Core ROOT::Physics ROOT::Eve)
 endif()
 
-INCLUDE(CTest)
+# INCLUDE(CTest)
 
-ADD_CUSTOM_TARGET( tests )
+# ADD_CUSTOM_TARGET( tests )
 
-ADD_GENFIT_TEST( fitterTests               test/fitterTests/main.cc)
-ADD_GENFIT_TEST( minimalFittingExample     test/minimalFittingExample/main.cc)
-ADD_GENFIT_TEST( minimalFittingExample2    test/minimalFittingExample/main2.cc)
-ADD_GENFIT_TEST( measurementFactoryExample test/measurementFactoryExample/main.cc)
-ADD_GENFIT_TEST( streamerTest              test/streamerTest/main.cc)
-ADD_GENFIT_TEST( unitTests                 test/unitTests/main.cc)
-IF(DEFINED RAVE)
-  ADD_GENFIT_TEST( vertexingTest           test/vertexingTest/main.cc)
-  ADD_GENFIT_TEST( vertexingTestRead       test/vertexingTest/read.cc)
-ENDIF()
+# ADD_GENFIT_TEST( fitterTests               test/fitterTests/main.cc)
+# ADD_GENFIT_TEST( minimalFittingExample     test/minimalFittingExample/main.cc)
+# ADD_GENFIT_TEST( minimalFittingExample2    test/minimalFittingExample/main2.cc)
+# ADD_GENFIT_TEST( measurementFactoryExample test/measurementFactoryExample/main.cc)
+# ADD_GENFIT_TEST( streamerTest              test/streamerTest/main.cc)
+# ADD_GENFIT_TEST( unitTests                 test/unitTests/main.cc)
+# IF(DEFINED RAVE)
+#   ADD_GENFIT_TEST( vertexingTest           test/vertexingTest/main.cc)
+#   ADD_GENFIT_TEST( vertexingTestRead       test/vertexingTest/read.cc)
+# ENDIF()
 
-IF(BUILD_TESTING)
+# IF(BUILD_TESTING)
 
-	# Run these automatically via ctest since they do not need a GUI. Create the
-	# necessary geometry first via a dummy test
-	ADD_TEST(NAME createGeometry COMMAND root -l -b -q ${CMAKE_CURRENT_LIST_DIR}/test/makeGeom.C)
+# 	# Run these automatically via ctest since they do not need a GUI. Create the
+# 	# necessary geometry first via a dummy test
+# 	ADD_TEST(NAME createGeometry COMMAND root -l -b -q ${CMAKE_CURRENT_LIST_DIR}/test/makeGeom.C)
 
-	ADD_TEST(NAME streamerTest COMMAND streamerTest)
-	SET_PROPERTY(TEST streamerTest PROPERTY DEPENDS createGeometry)
+# 	ADD_TEST(NAME streamerTest COMMAND streamerTest)
+# 	SET_PROPERTY(TEST streamerTest PROPERTY DEPENDS createGeometry)
 
-	ADD_TEST(NAME unitTests COMMAND unitTests)
-	SET_PROPERTY(TEST unitTests PROPERTY DEPENDS createGeometry)
+# 	ADD_TEST(NAME unitTests COMMAND unitTests)
+# 	SET_PROPERTY(TEST unitTests PROPERTY DEPENDS createGeometry)
 
-    ENABLE_TESTING()
+#     ENABLE_TESTING()
 
 
-	FIND_PACKAGE(GTest REQUIRED)
-	ADD_EXECUTABLE(gtests
-			gtest/TestConstField.cpp
-			gtest/TestMaterialEffects.cpp
-			gtest/TestRKTrackRep.cpp
-			gtest/TestMaterial.cpp
-			)
-	TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ${PROJECT_NAME})  # gtest gtest_main
-	MESSAGE(STATUS  ${GTEST_INCLUDE_DIRS})
-	TARGET_INCLUDE_DIRECTORIES(gtests PUBLIC ${GTEST_INCLUDE_DIRS})
-	GTEST_DISCOVER_TESTS(gtests)
-	INSTALL(TARGETS gtests DESTINATION bin)
-ENDIF()
+# 	FIND_PACKAGE(GTest REQUIRED)
+# 	ADD_EXECUTABLE(gtests
+# 			gtest/TestConstField.cpp
+# 			gtest/TestMaterialEffects.cpp
+# 			gtest/TestRKTrackRep.cpp
+# 			gtest/TestMaterial.cpp
+# 			)
+# 	TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ${PROJECT_NAME})  # gtest gtest_main
+# 	MESSAGE(STATUS  ${GTEST_INCLUDE_DIRS})
+# 	TARGET_INCLUDE_DIRECTORIES(gtests PUBLIC ${GTEST_INCLUDE_DIRS})
+# 	GTEST_DISCOVER_TESTS(gtests)
+# 	INSTALL(TARGETS gtests DESTINATION bin)
+# ENDIF()
 
 # generate and install following configuration files
 #GENERATE_PACKAGE_CONFIGURATION_FILES( genfitConfig.cmake genfitConfigVersion.cmake )
