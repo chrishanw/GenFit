@@ -103,9 +103,7 @@ void StepLimits::setStepSign(double signedVal) {
 
 
 void StepLimits::reset() {
-  for (size_t i = 1; i < c_nStepLimitTypes; ++i) {
-    limits_[i] = maxLimit_;
-  }
+  limits_.fill(maxLimit_);
   stepSign_ = 1;
 }
 
