@@ -57,7 +57,7 @@ class StepLimits {
   //! Number of step-limit types.
   static constexpr size_t c_nStepLimitTypes = 7;
 
-  StepLimits() : stepSign_(1) {
+  StepLimits() {
     limits_.fill(maxLimit_);
   }
 
@@ -108,7 +108,7 @@ class StepLimits {
   // limits are unsigned (i.e. non-negative)
   std::array<double, c_nStepLimitTypes> limits_;
 
-  signed char stepSign_;
+  signed char stepSign_ = 1;
   static const double maxLimit_;
 
 };
