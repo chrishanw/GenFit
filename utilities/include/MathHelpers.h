@@ -66,4 +66,23 @@ namespace genfit {
     return x4 * x2;
   }
 
+  /**
+   * Generalised method
+   */
+  template<typename T>
+  inline constexpr T powN(const T x, const int N)
+  {
+    if (N == 3) {
+      return cube(x);
+    } else if (N == 4) {
+      return pow4(x);
+    } else if (N == 5) {
+      return pow5(x);
+    } else if (N == 6) {
+      return pow6(x);
+    } else {
+      return std::pow(x, static_cast<T>(N));
+    }
+  }
+
 }
