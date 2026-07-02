@@ -36,9 +36,11 @@ jobs:
     - name: Build GenFit
       run: |
         source root/bin/thisroot.sh
+        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
         cd ${{github.workspace}}/.. && mkdir build && cd build
-        cmake ../GenFit
+        cmake ../GenFit -DCMAKE_PREFIX_PATH=$ROOTSYS
         make
+
     
     - name: Run Tests
       run: |

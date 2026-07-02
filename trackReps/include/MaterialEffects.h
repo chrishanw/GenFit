@@ -29,8 +29,6 @@
 #include <iostream>
 #include <vector>
 
-#include <TVector3.h>
-
 
 namespace genfit {
 

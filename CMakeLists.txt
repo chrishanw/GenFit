@@ -257,6 +257,7 @@ SET(UTILITIES_DICTIONARY_SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/MeasurementCreator.h
 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/mySpacepointDetectorHit.h
 		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/mySpacepointMeasurement.h
+		${CMAKE_CURRENT_SOURCE_DIR}/utilities/include/VectorUtils.h
 )
 ROOT_GENERATE_DICTIONARY(
 	    utilitiesRootDict
@@ -338,7 +339,12 @@ IF(BUILD_TESTING)
 			gtest/TestRKTrackRep.cpp
 			gtest/TestMaterial.cpp
 			)
-	TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ${PROJECT_NAME})  # gtest gtest_main
+	# ROOT::Math is needed for older ROOT versions like 6.26
+	if(ROOT_VERSION VERSION_LESS 6.30)
+		TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ROOT::GenVector ${PROJECT_NAME})
+	else()
+		TARGET_LINK_LIBRARIES(gtests ${GTEST_BOTH_LIBRARIES} ${ROOT_LIBS} ${PROJECT_NAME})
+	endif()
 	MESSAGE(STATUS  ${GTEST_INCLUDE_DIRS})
 	TARGET_INCLUDE_DIRECTORIES(gtests PUBLIC ${GTEST_INCLUDE_DIRS})
 	GTEST_DISCOVER_TESTS(gtests)
