@@ -59,7 +59,7 @@ MeasurementCreator::MeasurementCreator() :
 }
 
 
-std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType type, double tracklength, bool& outlier, int& lr) {
+std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(EMeasurementType type, double tracklength, bool& outlier, int& lr) {
 
   outlier = false;
   lr = 0;
@@ -79,8 +79,8 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
   ROOT::Math::XYZVector currentWireDir(wireDir_);
   ROOT::Math::XYZVector wirePerp;
 
-  if (type == Wire ||
-      type == WirePoint){
+  if (type == EMeasurementType::Wire ||
+      type == EMeasurementType::WirePoint){
 
     // skew layers
     if (useSkew_ && (int)((double)wireCounter_/(double)nSuperLayer_)%2 == 1) {
@@ -109,7 +109,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
 
 
   switch(type){
-    case Pixel: {
+    case EMeasurementType::Pixel: {
       if (debug_) std::cerr << "create PixHit" << std::endl;
 
       genfit::SharedPlanePtr plane(new genfit::DetPlane(point, planeNorm.Cross(z), (planeNorm.Cross(z)).Cross(planeNorm)));
@@ -134,7 +134,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     }
     break;
 
-    case Spacepoint: {
+    case EMeasurementType::Spacepoint: {
       if (debug_) std::cerr << "create SpacepointHit" << std::endl;
 
       TVectorD hitCoords(3);
@@ -159,7 +159,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     }
     break;
 
-    case ProlateSpacepoint: {
+    case EMeasurementType::ProlateSpacepoint: {
       if (debug_) std::cerr << "create ProlateSpacepointHit" << std::endl;
 
       TVectorD hitCoords(3);
@@ -211,7 +211,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     }
     break;
 
-    case StripU: case StripV: case StripUV : {
+    case EMeasurementType::StripU: case EMeasurementType::StripV: case EMeasurementType::StripUV : {
       if (debug_) std::cerr << "create StripHit" << std::endl;
 
       ROOT::Math::XYZVector vU, vV;
@@ -230,12 +230,12 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
 
       measurement = new genfit::PlanarMeasurement(hitCoords, hitCov, int(type), measurementCounter_, nullptr);
       static_cast<genfit::PlanarMeasurement*>(measurement)->setPlane(plane, measurementCounter_);
-      if (type == StripV)
+      if (type == EMeasurementType::StripV)
         static_cast<genfit::PlanarMeasurement*>(measurement)->setStripV();
       retVal.push_back(measurement);
 
 
-      if (type == StripUV) {
+      if (type == EMeasurementType::StripUV) {
         if (outlier)
           hitCoords(0) = gRandom->Uniform(-outlierRange_, outlierRange_);
         else
@@ -251,7 +251,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     }
     break;
 
-    case Wire: {
+    case EMeasurementType::Wire: {
       if (debug_) std::cerr << "create WireHit" << std::endl;
 
       if (outlier) {
@@ -285,7 +285,7 @@ std::vector<genfit::AbsMeasurement*> MeasurementCreator::create(eMeasurementType
     }
     break;
 
-    case WirePoint: {
+    case EMeasurementType::WirePoint: {
       if (debug_) std::cerr << "create WirePointHit" << std::endl;
 
       if (outlier) {

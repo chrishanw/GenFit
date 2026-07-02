@@ -21,8 +21,7 @@
  * @{
  */
 
-#ifndef genfit_Tools_h
-#define genfit_Tools_h
+#pragma once
 
 #include <TVectorD.h>
 #include <TMatrixD.h>
@@ -97,5 +96,3 @@ kalmanUpdateSqrt(const TMatrixD& S,
 } /* End of namespace tools */
 } /* End of namespace genfit */
 /** @} */
-
-#endif // genfit_Tools_h

@@ -20,8 +20,7 @@
  * @{
  */
 
-#ifndef genfit_AbsBField_h
-#define genfit_AbsBField_h
+#pragma once
 
 #include <Math/Vector3D.h>
 
@@ -61,5 +60,3 @@ public:
 
 } /* End of namespace genfit */
 /** @} */
-
-#endif // genfit_AbsBField_h

@@ -20,8 +20,7 @@
  * @{
  */
 
-#ifndef genfit_GblFitterInfo2_h
-#define genfit_GblFitterInfo2_h
+#pragma once
 
 #include "AbsFitterInfo.h"
 #include "MeasuredStateOnPlane.h"
@@ -291,8 +290,8 @@ namespace genfit {
     virtual bool checkConsistency(const genfit::PruneFlags* = nullptr) const override;
        
   private:
-    enum measurementType{_uMeas, _vMeas, _uvMeas, _noMeas};
-    measurementType measType_;
+    enum class EMeasurementType{uMeas, vMeas, uvMeas, noMeas};
+    EMeasurementType measType_;
     unsigned int label_;
     TMatrixD jacobian_;
     TMatrixDSym noise_;
@@ -323,5 +322,3 @@ namespace genfit {
   
 } /* End of namespace genfit */
 /** @} */
-
-#endif // genfit_GblFitterInfo2_h

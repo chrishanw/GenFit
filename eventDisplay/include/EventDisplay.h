@@ -20,8 +20,7 @@
 * @{
 */
 
-#ifndef genfit_EventDisplay_h
-#define genfit_EventDisplay_h
+#pragma once
 
 #include "Track.h"
 #include "AbsKalmanFitter.h"
@@ -38,7 +37,7 @@
 
 namespace genfit {
 
-enum eFitterType {
+enum class EFitterType {
   SimpleKalman,
   RefKalman,
   DafSimple,
@@ -220,9 +219,9 @@ class EventDisplay : public TNamed {
     TGNumberEntry* guiDebugLvl_;
     unsigned int debugLvl_;
     TGButtonGroup* guiFitterId_;
-    eFitterType fitterId_;
+    EFitterType fitterId_;
     TGButtonGroup* guiMmHandling_;
-    eMultipleMeasurementHandling mmHandling_;
+    EMultipleMeasurementHandling mmHandling_;
 
     TGCheckButton* guiSquareRootFormalism_;
     bool squareRootFormalism_;
@@ -249,6 +248,3 @@ class EventDisplay : public TNamed {
 
 } /* End of namespace genfit */
 /** @} */
-
-#endif // genfit_EventDisplay_h
-
