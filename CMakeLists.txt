@@ -192,6 +192,9 @@ SET(FITTERS_DICTIONARY_SOURCES
 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitter.h
 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/KalmanFitterInfo.h
 		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/DAF.h
+		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/GSF.h
+		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/GSFFitStatus.h
+		${CMAKE_CURRENT_SOURCE_DIR}/fitters/include/GSFFitterInfo.h
 )
 ROOT_GENERATE_DICTIONARY(
 	    fittersRootDict
