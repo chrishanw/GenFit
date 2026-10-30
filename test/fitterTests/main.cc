@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -18,6 +19,9 @@
 #include <KalmanFitterInfo.h>
 #include <KalmanFitStatus.h>
 #include <DAF.h>
+#include <GSF.h>
+#include <GSFFitStatus.h>
+#include <GSFFitterInfo.h>
 #include <GFGbl.h>
 #include <MeasuredStateOnPlane.h>
 #include <MeasurementOnPlane.h>
@@ -476,6 +480,44 @@ int main() {
       secondTrack->checkConsistency();
 
       //if (debug) fitTrack->Print();
+
+      if (iEvent == 0) {
+        genfit::Track gsfTrack(*fitTrack);
+        genfit::AbsTrackRep* gsfRep = gsfTrack.getCardinalRep();
+        genfit::GSF gsf;
+        gsf.processTrackWithRep(&gsfTrack, gsfRep);
+
+        const genfit::FitStatus* status = gsfTrack.getFitStatus(gsfRep);
+        const auto* gsfStatus = dynamic_cast<const genfit::GSFFitStatus*>(status);
+        if (!status->isFitted() || status->getNFailedPoints() != 0 || gsfStatus == nullptr ||
+            gsfStatus->getMaxComponents() != 12 || gsfStatus->getMaxComponentsUsed() == 0) {
+          std::cerr << "GSF test failed: track fit did not process every measurement.\n";
+          return 1;
+        }
+        for (unsigned int pointIndex = 0; pointIndex < gsfTrack.getNumPointsWithMeasurement(); ++pointIndex) {
+          const auto* fitterInfo = dynamic_cast<const genfit::GSFFitterInfo*>(
+              gsfTrack.getPointWithMeasurement(pointIndex)->getFitterInfo(gsfRep));
+          if (fitterInfo == nullptr || !fitterInfo->hasBackwardUpdate()) {
+            std::cerr << "GSF test failed: missing GSF backward update at measurement " << pointIndex << ".\n";
+            return 1;
+          }
+          const std::vector<genfit::GSFComponent>& components = fitterInfo->getComponents(-1);
+          double totalWeight = 0.;
+          for (const genfit::GSFComponent& component : components)
+            totalWeight += component.weight;
+          if (components.empty() || std::fabs(totalWeight - 1.) > 1e-10) {
+            std::cerr << "GSF test failed: invalid component weights at measurement " << pointIndex << ".\n";
+            return 1;
+          }
+          const TVectorD& state = fitterInfo->getBackwardUpdate()->getState();
+          for (int parameter = 0; parameter < state.GetNrows(); ++parameter) {
+            if (!std::isfinite(state(parameter))) {
+              std::cerr << "GSF test failed: non-finite state at measurement " << pointIndex << ".\n";
+              return 1;
+            }
+          }
+        }
+      }
 
       // do the fit
       try{
