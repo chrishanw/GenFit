@@ -66,8 +66,7 @@ class KalmanFitterInfo : public AbsFitterInfo {
   MeasurementOnPlane* getClosestMeasurementOnPlane(const StateOnPlane*) const;
   unsigned int getNumMeasurements() const {return measurementsOnPlane_.size();}
   //! Get weights of measurements.
-  std::vector<double> getWeights() const;
-  //! Are the weights fixed?
+  std::vector<double> getWeights() const override;
   bool areWeightsFixed() const {return fixWeights_;}
   //! Get unbiased or biased (default) smoothed state.
   const MeasuredStateOnPlane& getFittedState(bool biased = true) const override;

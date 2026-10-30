@@ -64,6 +64,8 @@ class AbsFitterInfo : public TObject {
   virtual bool hasForwardUpdate() const = 0;
   virtual bool hasBackwardUpdate() const = 0;
   virtual bool hasUpdate(int direction) const {if (direction >=0) return hasForwardUpdate(); return hasBackwardUpdate();}
+  //! Measurement weights when the fitter uses weighted measurement hypotheses.
+  virtual std::vector<double> getWeights() const { return {}; }
 
   virtual void deleteForwardInfo() = 0;
   virtual void deleteBackwardInfo() = 0;
@@ -92,11 +94,9 @@ class AbsFitterInfo : public TObject {
 
   SharedPlanePtr sharedPlane_; //! Shared ownership.  '!' shuts up ROOT.
 
-
  private:
   AbsFitterInfo(const AbsFitterInfo&); // copy constructor
   AbsFitterInfo& operator=(const AbsFitterInfo&); // assignment operator
-
 
  public:
   ClassDef(AbsFitterInfo,1)
