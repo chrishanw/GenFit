@@ -322,6 +322,7 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
   double backwardNdf = -static_cast<double>(rep->getDim());
   int failedPointsForward = 0;
   int failedPointsBackward = 0;
+  std::vector<bool> forwardPointValid(nPoints, false);
 
   // Both passes use the same component update. The reverse pass reuses the
   // planes and measurements built during the forward pass.
@@ -330,6 +331,9 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
          pointIndex >= 0 && pointIndex < static_cast<int>(nPoints); pointIndex += direction) {
       TrackPoint* trackPoint = tr->getPointWithMeasurement(pointIndex);
       if (!trackPoint->hasRawMeasurements())
+        continue;
+
+      if (direction < 0 && !forwardPointValid[pointIndex])
         continue;
 
       GSFFitterInfo* fitterInfo = nullptr;
@@ -342,6 +346,7 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
         trackPoint->setFitterInfo(fitterInfo);
       }
 
+      Components componentsBeforePoint(components);
       try {
         SharedPlanePtr plane;
         if (direction > 0) {
@@ -353,6 +358,9 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
         else {
           plane = fitterInfo->getPlane();
         }
+
+        if (!plane)
+          throw std::runtime_error("TrackPoint has no detector plane");
 
         for (GaussianComponent& component : components)
           rep->extrapolateToPlane(component.state, plane);
@@ -406,13 +414,18 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
         fitterInfo->setUpdate(updatedState, direction, pointChi2, pointNdf);
         chi2 += pointChi2;
         ndf += pointNdf;
+        if (direction > 0)
+          forwardPointValid[pointIndex] = true;
       }
       catch (Exception& exception) {
+        components = componentsBeforePoint;
         errorOut << exception.what();
         ++failedPoints;
       }
       catch (const std::runtime_error& exception) {
-        errorOut << "GSF failed at TrackPoint " << pointIndex << ": " << exception.what() << std::endl;
+        components = componentsBeforePoint;
+        errorOut << "GSF failed at TrackPoint " << pointIndex << ": "
+                 << exception.what() << std::endl;
         ++failedPoints;
       }
     }
