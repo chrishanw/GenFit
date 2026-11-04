@@ -93,8 +93,7 @@ class GSFFitterInfo : public AbsFitterInfo {
   void deleteBackwardInfo() override;
   void deleteMeasurementInfo() override;
   const MeasuredStateOnPlane& getFittedState(bool biased = true) const override;
-  MeasurementOnPlane getResidual(unsigned int iMeasurement = 0, bool biased = true,
-                                 bool onlyMeasurementErrors = false) const override;
+  MeasurementOnPlane getResidual(unsigned int iMeasurement = 0, bool biased = false, bool onlyMeasurementErrors = true) const override;
   bool checkConsistency(const PruneFlags* = nullptr) const override;
 
  private:

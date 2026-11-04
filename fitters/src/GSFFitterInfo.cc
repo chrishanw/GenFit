@@ -210,26 +210,35 @@ const MeasuredStateOnPlane& GSFFitterInfo::getFittedState(bool biased) const {
   throw exception;
 }
 
-MeasurementOnPlane GSFFitterInfo::getResidual(unsigned int iMeasurement, bool biased,
-                                               bool onlyMeasurementErrors) const {
+MeasurementOnPlane GSFFitterInfo::getResidual(unsigned int iMeasurement, bool biased, bool onlyMeasurementErrors) const {
+
   const MeasuredStateOnPlane& fittedState = getFittedState(biased);
   const MeasurementOnPlane& measurement = measurementsOnPlane_.at(iMeasurement);
-  const AbsHMatrix* hMatrix = measurement.getHMatrix();
-  if (fittedState.getRep() != measurement.getRep() || *fittedState.getPlane() != *measurement.getPlane()) {
-    Exception exception("GSFFitterInfo::getResidual: fitted state and measurement are not on the same plane and representation.",
-                        __LINE__, __FILE__);
+  const SharedPlanePtr& plane = measurement.getPlane();
+
+  // check equality of planes and reps
+  if(*(fittedState.getPlane()) != *plane) {
+    Exception exception("GSFFitterInfo::getResidual: fittedState and measurement are not defined in the same plane.", __LINE__,__FILE__);
     throw exception;
   }
+  if(fittedState.getRep() != measurement.getRep()) {
+    Exception exception("GSFFitterInfo::getResidual: fittedState and measurement are not defined wrt the same TrackRep.", __LINE__,__FILE__);
+    throw exception;
+  }
+
+  const AbsHMatrix* hMatrix = measurement.getHMatrix();
 
   TVectorD residual(hMatrix->Hv(fittedState.getState()) - measurement.getState());
   residual *= -1.;
   TMatrixDSym covariance(measurement.getCov());
-  if (!onlyMeasurementErrors) {
-    covariance.ResizeTo(fittedState.getCov());
-    covariance = fittedState.getCov();
-    hMatrix->HMHt(covariance);
-    covariance += measurement.getCov();
+
+  if (onlyMeasurementErrors) {
+    return MeasurementOnPlane(residual, covariance, plane, fittedState.getRep(), hMatrix->clone(), measurement.getWeight());
   }
+
+  TMatrixDSym stateCov(fittedState.getCov());
+  hMatrix->HMHt(stateCov);
+  covariance += stateCov;
   return MeasurementOnPlane(residual, covariance, measurement.getPlane(), fittedState.getRep(),
                              hMatrix->clone(), measurement.getWeight());
 }
