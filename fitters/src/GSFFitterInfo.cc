@@ -50,20 +50,16 @@ std::vector<double> GSFFitterInfo::getWeights() const {
 
 void GSFFitterInfo::setForwardPrediction(MeasuredStateOnPlane* prediction) {
   hasForwardPrediction_ = prediction != nullptr;
-  if (prediction != nullptr) {
-    forwardPrediction_ = *prediction;
+  if (prediction != nullptr)
     setPlane(prediction->getPlane());
-    delete prediction;
-  }
+  forwardPrediction_.reset(prediction);
 }
 
 void GSFFitterInfo::setBackwardPrediction(MeasuredStateOnPlane* prediction) {
   hasBackwardPrediction_ = prediction != nullptr;
-  if (prediction != nullptr) {
-    backwardPrediction_ = *prediction;
+  if (prediction != nullptr)
     setPlane(prediction->getPlane());
-    delete prediction;
-  }
+  backwardPrediction_.reset(prediction);
 }
 
 void GSFFitterInfo::setPrediction(MeasuredStateOnPlane* prediction, int direction) {
@@ -74,7 +70,7 @@ void GSFFitterInfo::setPrediction(MeasuredStateOnPlane* prediction, int directio
 }
 
 void GSFFitterInfo::setForwardUpdate(const MeasuredStateOnPlane& update, double chi2Increment, double ndf) {
-  forwardUpdate_ = update;
+  forwardUpdate_.reset(new MeasuredStateOnPlane(update));
   forwardUpdateChi2Increment_ = chi2Increment;
   forwardUpdateNdf_ = ndf;
   hasForwardUpdate_ = true;
@@ -82,7 +78,7 @@ void GSFFitterInfo::setForwardUpdate(const MeasuredStateOnPlane& update, double 
 }
 
 void GSFFitterInfo::setBackwardUpdate(const MeasuredStateOnPlane& update, double chi2Increment, double ndf) {
-  backwardUpdate_ = update;
+  backwardUpdate_.reset(new MeasuredStateOnPlane(update));
   backwardUpdateChi2Increment_ = chi2Increment;
   backwardUpdateNdf_ = ndf;
   hasBackwardUpdate_ = true;
@@ -126,14 +122,14 @@ void GSFFitterInfo::setComponents(const std::vector<GSFComponent>& components, i
 
 void GSFFitterInfo::setRep(const AbsTrackRep* rep) {
   AbsFitterInfo::setRep(rep);
-  if (hasForwardPrediction_)
-    forwardPrediction_.setRep(rep);
-  if (hasBackwardPrediction_)
-    backwardPrediction_.setRep(rep);
-  if (hasForwardUpdate_)
-    forwardUpdate_.setRep(rep);
-  if (hasBackwardUpdate_)
-    backwardUpdate_.setRep(rep);
+  if (forwardPrediction_)
+    forwardPrediction_->setRep(rep);
+  if (backwardPrediction_)
+    backwardPrediction_->setRep(rep);
+  if (forwardUpdate_)
+    forwardUpdate_->setRep(rep);
+  if (backwardUpdate_)
+    backwardUpdate_->setRep(rep);
   for (MeasurementOnPlane& measurement : measurementsOnPlane_)
     measurement.setRep(rep);
   for (std::vector<GSFComponent>* components : {&forwardPredictedComponents_, &forwardUpdatedComponents_,
@@ -146,6 +142,8 @@ void GSFFitterInfo::setRep(const AbsTrackRep* rep) {
 void GSFFitterInfo::deleteForwardInfo() {
   hasForwardPrediction_ = false;
   hasForwardUpdate_ = false;
+  forwardPrediction_.reset();
+  forwardUpdate_.reset();
   forwardUpdateChi2Increment_ = 0.;
   forwardUpdateNdf_ = 0.;
   forwardPredictedComponents_.clear();
@@ -155,6 +153,8 @@ void GSFFitterInfo::deleteForwardInfo() {
 void GSFFitterInfo::deleteBackwardInfo() {
   hasBackwardPrediction_ = false;
   hasBackwardUpdate_ = false;
+  backwardPrediction_.reset();
+  backwardUpdate_.reset();
   backwardUpdateChi2Increment_ = 0.;
   backwardUpdateNdf_ = 0.;
   backwardPredictedComponents_.clear();
@@ -186,22 +186,22 @@ const MeasuredStateOnPlane& GSFFitterInfo::getFittedState(bool biased) const {
 
   if (biased) {
     if (last && !hasBackwardPrediction_ && hasForwardUpdate_)
-      return forwardUpdate_;
+      return *forwardUpdate_;
     if (first && (!hasForwardUpdate_ || (hasBackwardUpdate_ && !hasForwardPrediction_))) {
       if (hasBackwardUpdate_)
-        return backwardUpdate_;
+        return *backwardUpdate_;
     }
     if (hasForwardUpdate_ && hasBackwardPrediction_) {
-      fittedState_ = calcAverageState(forwardUpdate_, backwardPrediction_);
+      fittedState_ = calcAverageState(*forwardUpdate_, *backwardPrediction_);
       return fittedState_;
     }
   } else {
     if (last && !hasBackwardPrediction_ && hasForwardPrediction_)
-      return forwardPrediction_;
+      return *forwardPrediction_;
     if (first && !hasForwardPrediction_ && hasBackwardPrediction_)
-      return backwardPrediction_;
+      return *backwardPrediction_;
     if (hasForwardPrediction_ && hasBackwardPrediction_) {
-      fittedState_ = calcAverageState(forwardPrediction_, backwardPrediction_);
+      fittedState_ = calcAverageState(*forwardPrediction_, *backwardPrediction_);
       return fittedState_;
     }
   }

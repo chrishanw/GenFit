@@ -40,11 +40,19 @@ class GSFFitterInfo : public AbsFitterInfo {
 
   GSFFitterInfo* clone() const override;
 
-  MeasuredStateOnPlane* getForwardPrediction() const { return hasForwardPrediction_ ? &forwardPrediction_ : nullptr; }
-  MeasuredStateOnPlane* getBackwardPrediction() const { return hasBackwardPrediction_ ? &backwardPrediction_ : nullptr; }
+  MeasuredStateOnPlane* getForwardPrediction() const {
+    return hasForwardPrediction_ ? forwardPrediction_.get() : nullptr;
+  }
+  MeasuredStateOnPlane* getBackwardPrediction() const {
+    return hasBackwardPrediction_ ? backwardPrediction_.get() : nullptr;
+  }
   MeasuredStateOnPlane* getPrediction(int direction) const { return direction >= 0 ? getForwardPrediction() : getBackwardPrediction(); }
-  MeasuredStateOnPlane* getForwardUpdate() const { return hasForwardUpdate_ ? &forwardUpdate_ : nullptr; }
-  MeasuredStateOnPlane* getBackwardUpdate() const { return hasBackwardUpdate_ ? &backwardUpdate_ : nullptr; }
+  MeasuredStateOnPlane* getForwardUpdate() const {
+    return hasForwardUpdate_ ? forwardUpdate_.get() : nullptr;
+  }
+  MeasuredStateOnPlane* getBackwardUpdate() const {
+    return hasBackwardUpdate_ ? backwardUpdate_.get() : nullptr;
+  }
   MeasuredStateOnPlane* getUpdate(int direction) const { return direction >= 0 ? getForwardUpdate() : getBackwardUpdate(); }
   double getForwardUpdateChi2Increment() const { return forwardUpdateChi2Increment_; }
   double getBackwardUpdateChi2Increment() const { return backwardUpdateChi2Increment_; }
@@ -90,10 +98,10 @@ class GSFFitterInfo : public AbsFitterInfo {
   bool checkConsistency(const PruneFlags* = nullptr) const override;
 
  private:
-  mutable MeasuredStateOnPlane forwardPrediction_;
-  mutable MeasuredStateOnPlane backwardPrediction_;
-  mutable MeasuredStateOnPlane forwardUpdate_;
-  mutable MeasuredStateOnPlane backwardUpdate_;
+  mutable std::unique_ptr<MeasuredStateOnPlane> forwardPrediction_;
+  mutable std::unique_ptr<MeasuredStateOnPlane> backwardPrediction_;
+  mutable std::unique_ptr<MeasuredStateOnPlane> forwardUpdate_;
+  mutable std::unique_ptr<MeasuredStateOnPlane> backwardUpdate_;
   double forwardUpdateChi2Increment_ = 0.;
   double backwardUpdateChi2Increment_ = 0.;
   double forwardUpdateNdf_ = 0.;
