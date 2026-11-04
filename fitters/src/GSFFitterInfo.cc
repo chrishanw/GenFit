@@ -225,6 +225,7 @@ MeasurementOnPlane GSFFitterInfo::getResidual(unsigned int iMeasurement, bool bi
   residual *= -1.;
   TMatrixDSym covariance(measurement.getCov());
   if (!onlyMeasurementErrors) {
+    covariance.ResizeTo(fittedState.getCov());
     covariance = fittedState.getCov();
     hMatrix->HMHt(covariance);
     covariance += measurement.getCov();
