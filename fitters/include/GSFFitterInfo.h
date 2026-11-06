@@ -40,19 +40,11 @@ class GSFFitterInfo : public AbsFitterInfo {
 
   GSFFitterInfo* clone() const override;
 
-  MeasuredStateOnPlane* getForwardPrediction() const {
-    return hasForwardPrediction_ ? forwardPrediction_.get() : nullptr;
-  }
-  MeasuredStateOnPlane* getBackwardPrediction() const {
-    return hasBackwardPrediction_ ? backwardPrediction_.get() : nullptr;
-  }
+  MeasuredStateOnPlane* getForwardPrediction() const { return forwardPrediction_.get(); }
+  MeasuredStateOnPlane* getBackwardPrediction() const { return backwardPrediction_.get(); }
   MeasuredStateOnPlane* getPrediction(int direction) const { return direction >= 0 ? getForwardPrediction() : getBackwardPrediction(); }
-  MeasuredStateOnPlane* getForwardUpdate() const {
-    return hasForwardUpdate_ ? forwardUpdate_.get() : nullptr;
-  }
-  MeasuredStateOnPlane* getBackwardUpdate() const {
-    return hasBackwardUpdate_ ? backwardUpdate_.get() : nullptr;
-  }
+  MeasuredStateOnPlane* getForwardUpdate() const { return forwardUpdate_.get(); }
+  MeasuredStateOnPlane* getBackwardUpdate() const { return backwardUpdate_.get(); }
   MeasuredStateOnPlane* getUpdate(int direction) const { return direction >= 0 ? getForwardUpdate() : getBackwardUpdate(); }
   double getForwardUpdateChi2Increment() const { return forwardUpdateChi2Increment_; }
   double getBackwardUpdateChi2Increment() const { return backwardUpdateChi2Increment_; }
@@ -84,10 +76,11 @@ class GSFFitterInfo : public AbsFitterInfo {
   void setRep(const AbsTrackRep* rep) override;
   bool hasMeasurements() const override { return !measurementsOnPlane_.empty(); }
   bool hasReferenceState() const override { return false; }
-  bool hasForwardPrediction() const override { return hasForwardPrediction_; }
-  bool hasBackwardPrediction() const override { return hasBackwardPrediction_; }
-  bool hasForwardUpdate() const override { return hasForwardUpdate_; }
-  bool hasBackwardUpdate() const override { return hasBackwardUpdate_; }
+
+  bool hasForwardPrediction() const override {return (forwardPrediction_.get()  != nullptr);}
+  bool hasBackwardPrediction() const override {return (backwardPrediction_.get() != nullptr);}
+  bool hasForwardUpdate() const override {return (forwardUpdate_.get() != nullptr);}
+  bool hasBackwardUpdate() const override {return (backwardUpdate_.get() != nullptr);}
   void deleteReferenceInfo() override {}
   void deleteForwardInfo() override;
   void deleteBackwardInfo() override;
@@ -105,10 +98,6 @@ class GSFFitterInfo : public AbsFitterInfo {
   double backwardUpdateChi2Increment_ = 0.;
   double forwardUpdateNdf_ = 0.;
   double backwardUpdateNdf_ = 0.;
-  bool hasForwardPrediction_ = false;
-  bool hasBackwardPrediction_ = false;
-  bool hasForwardUpdate_ = false;
-  bool hasBackwardUpdate_ = false;
   bool fixWeights_ = false;
   std::vector<MeasurementOnPlane> measurementsOnPlane_;
   std::vector<GSFComponent> forwardPredictedComponents_;
