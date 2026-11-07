@@ -7,9 +7,11 @@
 #include "Track.h"
 #include "TrackPoint.h"
 
-#include "TBuffer.h"
+#include <TBuffer.h>
 
 #include <cmath>
+#include <stdexcept>
+#include <utility>
 
 namespace genfit {
 
@@ -17,10 +19,6 @@ GSFFitterInfo::GSFFitterInfo() : AbsFitterInfo() {}
 
 GSFFitterInfo::GSFFitterInfo(const TrackPoint* trackPoint, const AbsTrackRep* rep)
     : AbsFitterInfo(trackPoint, rep) {}
-
-GSFFitterInfo::~GSFFitterInfo() {
-  deleteMeasurementInfo();
-}
 
 GSFFitterInfo* GSFFitterInfo::clone() const {
   GSFFitterInfo* result = new GSFFitterInfo(getTrackPoint(), getRep());
@@ -33,8 +31,9 @@ GSFFitterInfo* GSFFitterInfo::clone() const {
   if (hasBackwardUpdate())
     result->setBackwardUpdate(*getBackwardUpdate(), getBackwardUpdateChi2Increment(), getBackwardUpdateNdf());
 
-  for (MeasurementOnPlane* measurement : measurementsOnPlane_)
-    result->addMeasurementOnPlane(measurement);
+  result->measurementsOnPlane_.reserve(measurementsOnPlane_.size());
+  for (const std::unique_ptr<MeasurementOnPlane>& measurement : measurementsOnPlane_)
+    result->addMeasurementOnPlane(std::unique_ptr<MeasurementOnPlane>(new MeasurementOnPlane(*measurement)));
   if (!measurementsOnPlane_.empty())
     result->setWeights(getWeights());
   result->fixWeights(fixWeights_);
@@ -50,7 +49,7 @@ GSFFitterInfo* GSFFitterInfo::clone() const {
 std::vector<double> GSFFitterInfo::getWeights() const {
   std::vector<double> weights;
   weights.reserve(measurementsOnPlane_.size());
-  for (const MeasurementOnPlane* measurement : measurementsOnPlane_)
+  for (const std::unique_ptr<MeasurementOnPlane>& measurement : measurementsOnPlane_)
     weights.push_back(measurement->getWeight());
   return weights;
 }
@@ -95,11 +94,13 @@ void GSFFitterInfo::setUpdate(const MeasuredStateOnPlane& update, int direction,
     setBackwardUpdate(update, chi2Increment, ndf);
 }
 
-void GSFFitterInfo::addMeasurementOnPlane(MeasurementOnPlane* measurementOnPlane) {
-  if (measurementsOnPlane_.size() == 0)
-    setPlane(measurementOnPlane->getPlane());
+void GSFFitterInfo::addMeasurementOnPlane(std::unique_ptr<MeasurementOnPlane> measurement) {
+  if (!measurement)
+    throw std::invalid_argument("GSFFitterInfo::addMeasurementOnPlane: measurement must not be null");
+  if (measurementsOnPlane_.empty())
+    setPlane(measurement->getPlane());
 
-  measurementsOnPlane_.push_back(measurementOnPlane);
+  measurementsOnPlane_.push_back(std::move(measurement));
 }
 
 void GSFFitterInfo::setWeights(const std::vector<double>& weights) {
@@ -134,7 +135,7 @@ void GSFFitterInfo::setRep(const AbsTrackRep* rep) {
     forwardUpdate_->setRep(rep);
   if (backwardUpdate_)
     backwardUpdate_->setRep(rep);
-  for (MeasurementOnPlane* measurement : measurementsOnPlane_)
+  for (const std::unique_ptr<MeasurementOnPlane>& measurement : measurementsOnPlane_)
     measurement->setRep(rep);
   for (std::vector<GSFComponent>* components : {&forwardPredictedComponents_, &forwardUpdatedComponents_,
                                                 &backwardPredictedComponents_, &backwardUpdatedComponents_}) {
@@ -162,8 +163,6 @@ void GSFFitterInfo::deleteBackwardInfo() {
 }
 
 void GSFFitterInfo::deleteMeasurementInfo() {
-  for (MeasurementOnPlane* measurement : measurementsOnPlane_)
-    delete measurement;
   measurementsOnPlane_.clear();
 }
 
@@ -315,7 +314,7 @@ bool GSFFitterInfo::checkConsistency(const PruneFlags* flags) const {
 
   // measurements
   for (unsigned int i = 0; i < measurementsOnPlane_.size(); ++i) {
-    const MeasurementOnPlane* measurement = measurementsOnPlane_[i];
+    const MeasurementOnPlane* measurement = measurementsOnPlane_[i].get();
     if (measurement->getPlane() != plane) {
       errorOut << "GSFFitterInfo::checkConsistency(): measurement " << i
                << " is not defined with the correct plane" << std::endl;
@@ -463,7 +462,6 @@ void GSFFitterInfo::Streamer(TBuffer &R__b)
         // rep needs to be fixed up
       }
       {
-        std::vector<genfit::MeasurementOnPlane*,std::allocator<genfit::MeasurementOnPlane*> > &R__stl =  measurementsOnPlane_;
         TClass *R__tcl1 = TBuffer::GetClass(typeid(genfit::MeasurementOnPlane));
         if (R__tcl1==0) {
           Error("measurementsOnPlane_ streamer","Missing the TClass object for genfit::MeasurementOnPlane!");
@@ -471,12 +469,12 @@ void GSFFitterInfo::Streamer(TBuffer &R__b)
         }
         int R__i, R__n;
         R__b >> R__n;
-        R__stl.reserve(R__n);
+        measurementsOnPlane_.reserve(R__n);
         for (R__i = 0; R__i < R__n; R__i++) {
-          genfit::MeasurementOnPlane* R__t = new MeasurementOnPlane();
+          std::unique_ptr<MeasurementOnPlane> R__t(new MeasurementOnPlane());
           R__t->Streamer(R__b);
           R__t->setPlane(getPlane());
-          R__stl.push_back(R__t);
+          measurementsOnPlane_.push_back(std::move(R__t));
         }
       }
       R__b.CheckByteCount(R__s, R__c, thisClass::IsA());
@@ -501,13 +499,11 @@ void GSFFitterInfo::Streamer(TBuffer &R__b)
      if (flag & (1 << 3))
        backwardUpdate_->Streamer(R__b);
      {
-       std::vector<genfit::MeasurementOnPlane*,std::allocator<genfit::MeasurementOnPlane*> > &R__stl =  measurementsOnPlane_;
-       int R__n=int(R__stl.size());
+       int R__n=int(measurementsOnPlane_.size());
        R__b << R__n;
        if(R__n) {
-         std::vector<genfit::MeasurementOnPlane*,std::allocator<genfit::MeasurementOnPlane*> >::iterator R__k;
-         for (R__k = R__stl.begin(); R__k != R__stl.end(); ++R__k) {
-           (*R__k)->Streamer(R__b);
+         for (const std::unique_ptr<MeasurementOnPlane>& measurement : measurementsOnPlane_) {
+           measurement->Streamer(R__b);
          }
        }
      }

@@ -21,6 +21,7 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 using namespace genfit;
@@ -372,8 +373,7 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
         if (direction > 0) {
           for (AbsMeasurement* rawMeasurement : trackPoint->getRawMeasurements()) {
             for (MeasurementOnPlane* measurement : rawMeasurement->constructMeasurementsOnPlane(prediction)) {
-              fitterInfo->addMeasurementOnPlane(measurement);
-              delete measurement;
+              fitterInfo->addMeasurementOnPlane(std::unique_ptr<MeasurementOnPlane>(measurement));
             }
           }
         }
@@ -382,7 +382,7 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
         // their posterior weights before pruning or moment matching.
         std::vector<ComponentUpdate> updates;
         for (const GaussianComponent& component : components) {
-          for (const MeasurementOnPlane* measurement : fitterInfo->getMeasurementsOnPlane()) {
+          for (const std::unique_ptr<MeasurementOnPlane>& measurement : fitterInfo->getMeasurementsOnPlane()) {
             try {
               updates.push_back(updateComponent(component, *measurement));
             }
