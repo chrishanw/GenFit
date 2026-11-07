@@ -36,7 +36,7 @@ class GSFFitterInfo : public AbsFitterInfo {
  public:
   GSFFitterInfo();
   GSFFitterInfo(const TrackPoint* trackPoint, const AbsTrackRep* rep);
-  ~GSFFitterInfo() override = default;
+  ~GSFFitterInfo() override;
 
   GSFFitterInfo* clone() const override;
 
@@ -51,9 +51,9 @@ class GSFFitterInfo : public AbsFitterInfo {
   double getForwardUpdateNdf() const { return forwardUpdateNdf_; }
   double getBackwardUpdateNdf() const { return backwardUpdateNdf_; }
 
-  const std::vector<MeasurementOnPlane>& getMeasurementsOnPlane() const { return measurementsOnPlane_; }
-  MeasurementOnPlane* getMeasurementOnPlane(int i = 0) { if (i < 0) i += measurementsOnPlane_.size(); return &measurementsOnPlane_.at(i); }
-  const MeasurementOnPlane* getMeasurementOnPlane(int i = 0) const { if (i < 0) i += measurementsOnPlane_.size(); return &measurementsOnPlane_.at(i); }
+  const std::vector<MeasurementOnPlane*>& getMeasurementsOnPlane() const { return measurementsOnPlane_; }
+  MeasurementOnPlane* getMeasurementOnPlane(int i = 0) { if (i < 0) i += measurementsOnPlane_.size(); return measurementsOnPlane_.at(i); }
+  const MeasurementOnPlane* getMeasurementOnPlane(int i = 0) const { if (i < 0) i += measurementsOnPlane_.size(); return measurementsOnPlane_.at(i); }
   unsigned int getNumMeasurements() const { return measurementsOnPlane_.size(); }
   std::vector<double> getWeights() const override;
   bool areWeightsFixed() const { return fixWeights_; }
@@ -99,7 +99,7 @@ class GSFFitterInfo : public AbsFitterInfo {
   double forwardUpdateNdf_ = 0.;
   double backwardUpdateNdf_ = 0.;
   bool fixWeights_ = false;
-  std::vector<MeasurementOnPlane> measurementsOnPlane_;
+  std::vector<MeasurementOnPlane*> measurementsOnPlane_;
   std::vector<GSFComponent> forwardPredictedComponents_;
   std::vector<GSFComponent> forwardUpdatedComponents_;
   std::vector<GSFComponent> backwardPredictedComponents_;

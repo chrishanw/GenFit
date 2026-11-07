@@ -15,6 +15,10 @@ GSFFitterInfo::GSFFitterInfo() : AbsFitterInfo() {}
 GSFFitterInfo::GSFFitterInfo(const TrackPoint* trackPoint, const AbsTrackRep* rep)
     : AbsFitterInfo(trackPoint, rep) {}
 
+GSFFitterInfo::~GSFFitterInfo() {
+  deleteMeasurementInfo();
+}
+
 GSFFitterInfo* GSFFitterInfo::clone() const {
   GSFFitterInfo* result = new GSFFitterInfo(getTrackPoint(), getRep());
   if (hasForwardPrediction())
@@ -26,8 +30,8 @@ GSFFitterInfo* GSFFitterInfo::clone() const {
   if (hasBackwardUpdate())
     result->setBackwardUpdate(*getBackwardUpdate(), getBackwardUpdateChi2Increment(), getBackwardUpdateNdf());
 
-  for (const MeasurementOnPlane& measurement : measurementsOnPlane_)
-    result->addMeasurementOnPlane(measurement);
+  for (const MeasurementOnPlane* measurement : measurementsOnPlane_)
+    result->addMeasurementOnPlane(*measurement);
   if (!measurementsOnPlane_.empty())
     result->setWeights(getWeights());
   result->fixWeights(fixWeights_);
@@ -43,8 +47,8 @@ GSFFitterInfo* GSFFitterInfo::clone() const {
 std::vector<double> GSFFitterInfo::getWeights() const {
   std::vector<double> weights;
   weights.reserve(measurementsOnPlane_.size());
-  for (const MeasurementOnPlane& measurement : measurementsOnPlane_)
-    weights.push_back(measurement.getWeight());
+  for (const MeasurementOnPlane* measurement : measurementsOnPlane_)
+    weights.push_back(measurement->getWeight());
   return weights;
 }
 
@@ -91,7 +95,7 @@ void GSFFitterInfo::setUpdate(const MeasuredStateOnPlane& update, int direction,
 void GSFFitterInfo::addMeasurementOnPlane(const MeasurementOnPlane& measurement) {
   if (measurementsOnPlane_.empty())
     setPlane(measurement.getPlane());
-  measurementsOnPlane_.push_back(measurement);
+  measurementsOnPlane_.push_back(new MeasurementOnPlane(measurement));
 }
 
 void GSFFitterInfo::setWeights(const std::vector<double>& weights) {
@@ -100,7 +104,7 @@ void GSFFitterInfo::setWeights(const std::vector<double>& weights) {
     throw exception;
   }
   for (std::size_t i = 0; i < weights.size(); ++i)
-    measurementsOnPlane_[i].setWeight(weights[i]);
+    measurementsOnPlane_[i]->setWeight(weights[i]);
 }
 
 const std::vector<GSFComponent>& GSFFitterInfo::getComponents(int direction, bool updated) const {
@@ -126,8 +130,8 @@ void GSFFitterInfo::setRep(const AbsTrackRep* rep) {
     forwardUpdate_->setRep(rep);
   if (backwardUpdate_)
     backwardUpdate_->setRep(rep);
-  for (MeasurementOnPlane& measurement : measurementsOnPlane_)
-    measurement.setRep(rep);
+  for (MeasurementOnPlane* measurement : measurementsOnPlane_)
+    measurement->setRep(rep);
   for (std::vector<GSFComponent>* components : {&forwardPredictedComponents_, &forwardUpdatedComponents_,
                                                 &backwardPredictedComponents_, &backwardUpdatedComponents_}) {
     for (GSFComponent& component : *components)
@@ -154,6 +158,8 @@ void GSFFitterInfo::deleteBackwardInfo() {
 }
 
 void GSFFitterInfo::deleteMeasurementInfo() {
+  for (MeasurementOnPlane* measurement : measurementsOnPlane_)
+    delete measurement;
   measurementsOnPlane_.clear();
 }
 
@@ -205,7 +211,7 @@ const MeasuredStateOnPlane& GSFFitterInfo::getFittedState(bool biased) const {
 MeasurementOnPlane GSFFitterInfo::getResidual(unsigned int iMeasurement, bool biased, bool onlyMeasurementErrors) const {
 
   const MeasuredStateOnPlane& fittedState = getFittedState(biased);
-  const MeasurementOnPlane& measurement = measurementsOnPlane_.at(iMeasurement);
+  const MeasurementOnPlane& measurement = *measurementsOnPlane_.at(iMeasurement);
   const SharedPlanePtr& plane = measurement.getPlane();
 
   // check equality of planes and reps
@@ -236,10 +242,10 @@ MeasurementOnPlane GSFFitterInfo::getResidual(unsigned int iMeasurement, bool bi
 }
 
 bool GSFFitterInfo::checkConsistency(const PruneFlags*) const {
-  if (!measurementsOnPlane_.empty() && getPlane() != measurementsOnPlane_.front().getPlane())
+  if (!measurementsOnPlane_.empty() && getPlane() != measurementsOnPlane_.front()->getPlane())
     return false;
-  for (const MeasurementOnPlane& measurement : measurementsOnPlane_) {
-    if (measurement.getRep() != getRep() || measurement.getPlane() != getPlane())
+  for (const MeasurementOnPlane* measurement : measurementsOnPlane_) {
+    if (measurement->getRep() != getRep() || measurement->getPlane() != getPlane())
       return false;
   }
   const auto validComponents = [](const std::vector<GSFComponent>& components) {
