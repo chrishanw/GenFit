@@ -184,8 +184,8 @@ const MeasuredStateOnPlane& GSFFitterInfo::getFittedState(bool biased) const {
         return *backwardUpdate_;
     }
     if (hasForwardUpdate() && hasBackwardPrediction()) {
-      fittedState_ = calcAverageState(*forwardUpdate_, *backwardPrediction_);
-      return fittedState_;
+      fittedState_.reset(new MeasuredStateOnPlane(calcAverageState(*forwardUpdate_, *backwardPrediction_)));
+      return *fittedState_;
     }
   } else {
     if (last && !hasBackwardPrediction() && hasForwardPrediction())
@@ -193,8 +193,8 @@ const MeasuredStateOnPlane& GSFFitterInfo::getFittedState(bool biased) const {
     if (first && !hasForwardPrediction() && hasBackwardPrediction())
       return *backwardPrediction_;
     if (hasForwardPrediction() && hasBackwardPrediction()) {
-      fittedState_ = calcAverageState(*forwardPrediction_, *backwardPrediction_);
-      return fittedState_;
+      fittedState_.reset(new MeasuredStateOnPlane(calcAverageState(*forwardPrediction_, *backwardPrediction_)));
+      return *fittedState_;
     }
   }
 

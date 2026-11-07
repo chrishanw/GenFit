@@ -104,7 +104,7 @@ class GSFFitterInfo : public AbsFitterInfo {
   std::vector<GSFComponent> forwardUpdatedComponents_;
   std::vector<GSFComponent> backwardPredictedComponents_;
   std::vector<GSFComponent> backwardUpdatedComponents_;
-  mutable MeasuredStateOnPlane fittedState_;
+  mutable std::unique_ptr<MeasuredStateOnPlane> fittedState_;
 
  public:
   ClassDefOverride(GSFFitterInfo, 1)
