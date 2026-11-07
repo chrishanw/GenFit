@@ -90,10 +90,10 @@ class GSFFitterInfo : public AbsFitterInfo {
   bool checkConsistency(const PruneFlags* = nullptr) const override;
 
  private:
-  mutable std::unique_ptr<MeasuredStateOnPlane> forwardPrediction_;
-  mutable std::unique_ptr<MeasuredStateOnPlane> backwardPrediction_;
-  mutable std::unique_ptr<MeasuredStateOnPlane> forwardUpdate_;
-  mutable std::unique_ptr<MeasuredStateOnPlane> backwardUpdate_;
+  std::unique_ptr<MeasuredStateOnPlane> forwardPrediction_;
+  std::unique_ptr<MeasuredStateOnPlane> backwardPrediction_;
+  std::unique_ptr<MeasuredStateOnPlane> forwardUpdate_;
+  std::unique_ptr<MeasuredStateOnPlane> backwardUpdate_;
   double forwardUpdateChi2Increment_ = 0.;
   double backwardUpdateChi2Increment_ = 0.;
   double forwardUpdateNdf_ = 0.;
