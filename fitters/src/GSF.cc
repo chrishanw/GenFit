@@ -372,7 +372,7 @@ void GSF::processTrackWithRep(Track* tr, const AbsTrackRep* rep, bool) {
         if (direction > 0) {
           for (AbsMeasurement* rawMeasurement : trackPoint->getRawMeasurements()) {
             for (MeasurementOnPlane* measurement : rawMeasurement->constructMeasurementsOnPlane(prediction)) {
-              fitterInfo->addMeasurementOnPlane(*measurement);
+              fitterInfo->addMeasurementOnPlane(measurement);
               delete measurement;
             }
           }

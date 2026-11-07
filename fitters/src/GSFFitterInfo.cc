@@ -33,8 +33,8 @@ GSFFitterInfo* GSFFitterInfo::clone() const {
   if (hasBackwardUpdate())
     result->setBackwardUpdate(*getBackwardUpdate(), getBackwardUpdateChi2Increment(), getBackwardUpdateNdf());
 
-  for (const MeasurementOnPlane* measurement : measurementsOnPlane_)
-    result->addMeasurementOnPlane(*measurement);
+  for (MeasurementOnPlane* measurement : measurementsOnPlane_)
+    result->addMeasurementOnPlane(measurement);
   if (!measurementsOnPlane_.empty())
     result->setWeights(getWeights());
   result->fixWeights(fixWeights_);
@@ -95,10 +95,11 @@ void GSFFitterInfo::setUpdate(const MeasuredStateOnPlane& update, int direction,
     setBackwardUpdate(update, chi2Increment, ndf);
 }
 
-void GSFFitterInfo::addMeasurementOnPlane(const MeasurementOnPlane& measurement) {
-  if (measurementsOnPlane_.empty())
-    setPlane(measurement.getPlane());
-  measurementsOnPlane_.push_back(new MeasurementOnPlane(measurement));
+void GSFFitterInfo::addMeasurementOnPlane(MeasurementOnPlane* measurementOnPlane) {
+  if (measurementsOnPlane_.size() == 0)
+    setPlane(measurementOnPlane->getPlane());
+
+  measurementsOnPlane_.push_back(measurementOnPlane);
 }
 
 void GSFFitterInfo::setWeights(const std::vector<double>& weights) {

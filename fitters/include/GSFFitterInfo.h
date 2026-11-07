@@ -64,7 +64,7 @@ class GSFFitterInfo : public AbsFitterInfo {
   void setForwardUpdate(const MeasuredStateOnPlane& update, double chi2Increment = 0., double ndf = 0.);
   void setBackwardUpdate(const MeasuredStateOnPlane& update, double chi2Increment = 0., double ndf = 0.);
   void setUpdate(const MeasuredStateOnPlane& update, int direction, double chi2Increment = 0., double ndf = 0.);
-  void addMeasurementOnPlane(const MeasurementOnPlane& measurement);
+  void addMeasurementOnPlane(MeasurementOnPlane* measurement);
   void setWeights(const std::vector<double>& weights);
   void fixWeights(bool value = true) { fixWeights_ = value; }
 
