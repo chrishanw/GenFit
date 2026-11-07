@@ -21,5 +21,5 @@
 #pragma link C++ class genfit::KalmanFitter-;
 #pragma link C++ class genfit::KalmanFitterInfo-;
 #pragma link C++ class genfit::GSFComponent+;
-#pragma link C++ class genfit::GSFFitterInfo+;
+#pragma link C++ class genfit::GSFFitterInfo-;
 #pragma link C++ class genfit::DAF-;
